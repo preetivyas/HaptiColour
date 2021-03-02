@@ -85,6 +85,8 @@ float             edgeBottomRightY                    = worldHeight;
 
 /* Definition of wallList */
 ArrayList<Wall> wallList;
+//LK: hashmap is a workaround solution since I couldn't get fisica to import in the Wall.java file
+HashMap<Wall, FBox> wallToWorldList;
 
 /* Definition of maze end */
 FCircle end;
@@ -102,7 +104,7 @@ PFont font;
 boolean           colour;
 float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
 PImage            haplyAvatar, bi;
-String           tooltip;
+String            tooltip;
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -134,9 +136,12 @@ void setup() {
    *
    *      windows:      haplyBoard = new Board(this, "COM10", 0);
    *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
-   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem1411", 0);
+   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
+
+
   haplyBoard = new Board(this, "COM3", 0);
+
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
 
@@ -177,7 +182,6 @@ void setup() {
 
 
   for (int i = 0; i <button_img.length; i++) {
-    println (i);
     bi = loadImage(button_img[i]);
     bi.resize(50, 50);
     cp5.addButton(button_label[i]).setImage(bi)
@@ -211,6 +215,18 @@ void setup() {
 
 /* start button action section ****************************************************************************************************/
 //PV: need to update this section; really bad (but working) code
+
+void keyPressed(){
+  if (key == ' '){ // pressing spacebar makes walls flexible
+    setWallFlexibility(true, color(255, 0, 0));
+  }
+}
+
+void keyReleased(){
+  if (key == ' '){
+    setWallFlexibility(false, color(0, 0, 0));
+  }
+}
 
 public void b1(int theValue) {
   tooltip = button_img[0];
@@ -351,6 +367,7 @@ class SimulationThread implements Runnable {
 
 ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
   wallList = new ArrayList<Wall>();
+  wallToWorldList = new HashMap<Wall, FBox>();
   Wall w;
 
   String[] lines = loadStrings(FILENAME);
@@ -412,6 +429,7 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wall.setStatic(true);
     int c = item.getColor();
     wall.setFill(c);
+    wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
 }
@@ -429,6 +447,14 @@ void createPlayerToken(float x, float y) {
   playerToken.init(world, x, y);
 }
 
-
+void setWallFlexibility(boolean flexibility, int wallColor) {
+  FBox wallInWorld;
+  for (Wall item : wallList){
+    wallInWorld = wallToWorldList.get(item);
+    wallInWorld.setSensor(flexibility);
+    wallInWorld.setFillColor(wallColor);
+    wallInWorld.setStrokeColor(wallColor);
+  }
+}
 
 /* end helper functions section ****************************************************************************************/
