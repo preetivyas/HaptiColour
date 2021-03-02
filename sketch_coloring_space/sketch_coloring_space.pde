@@ -19,7 +19,7 @@
 import processing.serial.*;
 import static java.util.concurrent.TimeUnit.*;
 import java.util.concurrent.*;
-
+import controlP5.*;
 /* end library imports *************************************************************************************************/
 
 
@@ -105,7 +105,7 @@ void setup() {
   cp5 = new ControlP5(this);
 
   /* screen size definition */
-  size(1200, 800);
+  size(1200, 680);
 
   /* set font type and size */
   font = loadFont("ComicSansMS-72.vlw");
@@ -170,14 +170,23 @@ void setup() {
   scheduler.scheduleAtFixedRate(st, 1, 1, MILLISECONDS);
 
   //gui specific buttons
+  
+  PImage[] button_img = {loadImage("../img/brush1.png"), loadImage("../img/brush2.png"), loadImage("../img/brush3.png"), 
+                        loadImage("../img/brush4.png"), loadImage("../img/brush5.png"), loadImage("../img/brush6.png"),
+                        loadImage("../img/brush7.png"), loadImage("../img/brush8.png"), loadImage("../img/brush9.png")};
+  String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9"};
+  
+  for (int i = 1; i <button_img.length;i++) {
+    button_img[i].resize(50,50);
+    cp5.addButton(button_label[i]).setImage(button_img[i])
+    .setPosition(100*i,600)
+    .setValue(0);
+    
+  }
+  
+  //PImage[] playImages = {loadImage("play.png"), loadImage("play.png"), loadImage("play.png")};
 
-  cp5.addButton("RandomPosition").setImage(loadImage("../img/brush2.png")).updateSize().setPosition(20,20)
-    .setValue(0)
-    .setPosition(10, 505)
-    .setSize(200, 50)
-    ;
-    
-    
+  
 }
 /* end setup section ***************************************************************************************************/
 
@@ -309,7 +318,7 @@ void createPlayerToken(float x, float y) {
   /* Setup the Virtual Coupling Contact Rendering Technique */
   playerToken = new HVirtualCoupling((tooltipsize)); 
   playerToken.h_avatar.setDensity(4); 
-  haplyAvatar = loadImage("../img/brush2.png"); 
+  haplyAvatar = loadImage("../img/brush5.png"); 
   haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
   playerToken.h_avatar.attachImage(haplyAvatar); 
   //playerToken.h_avatar.setFill(random(255),random(255),random(255)); 
