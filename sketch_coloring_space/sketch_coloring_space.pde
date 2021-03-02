@@ -48,7 +48,7 @@ boolean           renderingForce                      = false;
 
 
 /* framerate definition ************************************************************************************************/
-long              baseFrameRate                       = 120;
+long              baseFrameRate                       = 150;
 /* end framerate definition ********************************************************************************************/
 
 
@@ -94,15 +94,24 @@ PFont font;
 /* end elements definition *********************************************************************************************/
 
 /*colouring specific variables*/
-boolean colour;
-float tooltipsize = 1; //PV: set tooltip size (0.5 to 1 seems to work the best)
-PImage            haplyAvatar;
+boolean           colour;
+float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
+PImage            haplyAvatar, bi;
+String           tooltip;
+
+String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
+  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
+  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
+  "../img/brush10.png"};
+String[]          button_label      =      {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
 /* setup section *******************************************************************************************************/
 void setup() {
   /* put setup code here, run once: */
   background(255);
   cp5 = new ControlP5(this);
+
+  tooltip = button_img[0];
 
   /* screen size definition */
   size(1200, 680);
@@ -158,6 +167,28 @@ void setup() {
   world.setEdgesFriction(0.5);
 
 
+  //gui specific buttons
+
+
+
+  for (int i = 0; i <button_img.length; i++) {
+    println (i);
+    bi = loadImage(button_img[i]);
+    bi.resize(50, 50);
+    cp5.addButton(button_label[i]).setImage(bi)
+      .setPosition((50+100*i), 600)
+      .setValue(0);
+  }
+
+  cp5.addButton("resetHaply").setImage(bi)
+    .setPosition((50+100*i), 600)
+    .setValue(0);
+
+  cp5.addButton("move").setImage(bi)
+    .setPosition((50+100*i), 600)
+    .setValue(0);
+
+
   world.draw();
 
 
@@ -169,26 +200,74 @@ void setup() {
   SimulationThread st = new SimulationThread();
   scheduler.scheduleAtFixedRate(st, 1, 1, MILLISECONDS);
 
-  //gui specific buttons
-  
-  PImage[] button_img = {loadImage("../img/brush1.png"), loadImage("../img/brush2.png"), loadImage("../img/brush3.png"), 
-                        loadImage("../img/brush4.png"), loadImage("../img/brush5.png"), loadImage("../img/brush6.png"),
-                        loadImage("../img/brush7.png"), loadImage("../img/brush8.png"), loadImage("../img/brush9.png")};
-  String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9"};
-  
-  for (int i = 1; i <button_img.length;i++) {
-    button_img[i].resize(50,50);
-    cp5.addButton(button_label[i]).setImage(button_img[i])
-    .setPosition(100*i,600)
-    .setValue(0);
-    
-  }
-  
   //PImage[] playImages = {loadImage("play.png"), loadImage("play.png"), loadImage("play.png")};
-
-  
 }
 /* end setup section ***************************************************************************************************/
+
+/* start button action section ****************************************************************************************************/
+//PV: need to update this section; really bad (but working) code
+
+public void b1(int theValue) {
+  tooltip = button_img[0];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b2(int theValue) {
+  tooltip = button_img[1];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b3(int theValue) {
+  tooltip = button_img[2];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b4(int theValue) {
+  tooltip = button_img[3];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b5(int theValue) {
+  tooltip = button_img[4];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b6(int theValue) {
+  tooltip = button_img[5];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b7(int theValue) {
+  tooltip = button_img[6];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b8(int theValue) {
+  tooltip = button_img[7];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b9(int theValue) {
+  tooltip = button_img[8];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+public void b10(int theValue) {
+  tooltip = button_img[9];
+  haplyAvatar = loadImage(tooltip); 
+  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  playerToken.h_avatar.attachImage(haplyAvatar);
+}
+/* end button action section ****************************************************************************************************/
 
 
 
@@ -318,12 +397,14 @@ void createPlayerToken(float x, float y) {
   /* Setup the Virtual Coupling Contact Rendering Technique */
   playerToken = new HVirtualCoupling((tooltipsize)); 
   playerToken.h_avatar.setDensity(4); 
-  haplyAvatar = loadImage("../img/brush5.png"); 
+  haplyAvatar = loadImage(tooltip); 
   haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
   playerToken.h_avatar.attachImage(haplyAvatar); 
   //playerToken.h_avatar.setFill(random(255),random(255),random(255)); 
   //playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
   playerToken.init(world, x, y);
 }
+
+
 
 /* end helper functions section ****************************************************************************************/
