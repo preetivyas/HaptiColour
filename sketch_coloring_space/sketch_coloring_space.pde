@@ -56,7 +56,7 @@ long              baseFrameRate                       = 150;
 /* elements definition *************************************************************************************************/
 
 /* Screen and world setup parameters */
-float             pixelsPerCentimeter                 = 40.0;
+float             pixelsPerCentimeter                 = 40;
 
 /* generic data for a 2DOF device */
 /* joint space */
