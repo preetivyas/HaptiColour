@@ -56,7 +56,7 @@ long              baseFrameRate                       = 150;
 /* elements definition *************************************************************************************************/
 
 /* Screen and world setup parameters */
-float             pixelsPerCentimeter                 = 40.0;
+float             pixelsPerCentimeter                 = 40;
 
 /* generic data for a 2DOF device */
 /* joint space */
@@ -66,6 +66,11 @@ PVector           torques                             = new PVector(0, 0);
 /* task space */
 PVector           posEE                               = new PVector(0, 0);
 PVector           fEE                                 = new PVector(0, 0); 
+
+/* outside circle parameters for Haply */
+float xH = 0;
+float yH = 0;
+
 
 /* World boundaries in centimeters */
 FWorld            world;
@@ -278,6 +283,25 @@ void draw() {
     //background(255);
     world.draw();
   }
+  
+  
+  
+  ellipse(xH,yH,20,20);
+  
+  xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
+  yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
+  float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
+  println(d);
+  
+  if (d<10){
+    noFill();
+    stroke(255,0,0);
+    ellipse(xH, yH, 30, 30);
+    noFill();
+    noStroke();
+  }
+  
+  
 }
 /* end draw section ****************************************************************************************************/
 
