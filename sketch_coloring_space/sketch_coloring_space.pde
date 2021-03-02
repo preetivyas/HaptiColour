@@ -180,13 +180,13 @@ void setup() {
       .setValue(0);
   }
 
-  cp5.addButton("resetHaply").setImage(bi)
-    .setPosition((50+100*i), 600)
-    .setValue(0);
+  //cp5.addButton("resetHaply").setImage(bi)
+  //  .setPosition((50+100*i), 600)
+  //  .setValue(0);
 
-  cp5.addButton("move").setImage(bi)
-    .setPosition((50+100*i), 600)
-    .setValue(0);
+  //cp5.addButton("move").setImage(bi)
+  //  .setPosition((50+100*i), 600)
+  //  .setValue(0);
 
 
   world.draw();
