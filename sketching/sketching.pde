@@ -184,7 +184,7 @@ void draw(){
   text("x_pos = " + x_pos, 50, 80)                ;
   text("y_pos = " + y_pos, 50, 100)               ;
   text("min dist = " + min_dist, 50, 150)         ;
-  textSize(18)                                    ;
+  textSize(20)                                    ;
   fill(0, 102, 153)                               ;
   
   
