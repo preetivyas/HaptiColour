@@ -67,9 +67,9 @@ PVector           torques                             = new PVector(0, 0);
 PVector           posEE                               = new PVector(0, 0);
 PVector           fEE                                 = new PVector(0, 0); 
 
-/* outside circle parameters for Haply */
-float xH = 0;
-float yH = 0;
+///* outside circle parameters for Haply */
+//float xH = 0;
+//float yH = 0;
 
 
 /* World boundaries in centimeters */
@@ -84,7 +84,8 @@ float             edgeBottomRightY                    = worldHeight;
 
 
 /* Definition of wallList */
-ArrayList<Wall> wallList;
+ArrayList<Wall> wallList ;
+ArrayList<Wall> layerlist;
 
 /* Definition of maze end */
 FCircle end;
@@ -99,9 +100,9 @@ PFont font;
 /* end elements definition *********************************************************************************************/
 
 /*colouring specific variables*/
-boolean           colour;
-float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
-PImage            haplyAvatar, bi;
+boolean          colour;
+float            tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
+PImage           haplyAvatar, bi;
 String           tooltip;
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
@@ -286,20 +287,20 @@ void draw() {
   
   
   
-  ellipse(xH,yH,20,20);
+  //ellipse(xH,yH,20,20);
   
-  xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
-  yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
-  float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
-  println(d);
+  //xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
+  //yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
+  //float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
+  //println(d);
   
-  if (d<10){
-    noFill();
-    stroke(255,0,0);
-    ellipse(xH, yH, 30, 30);
-    noFill();
-    noStroke();
-  }
+  //if (d<10){
+  //  noFill();
+  //  stroke(255,0,0);
+  //  ellipse(xH, yH, 30, 30);
+  //  noFill();
+  //  noStroke();
+  //}
   
   
 }
@@ -376,8 +377,12 @@ ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
       c = line.charAt(j);
       if (c == '-') {
         wallList.add(new Wall(2, 0.1, edgeTopLeftX+j+0.5, edgeTopLeftY+i-0.5, 0x000000));
+        //wallList.add(new Wall(2, 0.1, edgeTopLeftX+j+0.5, edgeTopLeftY+i-0.6, 0x000000));
+        
       } else if (c == '|') {
         wallList.add(new Wall(0.1, 2, edgeTopLeftX+j+0.5, edgeTopLeftY+i-0.5, 0x000000));
+        //wallList.add(new Wall(0.1, 2, edgeTopLeftX+j+0.5, edgeTopLeftY+i-0.5, 0x000000));
+        
       } else if (c == 'x') {
         createMazeEnd(edgeTopLeftX+j+0.5, edgeTopLeftY+i-0.5);
       } else if (c == '+') {
@@ -391,6 +396,7 @@ ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
 
   return wallList;
 }
+
 
 void createMazeEnd(float x, float y) {
   /* Finish Button */
@@ -409,12 +415,17 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     /* creation of wall */
     wall = new FBox(item.getW(), item.getH());
     wall.setPosition(item.getX(), item.getY());
-    wall.setStatic(true);
+    wall.setStatic(true)   ;
     int c = item.getColor();
-    wall.setFill(c);
-    world.add(wall);
+    wall.setFill(c)        ;
+    world.add(wall)        ;
   }
 }
+
+
+
+
+
 
 void createPlayerToken(float x, float y) {
   /* Player circle */
