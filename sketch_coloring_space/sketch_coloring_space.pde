@@ -85,11 +85,9 @@ float             edgeBottomRightY                    = worldHeight;
 
 /* Definition of wallList */
 ArrayList<Wall> wallList ;
-ArrayList<Wall> layerlist;
 
 /* Definition of maze end */
-FCircle end;
-FBox l1; 
+FCircle end; 
 
 /* Initialization of player token */
 HVirtualCoupling  playerToken;
@@ -284,24 +282,6 @@ void draw() {
     //background(255);
     world.draw();
   }
-  
-  
-  
-  //ellipse(xH,yH,20,20);
-  
-  //xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
-  //yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
-  //float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
-  //println(d);
-  
-  //if (d<10){
-  //  noFill();
-  //  stroke(255,0,0);
-  //  ellipse(xH, yH, 30, 30);
-  //  noFill();
-  //  noStroke();
-  //}
-  
   
 }
 /* end draw section ****************************************************************************************************/
