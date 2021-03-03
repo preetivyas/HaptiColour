@@ -31,6 +31,8 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 /* DEFINE USER-SET PARAMETERS HERE! */
 public final String FILENAME = "maze.txt";
 public final boolean PRINTMAZE = true;
+public final int NUM_SHAPES = 2;
+public final boolean BEGIN_IN_DRAWING_MODE = false;
 
 ControlP5 cp5;
 
@@ -101,10 +103,16 @@ PFont font;
 /* end elements definition *********************************************************************************************/
 
 /*colouring specific variables*/
+boolean drawingModeEngaged;
+int[] drawingColor = new int[3];
+FBox[] colorSwatch = new FBox[4];
+int shape; //what shape is the being drawn?
 boolean           colour;
 float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
 PImage            haplyAvatar, bi;
 String            tooltip;
+FDrawable[] canvasObjects; //circular array of what's drawn on the canvas
+int canvasIndex; // always mod 10000 (size of the array)
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -117,8 +125,11 @@ void setup() {
   /* put setup code here, run once: */
   background(255);
   cp5 = new ControlP5(this);
+  drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
+  setDrawingColor((int)random(255), (int)random(255), (int)random(255));
+  shape = 0;
 
-  tooltip = button_img[0];
+  //tooltip = button_img[0];
 
   /* screen size definition */
   size(1200, 680);
@@ -140,7 +151,7 @@ void setup() {
    */
 
 
-  haplyBoard = new Board(this, "COM3", 0);
+  haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
@@ -188,15 +199,29 @@ void setup() {
       .setPosition((50+100*i), 600)
       .setValue(0);
   }
-
-  //cp5.addButton("resetHaply").setImage(bi)
-  //  .setPosition((50+100*i), 600)
-  //  .setValue(0);
-
-  //cp5.addButton("move").setImage(bi)
-  //  .setPosition((50+100*i), 600)
-  //  .setValue(0);
-
+  
+  for (int i=0; i< 3; i++) {
+    colorSwatch[i] = new FBox(1, 1);
+    colorSwatch[i].setPosition((50+100*(i+button_img.length)), worldHeight-3);
+    colorSwatch[i].setSensor(true);
+    if(i == 0){
+      colorSwatch[i].setFillColor(color(255, 0, 0));
+    }
+    else if(i == 1){
+      colorSwatch[i].setFillColor(color(0, 255, 0));
+    }
+    else{
+      colorSwatch[i].setFillColor(color(0, 0, 255));
+    }
+    world.add(colorSwatch[i]);
+  }
+  
+  colorSwatch[3] = new FBox(1, 3);
+  colorSwatch[3].setPosition(50+100*button_img.length, worldHeight-2);
+  colorSwatch[3].setStatic(true);
+  int[] c = getDrawingColor();
+  colorSwatch[3].setFillColor(color(c[0], c[1], c[2]));
+  world.add(colorSwatch[3]);
 
   world.draw();
 
@@ -216,108 +241,50 @@ void setup() {
 /* start button action section ****************************************************************************************************/
 //PV: need to update this section; really bad (but working) code
 
-void keyPressed(){
-  if (key == ' '){ // pressing spacebar makes walls flexible
-    setWallFlexibility(true, color(255, 0, 0));
+void keyPressed() {
+  if (key == ' ') { // pressing spacebar makes walls flexible
+    if (isDrawingModeEngaged()) {
+      disengageDrawingMode();
+    } else {
+      engageDrawingMode();
+    }
+  }
+  if (key == 'c' || key == 'C') { // pressing c changes to a random colour
+    setDrawingColor((int)random(255), (int)random(255), (int)random(255));
+  }
+  if (key == 'v' || key == 'V') { // pressing v changes to a random shape
+    shape = (shape + 1) % (NUM_SHAPES);
   }
 }
 
-void keyReleased(){
-  if (key == ' '){
-    setWallFlexibility(false, color(0, 0, 0));
-  }
-}
 
-public void b1(int theValue) {
-  tooltip = button_img[0];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b2(int theValue) {
-  tooltip = button_img[1];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b3(int theValue) {
-  tooltip = button_img[2];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b4(int theValue) {
-  tooltip = button_img[3];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b5(int theValue) {
-  tooltip = button_img[4];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b6(int theValue) {
-  tooltip = button_img[5];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b7(int theValue) {
-  tooltip = button_img[6];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b8(int theValue) {
-  tooltip = button_img[7];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b9(int theValue) {
-  tooltip = button_img[8];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b10(int theValue) {
-  tooltip = button_img[9];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
 /* end button action section ****************************************************************************************************/
 
 
 
 /* draw section ********************************************************************************************************/
 void draw() {
+  int[] c = getDrawingColor();
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   if (renderingForce == false) {
     //background(255);
     world.draw();
   }
-  
-  
-  
-  ellipse(xH,yH,20,20);
-  
-  xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
-  yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
-  float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
-  println(d);
-  
-  if (d<10){
-    noFill();
-    stroke(255,0,0);
-    ellipse(xH, yH, 30, 30);
-    noFill();
+  //noFill();
+  //stroke(255,0,0);
+  if (isDrawingModeEngaged()) {
     noStroke();
+    fill(color(c[0], c[1], c[2]));
+    ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+    //drawShape();
+    
   }
-  
-  
+  else{
+    stroke(255,0,0);
+    ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
+    //world.draw();
+  }
+
 }
 /* end draw section ****************************************************************************************************/
 
@@ -347,12 +314,6 @@ class SimulationThread implements Runnable {
 
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
-
-    if (playerToken.h_avatar.isTouchingBody(end)) {
-      fill(random(255), random(255), random(255));
-      text("!!!!!!!!!!", 
-        edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
-    }
 
     world.step(1.0f/1000.0f);
 
@@ -427,8 +388,15 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wall = new FBox(item.getW(), item.getH());
     wall.setPosition(item.getX(), item.getY());
     wall.setStatic(true);
-    int c = item.getColor();
-    wall.setFill(c);
+    color c;
+    if(BEGIN_IN_DRAWING_MODE){
+      c = color(0, 0, 0);
+    }
+    else{
+      c = color(0, 255, 0);
+    }
+    wall.setFillColor(c);
+    wall.setStrokeColor(c);
     wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
@@ -438,18 +406,16 @@ void createPlayerToken(float x, float y) {
   /* Player circle */
   /* Setup the Virtual Coupling Contact Rendering Technique */
   playerToken = new HVirtualCoupling((tooltipsize)); 
-  playerToken.h_avatar.setDensity(4); 
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar); 
-  //playerToken.h_avatar.setFill(random(255),random(255),random(255)); 
-  //playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
+  playerToken.h_avatar.setDensity(4);
+  playerToken.h_avatar.setNoFill(); 
+  //playerToken.h_avatar.setStroke(0, 0);
+  playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
   playerToken.init(world, x, y);
 }
 
 void setWallFlexibility(boolean flexibility, int wallColor) {
   FBox wallInWorld;
-  for (Wall item : wallList){
+  for (Wall item : wallList) {
     wallInWorld = wallToWorldList.get(item);
     wallInWorld.setSensor(flexibility);
     wallInWorld.setFillColor(wallColor);
@@ -457,4 +423,59 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
   }
 }
 
+private void disengageDrawingMode() {
+  setWallFlexibility(true, color(0, 255, 0));
+  drawingModeEngaged = false;
+}
+
+private void engageDrawingMode() {
+  setWallFlexibility(false, color(0, 0, 0));
+  drawingModeEngaged = true;
+}
+
+public boolean isDrawingModeEngaged() {
+  return drawingModeEngaged;
+}
+
+
+int[] getDrawingColor() {
+  return drawingColor;
+}
+
+void setDrawingColor(int r, int g, int b) {
+  drawingColor[0] = r;
+  drawingColor[1] = g;
+  drawingColor[2] = b;
+}
+
+void drawShape(){
+  switch(shape){
+    case 0: drawCircle();
+    break;
+    case 1: drawSquare();
+    break;
+    default: drawCircle();
+    break;
+  }
+}
+
+void drawCircle(){
+  FCircle circle = new FCircle(1);
+  circle.setPosition(playerToken.getAvatarPositionX(), playerToken.getAvatarPositionY());
+  circle.setStatic(true);
+  circle.setDensity(0);
+  circle.setFill(getDrawingColor()[0], getDrawingColor()[1], getDrawingColor()[2]);
+  circle.setNoStroke();
+  world.add(circle);
+}
+
+void drawSquare(){
+  FBox square = new FBox(1, 1);
+  square.setPosition(playerToken.getAvatarPositionX(), playerToken.getAvatarPositionY());
+  square.setStatic(true);
+  square.setDensity(0);
+  square.setFill(getDrawingColor()[0], getDrawingColor()[1], getDrawingColor()[2]);
+  square.setNoStroke();
+  world.add(square);
+}
 /* end helper functions section ****************************************************************************************/
