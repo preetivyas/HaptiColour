@@ -194,28 +194,12 @@ void draw(){
    world.draw()    ;
   }
   
-<<<<<<< Updated upstream
-  rect(x1, y1, 10, 10);
-  
-  //text(40*(posEE).x, 50, 80) ;
-  //text(40*(posEE).y, 50, 100);
-  //ellipse(40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7), 10, 10);
-  
-  x_pos = 40*(edgeTopLeftX+worldWidth/2-(posEE).x);
-  y_pos = 40*(edgeTopLeftY+(posEE).y-7)           ;
-  text("x_pos = " + x_pos, 50, 80)                ;
-  text("y_pos = " + y_pos, 50, 100)               ;
-  text("min dist = " + min_dist, 50, 150)         ;
-  textSize(20)                                    ;
-  fill(0, 102, 153)                               ;
-=======
   /* For "dist" method to grab increase damping */
   text("x_pos = " + s.h_avatar.getX(), 50, 80)  ;
   text("y_pos = " + s.h_avatar.getY(), 50, 100) ;
   //text("min dist = " + min_dist, 50, 150)     ;
   textSize(18)                                  ;
   fill(0, 102, 153)                             ;
->>>>>>> Stashed changes
   
   
   if ( ((x_pos <= x1) || (x_pos >= x2)) && ((y_pos <= y1) || (y_pos >= y3))  ) {                                                 // if avatar is perfectly located at a corner
@@ -283,8 +267,9 @@ class SimulationThread implements Runnable{
           Cf.setStatic(false)                            ;
           Cf.setFill(255,0,0)                            ;
           world.add(Cf)                                  ;
+          world.remove(Cf);
         }
-        world.remove(Cf);
+        //world.remove(Cf);
     }
     else{
       s.h_avatar.setDamping(500);
