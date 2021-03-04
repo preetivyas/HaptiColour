@@ -85,8 +85,7 @@ float             edgeTopLeftY                        = 0.0;
 float             edgeBottomRightX                    = worldWidth; 
 float             edgeBottomRightY                    = worldHeight + 2;
 
-PGraphics topLayer;
-PGraphics pg;
+PGraphics[] layers = new PGraphics[3];
 
 
 /* Definition of wallList */
@@ -129,10 +128,8 @@ void setup() {
   cp5 = new ControlP5(this);
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
   shape = 0;
-  //topLayer = createGraphics((int)worldWidth, (int)worldHeight + 2);
-  //topLayer.beginDraw();
-  //topLayer.background(255);
-  //topLayer.endDraw();
+  
+  createLayers();
 
   //tooltip = button_img[0];
 
@@ -165,7 +162,7 @@ void setup() {
 
 
   createBrushes();
-  
+
   createColorPicker();
 
   world.draw();
@@ -200,7 +197,6 @@ void keyPressed() {
   if (key == 'v' || key == 'V') { // pressing v changes to a random shape
     shape = (shape + 1) % (NUM_SHAPES);
   }
-  System.out.println(isDrawingModeEngaged());
 }
 
 
@@ -209,35 +205,43 @@ void keyPressed() {
 
 
 /* draw section ********************************************************************************************************/
-long layerindex = 0;
+//long layerindex = 0;
 void draw() {
-  int[] c = getDrawingColor();
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
-  if (renderingForce == false) {
-    if(layerindex % 2 == 0){
-      //topLayer.background(255);
-    }
-    world.draw();
-  }
   //noFill();
   //stroke(255,0,0);
-  //if (isDrawingModeEngaged() && layerindex % 2 == 1) {
-  if (isDrawingModeEngaged()){
-    //topLayer.beginDraw();
-    noStroke();
-    fill(color(c[0], c[1], c[2]));
-    ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
-    //topLayer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
-    //topLayer.endDraw();
-    //drawShape();
-    
-  }
-  else{
-    stroke(255,0,0);
-    ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
+  //if (isDrawingModeEngaged() && layerindex % 2 == 0) {
+  g.background(255);
+  image(layers[1],0,0);
+  if (isDrawingModeEngaged()) {
+    layers[1].beginDraw();
+    layers[1].noStroke();
+    int[] c = getDrawingColor();
+    layers[1].fill(color(c[0], c[1], c[2]));
+    //layers[0].ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+    drawShape(layers[1]);
+    layers[1].endDraw();
+    image(layers[1],0,0);
     //world.draw();
+  } //else if (! isDrawingModeEngaged() && layerindex % 2 == 1){
+  else{
+    //layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
+    layers[2].beginDraw();
+    //layers[1].mask(layers[2]);
+    layers[2].clear();
+    //layers[1].updatePixels();
+    //image(layers[1],0, 0, width, height);
+    layers[2].background(0, 0);
+    layers[2].stroke(255, 0, 0);
+    //layers[1].ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
+    drawCursor(layers[2]);
+    layers[2].endDraw();
+    image(layers[2],0, 0, width, height);
+    //g.background(255);
+    //image(layers[1],0,0);
   }
-  layerindex++;
+  world.draw();
+  //layerindex++;
 }
 /* end draw section ****************************************************************************************************/
 
@@ -342,10 +346,9 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wall.setPosition(item.getX(), item.getY());
     wall.setStatic(true);
     color c;
-    if(BEGIN_IN_DRAWING_MODE){
+    if (BEGIN_IN_DRAWING_MODE) {
       c = color(0, 0, 0);
-    }
-    else{
+    } else {
       c = color(0, 255, 0);
     }
     wall.setFillColor(c);
@@ -402,67 +405,109 @@ void setDrawingColor(int r, int g, int b) {
   colorSwatch[6].setFillColor(color(r, g, b));
 }
 
-void drawShape(){
-  switch(shape){
-    case 0: drawCircle();
+void drawShape(PGraphics layer) {
+  switch(shape) {
+  case 0: 
+    drawCircle(layer);
     break;
-    case 1: drawSquare();
+  case 1: 
+    drawSquare(layer);
     break;
-    default: drawCircle();
+  default: 
+    drawCircle(layer);
     break;
   }
 }
 
-void drawCircle(){
-  FCircle circle = new FCircle(1);
-  circle.setPosition(playerToken.getAvatarPositionX(), playerToken.getAvatarPositionY());
-  circle.setStatic(true);
-  circle.setDensity(0);
-  circle.setFill(getDrawingColor()[0], getDrawingColor()[1], getDrawingColor()[2]);
-  circle.setNoStroke();
-  world.add(circle);
+void drawCursor(PGraphics layer) {
+  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 2, 2);
+  world.draw();
 }
 
-void drawSquare(){
-  FBox square = new FBox(1, 1);
-  square.setPosition(playerToken.getAvatarPositionX(), playerToken.getAvatarPositionY());
-  square.setStatic(true);
-  square.setDensity(0);
-  square.setFill(getDrawingColor()[0], getDrawingColor()[1], getDrawingColor()[2]);
-  square.setNoStroke();
-  world.add(square);
+void drawCircle(PGraphics layer) {
+  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+  world.draw();
 }
 
-void createColorPicker(){
-    for (int i=0; i< 6; i++) {
+void drawSquare(PGraphics layer) {
+  layer.rect(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+  world.draw();
+}
+
+void createColorPicker() {
+  float x = 0f;
+  float y = 0f;
+  for (int i=0; i< 6; i++) {
+    x = edgeBottomRightX - 1.25*(i+1);
+    y = edgeBottomRightY - 1.8;
     colorSwatch[i] = new FBox(1, 1);
-    colorSwatch[i].setPosition(edgeBottomRightX - 1.25*(i+1), edgeBottomRightY - 1.8);
+    colorSwatch[i].setPosition(x, y);
     colorSwatch[i].setSensor(true);
-    if(i == 0 || i == 1){
+    switch(i) {
+    case 0:
       colorSwatch[i].setFillColor(color(255, 0, 0));
-    }
-    else if(i == 2 || i == 3){
+      world.add(colorSwatch[i]);
+      fill(255, 255, 255, 50);
+      text("+", x, y);
+      world.draw();
+      break;
+    case 1:
+      colorSwatch[i].setFillColor(color(255, 233, 236));
+      world.add(colorSwatch[i]);
+      fill(0, 0, 0, 50);
+      text("-", x, y);
+      world.draw();
+      break;
+    case 2:
       colorSwatch[i].setFillColor(color(0, 255, 0));
-    }
-    else{
+      world.add(colorSwatch[i]);
+      fill(255, 255, 255, 50);
+      text("+", x, y);
+      world.draw();
+      break;
+    case 3:
+      colorSwatch[i].setFillColor(color(233, 255, 233));
+      world.add(colorSwatch[i]);
+      fill(0, 0, 0, 50);
+      text("-", x, y);
+      world.draw();
+      break;
+    case 4:
       colorSwatch[i].setFillColor(color(0, 0, 255));
+      world.add(colorSwatch[i]);
+      fill(255, 255, 255, 50);
+      text("+", x, y);
+      world.draw();
+      break;
+    case 5:
+      colorSwatch[i].setFillColor(color(233, 233, 255));
+      world.add(colorSwatch[i]);
+      fill(0, 0, 0, 50);
+      text("-", x, y);
+      world.draw();
+      break;
     }
-    
-    world.add(colorSwatch[i]);
-    
-    fill(0);
-    if( i % 2 == 0){
-      g.text("+", edgeBottomRightX - 1.25*(i+1), edgeBottomRightY - 1.8);
-    }
-    else{
-      g.text("-", edgeBottomRightX - 1.25*(i+1), edgeBottomRightY - 1.8);
-    }
-    
-    fill(255, 255, 255);
-    text("TEST", width/2, height/2);
-    world.draw();
+
+    //world.draw();
+
+    //world.add(colorSwatch[i]);
+
+    //fill(0, 0, 0);
+    //if ( i % 2 == 0) {
+    //  text("+", width - x, y);
+    //  //text("+", width - 1.25*(i+1), height - 1.8);
+    //  world.draw();
+    //} else {
+    //  text("-", width - 1.25*(i+1), height - 1.8);
+    //  world.draw();
+    //}
+
+    //fill(0, 0, 0, 50);
+    //text("TEST", width/2, height/2);
+    //world.draw();
   }
-  
+
+  //create color mixer swatch
   colorSwatch[6] = new FBox(7.25, .5);
   colorSwatch[6].setPosition(edgeBottomRightX - 1.25 * 3.5, edgeBottomRightY - 1);
   colorSwatch[6].setStatic(true);
@@ -470,8 +515,8 @@ void createColorPicker(){
   world.add(colorSwatch[6]);
 }
 
-void setUpDevice(){
-    /* device setup */
+void setUpDevice() {
+  /* device setup */
 
   /**  
    * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
@@ -507,13 +552,22 @@ void setUpDevice(){
   world               = new FWorld();
 }
 
-void createBrushes(){
-    for (int i = 0; i <button_img.length; i++) {
+void createBrushes() {
+  for (int i = 0; i <button_img.length; i++) {
     bi = loadImage(button_img[i]);
     bi.resize(50, 50);
     cp5.addButton(button_label[i]).setImage(bi)
       .setPosition((50+80*i), 590)
       .setValue(0);
   }
+}
+
+void createLayers(){
+  //for(int i = 0; i < layers.length; i++){
+  //  layers[i] = createGraphics((int)worldWidth, (int)worldHeight + 2);
+  //}
+  layers[0] = g;
+  layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
+  layers[2] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
 }
 /* end helper functions section ****************************************************************************************/
