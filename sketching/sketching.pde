@@ -56,17 +56,27 @@ float             edgeBottomRightY                    = worldHeight;
 
 
 /* Initialization of wall */
-FBox              wall;
+FBox              wall ;
+FBox              wall2;
+
+/* Initialization of objects for feedback */
+FCircle           Cf   ;
+
+/* Initialization of collision object */
+FCircle  C   ;
 
 float x_pos = -50     ;
 float y_pos = -50     ;
+float x = 0           ;
+float y = 0           ;
 float temp = 0.0      ;
 float min_dist = 0.0  ;
 float x1, x2, x3, x4, y1, y2, y3, y4;
 
 
 /* Initialization of virtual tool */
-HVirtualCoupling  s;
+HVirtualCoupling s;
+
 PImage            haplyAvatar;
 
 /* end elements definition *********************************************************************************************/ 
@@ -100,27 +110,29 @@ void setup(){
   widgetOne.set_mechanism(pantograph);
   
   widgetOne.add_actuator(1, CCW, 2);
-  widgetOne.add_actuator(2, CW, 1);
- 
+  widgetOne.add_actuator(2, CW, 1) ;
   widgetOne.add_encoder(1, CCW, 241, 10752, 2);
-  widgetOne.add_encoder(2, CW, -61, 10752, 1);
-  
-  
+  widgetOne.add_encoder(2, CW, -61, 10752, 1) ;
   widgetOne.device_set_parameters();
-  
   
   /* 2D physics scaling and world creation */
   hAPI_Fisica.init(this); 
   hAPI_Fisica.setScale(pixelsPerCentimeter); 
   world               = new FWorld();
   
-  
-  /* creation of wall */
+  /* creation of walls */
   wall                   = new FBox(10.0, 1.0)     ;
   wall.setPosition(worldWidth/2.0, worldHeight/2.0);
   wall.setStatic(true)                             ;
-  wall.setFill(0, 0, 0)                            ;
+  wall.setFill(0,0,0)                              ;
   world.add(wall)                                  ;
+  
+  wall2                   = new FBox(1.0, 10.0)     ;
+  wall2.setPosition(worldWidth/2.0-10, worldHeight/2.0);
+  wall2.setStatic(true)                             ;
+  wall2.setFill(0,0,0)                              ;
+  world.add(wall2)                                  ;
+  
   
   x1 = 40*(worldWidth/2.0 - 5.0) ;  // TOP left corner
   y1 = 40*(worldHeight/2.0 - 0.5);  // TOP left corner
@@ -137,14 +149,23 @@ void setup(){
   s.h_avatar.setDensity(4);
   s.h_avatar.setNoStroke();
   s.h_avatar.setFill(0,0,250);
-  s.init(world, edgeTopLeftX+worldWidth/2, edgeTopLeftY+2); 
+  s.init(world, edgeTopLeftX+worldWidth/2, edgeTopLeftY+2);
   /* If you are developing on a Mac users must update the path below 
    * from "../img/Haply_avatar.png" to "./img/Haply_avatar.png" 
    */
   //haplyAvatar = loadImage("../img/Haply_avatar.png"); 
   //haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(1)), (int)(hAPI_Fisica.worldToScreen(1)));
-  //s.h_avatar.attachImage(haplyAvatar); 
-  
+  //s.h_avatar.attachImage(haplyAvatar);
+
+  /* Collision bubble/circle */
+  C                  = new FCircle(1.5);
+  C.setDensity(0.01);
+  C.setSensor(true) ;
+  C.setNoFill()     ;
+  C.setStroke(0,0,0);
+  C.setPosition(3,3);
+  world.add(C)      ;
+
   /* world conditions setup */
   world.setGravity((0.0), (1000.0)); //1000 cm/(s^2)
   world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
@@ -173,6 +194,7 @@ void draw(){
    world.draw()    ;
   }
   
+<<<<<<< Updated upstream
   rect(x1, y1, 10, 10);
   
   //text(40*(posEE).x, 50, 80) ;
@@ -186,6 +208,14 @@ void draw(){
   text("min dist = " + min_dist, 50, 150)         ;
   textSize(20)                                    ;
   fill(0, 102, 153)                               ;
+=======
+  /* For "dist" method to grab increase damping */
+  text("x_pos = " + s.h_avatar.getX(), 50, 80)  ;
+  text("y_pos = " + s.h_avatar.getY(), 50, 100) ;
+  //text("min dist = " + min_dist, 50, 150)     ;
+  textSize(18)                                  ;
+  fill(0, 102, 153)                             ;
+>>>>>>> Stashed changes
   
   
   if ( ((x_pos <= x1) || (x_pos >= x2)) && ((y_pos <= y1) || (y_pos >= y3))  ) {                                                 // if avatar is perfectly located at a corner
@@ -197,10 +227,7 @@ void draw(){
   } else if( (y_pos > y1) && (y_pos < y3) && ((x_pos < x1) || (x_pos > x2)) ) {                                                  // if avatar is outside the box, but closer to left/right
    min_dist = min(abs(x_pos - x1), abs(x_pos - x2));
   }
-  //} else {                                                                                                                       // if avatar is inside the box
-  //  min_dist = min(min(abs(y_pos - y1), abs(y_pos - y3)),min(abs(x_pos - x1), abs(x_pos - x2)));                                 
-  //}
-  
+
 }
 /* end draw section ****************************************************************************************************/
 
@@ -222,6 +249,8 @@ class SimulationThread implements Runnable{
     }
     
     s.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
+    C.setPosition(s.h_avatar.getX(), s.h_avatar.getY());
+    //joint_Formation();
     
     s.updateCouplingForce();
     fEE.set(-s.getVirtualCouplingForceX(), s.getVirtualCouplingForceY());
@@ -229,8 +258,33 @@ class SimulationThread implements Runnable{
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
     
-    if (min_dist <=60 ){
-      s.h_avatar.setDamping(980);
+    //if (min_dist <=60 ){
+    //  s.h_avatar.setDamping(980);
+    //}
+    //else{
+    //  s.h_avatar.setDamping(500);
+    //}
+    
+    //if( (C.isTouchingBody(wall)) || (C.isTouchingBody(wall2)) ){
+    //  s.h_avatar.setDamping(950);
+    //}
+    //else{
+    //  s.h_avatar.setDamping(500);
+    //}
+    
+    if( (s.h_avatar.isTouchingBody(wall)) || (s.h_avatar.isTouchingBody(wall2)) ){
+        
+        int bumps = 3;
+        
+        for (int i = 0; i < bumps; i++){
+          Cf                   = new FCircle(0.5)        ;
+          Cf.setDensity(300)                             ;
+          Cf.setPosition(s.h_avatar.getX(), s.h_avatar.getY());
+          Cf.setStatic(false)                            ;
+          Cf.setFill(255,0,0)                            ;
+          world.add(Cf)                                  ;
+        }
+        world.remove(Cf);
     }
     else{
       s.h_avatar.setDamping(500);
