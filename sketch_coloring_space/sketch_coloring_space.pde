@@ -205,12 +205,8 @@ void keyPressed() {
 
 
 /* draw section ********************************************************************************************************/
-//long layerindex = 0;
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
-  //noFill();
-  //stroke(255,0,0);
-  //if (isDrawingModeEngaged() && layerindex % 2 == 0) {
   g.background(255);
   image(layers[1],0,0);
   if (isDrawingModeEngaged()) {
@@ -218,30 +214,20 @@ void draw() {
     layers[1].noStroke();
     int[] c = getDrawingColor();
     layers[1].fill(color(c[0], c[1], c[2]));
-    //layers[0].ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
     drawShape(layers[1]);
     layers[1].endDraw();
     image(layers[1],0,0);
-    //world.draw();
-  } //else if (! isDrawingModeEngaged() && layerindex % 2 == 1){
+  }
   else{
-    //layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
     layers[2].beginDraw();
-    //layers[1].mask(layers[2]);
     layers[2].clear();
-    //layers[1].updatePixels();
-    //image(layers[1],0, 0, width, height);
     layers[2].background(0, 0);
     layers[2].stroke(255, 0, 0);
-    //layers[1].ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
     drawCursor(layers[2]);
     layers[2].endDraw();
     image(layers[2],0, 0, width, height);
-    //g.background(255);
-    //image(layers[1],0,0);
   }
   world.draw();
-  //layerindex++;
 }
 /* end draw section ****************************************************************************************************/
 
@@ -430,7 +416,7 @@ void drawCircle(PGraphics layer) {
 }
 
 void drawSquare(PGraphics layer) {
-  layer.rect(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+  layer.rect(playerToken.getAvatarPositionX()*40-10, playerToken.getAvatarPositionY()*40-10, 20, 20);
   world.draw();
 }
 
