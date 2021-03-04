@@ -84,6 +84,9 @@ float             edgeTopLeftY                        = 0.0;
 float             edgeBottomRightX                    = worldWidth; 
 float             edgeBottomRightY                    = worldHeight;
 
+PGraphics topLayer;
+PGraphics pg;
+
 
 /* Definition of wallList */
 ArrayList<Wall> wallList;
@@ -128,6 +131,10 @@ void setup() {
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
   setDrawingColor((int)random(255), (int)random(255), (int)random(255));
   shape = 0;
+  topLayer = createGraphics((int)worldWidth, (int)worldHeight);
+  topLayer.beginDraw();
+  topLayer.background(255);
+  topLayer.endDraw();
 
   //tooltip = button_img[0];
 
@@ -192,13 +199,13 @@ void setup() {
 
 
 
-  for (int i = 0; i <button_img.length; i++) {
-    bi = loadImage(button_img[i]);
-    bi.resize(50, 50);
-    cp5.addButton(button_label[i]).setImage(bi)
-      .setPosition((50+100*i), 600)
-      .setValue(0);
-  }
+  //for (int i = 0; i <button_img.length; i++) {
+  //  bi = loadImage(button_img[i]);
+  //  bi.resize(50, 50);
+  //  cp5.addButton(button_label[i]).setImage(bi)
+  //    .setPosition((50+100*i), 600)
+  //    .setValue(0);
+  //}
   
   for (int i=0; i< 3; i++) {
     colorSwatch[i] = new FBox(1, 1);
@@ -263,25 +270,32 @@ void keyPressed() {
 
 
 /* draw section ********************************************************************************************************/
+long layerindex = 0;
 void draw() {
   int[] c = getDrawingColor();
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   if (renderingForce == false) {
-    //background(255);
+    if(layerindex % 2 == 0){
+      topLayer.background(255);
+    }
     world.draw();
   }
   //noFill();
   //stroke(255,0,0);
-  if (isDrawingModeEngaged()) {
+  if (isDrawingModeEngaged() && layerindex % 2 == 1) {
+    topLayer.beginDraw();
     noStroke();
     fill(color(c[0], c[1], c[2]));
-    ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+    topLayer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+    topLayer.endDraw();
     //drawShape();
     
   }
   else{
     stroke(255,0,0);
-    ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
+    g.beginDraw();
+    g.ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
+    g.endDraw();
     //world.draw();
   }
 
