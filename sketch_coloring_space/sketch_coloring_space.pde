@@ -32,7 +32,8 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 public final String FILENAME = "maze.txt";
 public final boolean PRINTMAZE = true;
 public final int NUM_SHAPES = 2;
-public final boolean BEGIN_IN_DRAWING_MODE = false;
+public final boolean BEGIN_IN_DRAWING_MODE = true;
+public final String PORT = "/dev/cu.usbmodem14201";
 
 ControlP5 cp5;
 
@@ -82,7 +83,7 @@ float             worldHeight                         = 15.0;
 float             edgeTopLeftX                        = 0.0; 
 float             edgeTopLeftY                        = 0.0; 
 float             edgeBottomRightX                    = worldWidth; 
-float             edgeBottomRightY                    = worldHeight;
+float             edgeBottomRightY                    = worldHeight + 2;
 
 PGraphics topLayer;
 PGraphics pg;
@@ -108,14 +109,12 @@ PFont font;
 /*colouring specific variables*/
 boolean drawingModeEngaged;
 int[] drawingColor = new int[3];
-FBox[] colorSwatch = new FBox[4];
+FBox[] colorSwatch = new FBox[7];
 int shape; //what shape is the being drawn?
 boolean           colour;
 float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
 PImage            haplyAvatar, bi;
 String            tooltip;
-FDrawable[] canvasObjects; //circular array of what's drawn on the canvas
-int canvasIndex; // always mod 10000 (size of the array)
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -129,12 +128,11 @@ void setup() {
   background(255);
   cp5 = new ControlP5(this);
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
-  setDrawingColor((int)random(255), (int)random(255), (int)random(255));
   shape = 0;
-  topLayer = createGraphics((int)worldWidth, (int)worldHeight);
-  topLayer.beginDraw();
-  topLayer.background(255);
-  topLayer.endDraw();
+  //topLayer = createGraphics((int)worldWidth, (int)worldHeight + 2);
+  //topLayer.beginDraw();
+  //topLayer.background(255);
+  //topLayer.endDraw();
 
   //tooltip = button_img[0];
 
@@ -142,43 +140,10 @@ void setup() {
   size(1200, 680);
 
   /* set font type and size */
-  font = loadFont("ComicSansMS-72.vlw");
+  font = loadFont("SansSerif-28.vlw");
   textFont(font);
 
-  /* device setup */
-
-  /**  
-   * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
-   * In the base example, a connection is setup to the first detected serial device, this parameter can be changed
-   * to explicitly state the serial port will look like the following for different OS:
-   *
-   *      windows:      haplyBoard = new Board(this, "COM10", 0);
-   *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
-   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
-   */
-
-
-  haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
-
-  widgetOne           = new Device(widgetOneID, haplyBoard);
-  pantograph          = new Pantograph();
-
-  widgetOne.set_mechanism(pantograph);
-
-  widgetOne.add_actuator(1, CCW, 2);
-  widgetOne.add_actuator(2, CW, 1);
-
-  widgetOne.add_encoder(1, CCW, 241, 10752, 2);
-  widgetOne.add_encoder(2, CW, -61, 10752, 1);
-
-
-  widgetOne.device_set_parameters();
-
-
-  /* 2D physics scaling and world creation */
-  hAPI_Fisica.init(this); 
-  hAPI_Fisica.setScale(pixelsPerCentimeter); 
-  world               = new FWorld();
+  setUpDevice();
 
   /* create the maze!!! */
   try {
@@ -199,36 +164,9 @@ void setup() {
 
 
 
-  //for (int i = 0; i <button_img.length; i++) {
-  //  bi = loadImage(button_img[i]);
-  //  bi.resize(50, 50);
-  //  cp5.addButton(button_label[i]).setImage(bi)
-  //    .setPosition((50+100*i), 600)
-  //    .setValue(0);
-  //}
+  createBrushes();
   
-  for (int i=0; i< 3; i++) {
-    colorSwatch[i] = new FBox(1, 1);
-    colorSwatch[i].setPosition((50+100*(i+button_img.length)), worldHeight-3);
-    colorSwatch[i].setSensor(true);
-    if(i == 0){
-      colorSwatch[i].setFillColor(color(255, 0, 0));
-    }
-    else if(i == 1){
-      colorSwatch[i].setFillColor(color(0, 255, 0));
-    }
-    else{
-      colorSwatch[i].setFillColor(color(0, 0, 255));
-    }
-    world.add(colorSwatch[i]);
-  }
-  
-  colorSwatch[3] = new FBox(1, 3);
-  colorSwatch[3].setPosition(50+100*button_img.length, worldHeight-2);
-  colorSwatch[3].setStatic(true);
-  int[] c = getDrawingColor();
-  colorSwatch[3].setFillColor(color(c[0], c[1], c[2]));
-  world.add(colorSwatch[3]);
+  createColorPicker();
 
   world.draw();
 
@@ -262,6 +200,7 @@ void keyPressed() {
   if (key == 'v' || key == 'V') { // pressing v changes to a random shape
     shape = (shape + 1) % (NUM_SHAPES);
   }
+  System.out.println(isDrawingModeEngaged());
 }
 
 
@@ -276,29 +215,29 @@ void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   if (renderingForce == false) {
     if(layerindex % 2 == 0){
-      topLayer.background(255);
+      //topLayer.background(255);
     }
     world.draw();
   }
   //noFill();
   //stroke(255,0,0);
-  if (isDrawingModeEngaged() && layerindex % 2 == 1) {
-    topLayer.beginDraw();
+  //if (isDrawingModeEngaged() && layerindex % 2 == 1) {
+  if (isDrawingModeEngaged()){
+    //topLayer.beginDraw();
     noStroke();
     fill(color(c[0], c[1], c[2]));
-    topLayer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
-    topLayer.endDraw();
+    ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+    //topLayer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+    //topLayer.endDraw();
     //drawShape();
     
   }
   else{
     stroke(255,0,0);
-    g.beginDraw();
-    g.ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
-    g.endDraw();
+    ellipse(playerToken.getToolPositionX()*40, playerToken.getToolPositionY()*40, 1, 1);
     //world.draw();
   }
-
+  layerindex++;
 }
 /* end draw section ****************************************************************************************************/
 
@@ -460,6 +399,7 @@ void setDrawingColor(int r, int g, int b) {
   drawingColor[0] = r;
   drawingColor[1] = g;
   drawingColor[2] = b;
+  colorSwatch[6].setFillColor(color(r, g, b));
 }
 
 void drawShape(){
@@ -491,5 +431,89 @@ void drawSquare(){
   square.setFill(getDrawingColor()[0], getDrawingColor()[1], getDrawingColor()[2]);
   square.setNoStroke();
   world.add(square);
+}
+
+void createColorPicker(){
+    for (int i=0; i< 6; i++) {
+    colorSwatch[i] = new FBox(1, 1);
+    colorSwatch[i].setPosition(edgeBottomRightX - 1.25*(i+1), edgeBottomRightY - 1.8);
+    colorSwatch[i].setSensor(true);
+    if(i == 0 || i == 1){
+      colorSwatch[i].setFillColor(color(255, 0, 0));
+    }
+    else if(i == 2 || i == 3){
+      colorSwatch[i].setFillColor(color(0, 255, 0));
+    }
+    else{
+      colorSwatch[i].setFillColor(color(0, 0, 255));
+    }
+    
+    world.add(colorSwatch[i]);
+    
+    fill(0);
+    if( i % 2 == 0){
+      g.text("+", edgeBottomRightX - 1.25*(i+1), edgeBottomRightY - 1.8);
+    }
+    else{
+      g.text("-", edgeBottomRightX - 1.25*(i+1), edgeBottomRightY - 1.8);
+    }
+    
+    fill(255, 255, 255);
+    text("TEST", width/2, height/2);
+    world.draw();
+  }
+  
+  colorSwatch[6] = new FBox(7.25, .5);
+  colorSwatch[6].setPosition(edgeBottomRightX - 1.25 * 3.5, edgeBottomRightY - 1);
+  colorSwatch[6].setStatic(true);
+  setDrawingColor((int)random(255), (int)random(255), (int)random(255));
+  world.add(colorSwatch[6]);
+}
+
+void setUpDevice(){
+    /* device setup */
+
+  /**  
+   * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
+   * In the base example, a connection is setup to the first detected serial device, this parameter can be changed
+   * to explicitly state the serial port will look like the following for different OS:
+   *
+   *      windows:      haplyBoard = new Board(this, "COM10", 0);
+   *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
+   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
+   */
+
+
+  haplyBoard = new Board(this, PORT, 0);
+
+  widgetOne           = new Device(widgetOneID, haplyBoard);
+  pantograph          = new Pantograph();
+
+  widgetOne.set_mechanism(pantograph);
+
+  widgetOne.add_actuator(1, CCW, 2);
+  widgetOne.add_actuator(2, CW, 1);
+
+  widgetOne.add_encoder(1, CCW, 241, 10752, 2);
+  widgetOne.add_encoder(2, CW, -61, 10752, 1);
+
+
+  widgetOne.device_set_parameters();
+
+
+  /* 2D physics scaling and world creation */
+  hAPI_Fisica.init(this); 
+  hAPI_Fisica.setScale(pixelsPerCentimeter); 
+  world               = new FWorld();
+}
+
+void createBrushes(){
+    for (int i = 0; i <button_img.length; i++) {
+    bi = loadImage(button_img[i]);
+    bi.resize(50, 50);
+    cp5.addButton(button_label[i]).setImage(bi)
+      .setPosition((50+80*i), 590)
+      .setValue(0);
+  }
 }
 /* end helper functions section ****************************************************************************************/
