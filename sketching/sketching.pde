@@ -261,13 +261,13 @@ class SimulationThread implements Runnable{
         int bumps = 3;
         
         for (int i = 0; i < bumps; i++){
-          Cf                   = new FCircle(0.5)        ;
+          Cf                   = new FCircle(0.25)       ;
           Cf.setDensity(300)                             ;
           Cf.setPosition(s.h_avatar.getX(), s.h_avatar.getY());
           Cf.setStatic(false)                            ;
           Cf.setFill(255,0,0)                            ;
           world.add(Cf)                                  ;
-          world.remove(Cf);
+          //world.remove(Cf);
         }
         //world.remove(Cf);
     }
