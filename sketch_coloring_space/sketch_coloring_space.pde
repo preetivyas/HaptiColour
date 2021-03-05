@@ -128,7 +128,7 @@ void setup() {
   cp5 = new ControlP5(this);
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
   shape = 0;
-  
+
   createLayers();
 
   //tooltip = button_img[0];
@@ -208,7 +208,7 @@ void keyPressed() {
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   g.background(255);
-  image(layers[1],0,0);
+  image(layers[1], 0, 0);
   if (isDrawingModeEngaged()) {
     layers[1].beginDraw();
     layers[1].noStroke();
@@ -216,17 +216,17 @@ void draw() {
     layers[1].fill(color(c[0], c[1], c[2]));
     drawShape(layers[1]);
     layers[1].endDraw();
-    image(layers[1],0,0);
-  }
-  else{
+    image(layers[1], 0, 0);
+  } else {
     layers[2].beginDraw();
     layers[2].clear();
     layers[2].background(0, 0);
     layers[2].stroke(255, 0, 0);
     drawCursor(layers[2]);
     layers[2].endDraw();
-    image(layers[2],0, 0, width, height);
+    image(layers[2], 0, 0, width, height);
   }
+  //drawSwatchLabels();
   world.draw();
 }
 /* end draw section ****************************************************************************************************/
@@ -428,6 +428,7 @@ void createColorPicker() {
     y = edgeBottomRightY - 1.8;
     colorSwatch[i] = new FBox(1, 1);
     colorSwatch[i].setPosition(x, y);
+    colorSwatch[i].setStatic(true);
     colorSwatch[i].setSensor(true);
     switch(i) {
     case 0:
@@ -435,46 +436,40 @@ void createColorPicker() {
       world.add(colorSwatch[i]);
       fill(255, 255, 255, 50);
       text("+", x, y);
-      world.draw();
       break;
     case 1:
       colorSwatch[i].setFillColor(color(255, 233, 236));
       world.add(colorSwatch[i]);
       fill(0, 0, 0, 50);
       text("-", x, y);
-      world.draw();
       break;
     case 2:
       colorSwatch[i].setFillColor(color(0, 255, 0));
       world.add(colorSwatch[i]);
       fill(255, 255, 255, 50);
       text("+", x, y);
-      world.draw();
       break;
     case 3:
       colorSwatch[i].setFillColor(color(233, 255, 233));
       world.add(colorSwatch[i]);
       fill(0, 0, 0, 50);
       text("-", x, y);
-      world.draw();
       break;
     case 4:
       colorSwatch[i].setFillColor(color(0, 0, 255));
       world.add(colorSwatch[i]);
       fill(255, 255, 255, 50);
       text("+", x, y);
-      world.draw();
       break;
     case 5:
       colorSwatch[i].setFillColor(color(233, 233, 255));
       world.add(colorSwatch[i]);
       fill(0, 0, 0, 50);
       text("-", x, y);
-      world.draw();
       break;
     }
 
-    //world.draw();
+    world.draw();
 
     //world.add(colorSwatch[i]);
 
@@ -548,12 +543,34 @@ void createBrushes() {
   }
 }
 
-void createLayers(){
+void createLayers() {
   //for(int i = 0; i < layers.length; i++){
   //  layers[i] = createGraphics((int)worldWidth, (int)worldHeight + 2);
   //}
   layers[0] = g;
   layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
   layers[2] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
+}
+
+void drawSwatchLabels() {
+  float x = 0f;
+  float y = 0f;
+  layers[2].beginDraw();
+  for (int i=0; i< 6; i++) {
+    x = edgeBottomRightX - 1.25*(i+1);
+    y = edgeBottomRightY - 1.8;
+    if ( i % 2 == 0) {
+      layers[2].fill(255, 255, 255, 50);
+      layers[2].text("+", width - x, y);
+      //text("+", width - 1.25*(i+1), height - 1.8);
+      world.draw();
+    } else {
+      layers[2].fill(0, 0, 0, 50);
+      //text("-", width - 1.25*(i+1), height - 1.8);
+      layers[2].text("-", width - x, y);
+      world.draw();
+    }
+  }
+  layers[2].endDraw();
 }
 /* end helper functions section ****************************************************************************************/
