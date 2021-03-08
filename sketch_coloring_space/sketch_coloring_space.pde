@@ -56,7 +56,7 @@ long              baseFrameRate                       = 150;
 /* elements definition *************************************************************************************************/
 
 /* Screen and world setup parameters */
-float             pixelsPerCentimeter                 = 40.0;
+float             pixelsPerCentimeter                 = 40;
 
 /* generic data for a 2DOF device */
 /* joint space */
@@ -66,6 +66,11 @@ PVector           torques                             = new PVector(0, 0);
 /* task space */
 PVector           posEE                               = new PVector(0, 0);
 PVector           fEE                                 = new PVector(0, 0); 
+
+/* outside circle parameters for Haply */
+float xH = 0;
+float yH = 0;
+
 
 /* World boundaries in centimeters */
 FWorld            world;
@@ -80,6 +85,8 @@ float             edgeBottomRightY                    = worldHeight;
 
 /* Definition of wallList */
 ArrayList<Wall> wallList;
+//LK: hashmap is a workaround solution since I couldn't get fisica to import in the Wall.java file
+HashMap<Wall, FBox> wallToWorldList;
 
 /* Definition of maze end */
 FCircle end;
@@ -97,7 +104,7 @@ PFont font;
 boolean           colour;
 float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
 PImage            haplyAvatar, bi;
-String           tooltip;
+String            tooltip;
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -129,9 +136,16 @@ void setup() {
    *
    *      windows:      haplyBoard = new Board(this, "COM10", 0);
    *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
-   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem1411", 0);
+   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
+<<<<<<< HEAD
   haplyBoard = new Board(this, "COM4", 0);
+=======
+
+
+  haplyBoard = new Board(this, "COM3", 0);
+
+>>>>>>> 279c9754c0ec4976c4a09e286825e48b7e0a250e
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
 
@@ -172,7 +186,6 @@ void setup() {
 
 
   for (int i = 0; i <button_img.length; i++) {
-    println (i);
     bi = loadImage(button_img[i]);
     bi.resize(50, 50);
     cp5.addButton(button_label[i]).setImage(bi)
@@ -206,6 +219,18 @@ void setup() {
 
 /* start button action section ****************************************************************************************************/
 //PV: need to update this section; really bad (but working) code
+
+void keyPressed(){
+  if (key == ' '){ // pressing spacebar makes walls flexible
+    setWallFlexibility(true, color(255, 0, 0));
+  }
+}
+
+void keyReleased(){
+  if (key == ' '){
+    setWallFlexibility(false, color(0, 0, 0));
+  }
+}
 
 public void b1(int theValue) {
   tooltip = button_img[0];
@@ -278,6 +303,25 @@ void draw() {
     //background(255);
     world.draw();
   }
+  
+  
+  
+  ellipse(xH,yH,20,20);
+  
+  xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
+  yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
+  float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
+  println(d);
+  
+  if (d<10){
+    noFill();
+    stroke(255,0,0);
+    ellipse(xH, yH, 30, 30);
+    noFill();
+    noStroke();
+  }
+  
+  
 }
 /* end draw section ****************************************************************************************************/
 
@@ -327,6 +371,7 @@ class SimulationThread implements Runnable {
 
 ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
   wallList = new ArrayList<Wall>();
+  wallToWorldList = new HashMap<Wall, FBox>();
   Wall w;
 
   String[] lines = loadStrings(FILENAME);
@@ -389,6 +434,7 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wall.setStatic(true);
     int c = item.getColor();
     wall.setFill(c);
+    wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
 }
@@ -406,6 +452,14 @@ void createPlayerToken(float x, float y) {
   playerToken.init(world, x, y);
 }
 
-
+void setWallFlexibility(boolean flexibility, int wallColor) {
+  FBox wallInWorld;
+  for (Wall item : wallList){
+    wallInWorld = wallToWorldList.get(item);
+    wallInWorld.setSensor(flexibility);
+    wallInWorld.setFillColor(wallColor);
+    wallInWorld.setStrokeColor(wallColor);
+  }
+}
 
 /* end helper functions section ****************************************************************************************/

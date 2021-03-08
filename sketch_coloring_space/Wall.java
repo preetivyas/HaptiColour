@@ -33,4 +33,7 @@ public class Wall {
     return this.c;
   }
   
+  public void setColor(int newColor){
+    this.c = newColor;
+  }
 }
