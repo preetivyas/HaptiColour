@@ -138,14 +138,8 @@ void setup() {
    *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
-<<<<<<< HEAD
   haplyBoard = new Board(this, "COM4", 0);
-=======
 
-
-  haplyBoard = new Board(this, "COM3", 0);
-
->>>>>>> 279c9754c0ec4976c4a09e286825e48b7e0a250e
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
 
