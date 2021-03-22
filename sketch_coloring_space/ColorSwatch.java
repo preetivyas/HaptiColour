@@ -22,7 +22,8 @@ public class ColorSwatch{
   }
   
   public int[] getColor(){
-    return {this.r, this.g, this.b};
+    int[] ret = {this.r, this.g, this.b};
+    return ret;
   }
   
   public void setColor(int[] c){

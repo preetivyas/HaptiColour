@@ -9,14 +9,14 @@ public class ColorPalette{
   
   //returns black if swatch doesn't exist
   public ColorSwatch getSwatch(int index){
-    if(this.palette[index]){
+    if(this.palette[index] != null){
       return this.palette[index];
     }
     return new ColorSwatch(0, 0, 0);
   }
   
   //returns previous color or black if no previous color  
-  public void setSwatch(int index, ColorSwatch swatch){
+  public ColorSwatch setSwatch(int index, ColorSwatch swatch){
     ColorSwatch ret = this.getSwatch(index);
     this.palette[index] = swatch;
     return ret;

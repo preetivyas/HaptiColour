@@ -1,17 +1,19 @@
+import java.util.ArrayList;
+
 public class Brush {
   private float paintAmount;
   private int[] paintColor = new int[3];
   private ArrayList<Bristle> bristles;
   private float scaleFactor;
 
+  public Brush() {
+    this(new int[] {0, 0, 0});
+  }
+
   public Brush(int[] c){
     this.paintColor = c;
     this.paintAmount = 0.0f;
     this.scaleFactor = 1;
-  }
-  
-  public Brush() {
-    this.Brush({0, 0, 0});
   }
   
   public void changeColor(int[] c){
@@ -34,7 +36,7 @@ public class Brush {
     return this.bristles.size();
   }
   
-  public ArrayList<Bristles> getBristles(){
+  public ArrayList<Bristle> getBristles(){
     return this.bristles;
   }
 }

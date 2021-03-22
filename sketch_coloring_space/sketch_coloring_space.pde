@@ -394,7 +394,8 @@ void setDrawingColor(int r, int g, int b) {
 
 void createBrush(){
   brush = new Brush(drawingColor);
-  Bristle b = new Bristle(1.0, brush, {0, 0}); //centered bristle
+  int[] coords = {0, 0};
+  Bristle b = new Bristle(1.0, brush, coords); //centered bristle
   brush.addBristle(b);
 }
 
