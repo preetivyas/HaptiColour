@@ -116,6 +116,7 @@ PImage            haplyAvatar, bi;
 String            tooltip;
 Brush brush;
 ArrayList<ColorPalette> palettes;
+int paletteIndex;
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -228,7 +229,6 @@ void draw() {
     layers[2].endDraw();
     image(layers[2], 0, 0, width, height);
   }
-  //drawSwatchLabels();
   world.draw();
 }
 /* end draw section ****************************************************************************************************/
@@ -400,22 +400,23 @@ void createPalettes() {
 
 ColorPalette createPalette(int index) {
   ColorSwatch[] palette = new ColorSwatch[6];
+  paletteIndex = index;
   switch(index) {
     case(0): //rainbow
-    palette[0] = new ColorSwatch(255, 0, 0); //red
-    palette[1] = new ColorSwatch(255, 127, 0); //orange
-    palette[2] = new ColorSwatch(255, 255, 0); //yellow
-    palette[3] = new ColorSwatch(0, 255, 0); //green
-    palette[4] = new ColorSwatch(0, 0, 255); //blue
-    palette[5] = new ColorSwatch(255, 0, 127); //purple
+    palette[5] = new ColorSwatch(255, 0, 0); //red
+    palette[4] = new ColorSwatch(255, 127, 0); //orange
+    palette[3] = new ColorSwatch(255, 255, 0); //yellow
+    palette[2] = new ColorSwatch(0, 255, 0); //green
+    palette[1] = new ColorSwatch(0, 0, 255); //blue
+    palette[0] = new ColorSwatch(127, 0, 255); //purple
     break;
   default: //rainbow
-    palette[0] = new ColorSwatch(255, 0, 0); //red
-    palette[1] = new ColorSwatch(255, 127, 0); //orange
-    palette[2] = new ColorSwatch(255, 255, 0); //yellow
-    palette[3] = new ColorSwatch(0, 255, 0); //green
-    palette[4] = new ColorSwatch(0, 0, 255); //blue
-    palette[5] = new ColorSwatch(255, 0, 127); //purple
+    palette[5] = new ColorSwatch(255, 0, 0); //red
+    palette[4] = new ColorSwatch(255, 127, 0); //orange
+    palette[3] = new ColorSwatch(255, 255, 0); //yellow
+    palette[2] = new ColorSwatch(0, 255, 0); //green
+    palette[1] = new ColorSwatch(0, 0, 255); //blue
+    palette[0] = new ColorSwatch(127, 0, 255); //purple
     break;
   }
 
@@ -461,6 +462,7 @@ void drawSquare(PGraphics layer) {
 void createColorPicker(ColorPalette palette) {
   float x = 0f;
   float y = 0f;
+  ColorSwatch swatch;
   for (int i=0; i< 6; i++) {
     x = edgeBottomRightX - 1.25*(i+1);
     y = edgeBottomRightY - 1.8;
@@ -468,64 +470,20 @@ void createColorPicker(ColorPalette palette) {
     colorSwatch[i].setPosition(x, y);
     colorSwatch[i].setStatic(true);
     colorSwatch[i].setSensor(true);
-    ColorSwatch swatch;
-    switch(i) {
-    case 0:
-      swatch = palette.getSwatch(0);
-      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
-      world.add(colorSwatch[0]);
-      break;
-    case 1:
-      swatch = palette.getSwatch(1);
-      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
-      world.add(colorSwatch[1]);
-      break;
-    case 2:
-      swatch = palette.getSwatch(2);
-      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
-      world.add(colorSwatch[2]);
-      break;
-    case 3:
-      swatch = palette.getSwatch(3);
-      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
-      world.add(colorSwatch[3]);
-      break;
-    case 4:
-      swatch = palette.getSwatch(4);
-      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
-      world.add(colorSwatch[4]);
-      break;
-    case 5:
-      swatch = palette.getSwatch(5);
-      colorSwatch[5].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
-      world.add(colorSwatch[i]);
-      break;
-    }
+    
+    swatch = palette.getSwatch(i);
+    colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
+    world.add(colorSwatch[i]);
 
     world.draw();
-
-    //world.add(colorSwatch[i]);
-
-    //fill(0, 0, 0);
-    //if ( i % 2 == 0) {
-    //  text("+", width - x, y);
-    //  //text("+", width - 1.25*(i+1), height - 1.8);
-    //  world.draw();
-    //} else {
-    //  text("-", width - 1.25*(i+1), height - 1.8);
-    //  world.draw();
-    //}
-
-    //fill(0, 0, 0, 50);
-    //text("TEST", width/2, height/2);
-    //world.draw();
   }
 
   //create color mixer swatch
   colorSwatch[6] = new FBox(7.25, .5);
   colorSwatch[6].setPosition(edgeBottomRightX - 1.25 * 3.5, edgeBottomRightY - 1);
   colorSwatch[6].setStatic(true);
-  setDrawingColor((int)random(255), (int)random(255), (int)random(255));
+  swatch = palette.getSwatch(0);
+  setDrawingColor(swatch.getRed(), swatch.getGreen(), swatch.getBlue());
   world.add(colorSwatch[6]);
 }
 
@@ -583,27 +541,5 @@ void createLayers() {
   layers[0] = g;
   layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
   layers[2] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
-}
-
-void drawSwatchLabels() {
-  float x = 0f;
-  float y = 0f;
-  layers[2].beginDraw();
-  for (int i=0; i< 6; i++) {
-    x = edgeBottomRightX - 1.25*(i+1);
-    y = edgeBottomRightY - 1.8;
-    if ( i % 2 == 0) {
-      layers[2].fill(255, 255, 255, 50);
-      layers[2].text("+", width - x, y);
-      //text("+", width - 1.25*(i+1), height - 1.8);
-      world.draw();
-    } else {
-      layers[2].fill(0, 0, 0, 50);
-      //text("-", width - 1.25*(i+1), height - 1.8);
-      layers[2].text("-", width - x, y);
-      world.draw();
-    }
-  }
-  layers[2].endDraw();
 }
 /* end helper functions section ****************************************************************************************/
