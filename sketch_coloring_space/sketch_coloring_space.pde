@@ -302,12 +302,11 @@ public void b10(int theValue) {
 /* end button action section ****************************************************************************************************/
 
 
-
 /* draw section ********************************************************************************************************/
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   if (renderingForce == false) {
-    //background(255);
+    background(255);
     world.draw();
   }
   
@@ -350,8 +349,10 @@ class SimulationThread implements Runnable {
     }
 
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
-    C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
-
+    //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
+    
+    println(playerToken.h_avatar.getTouching());
+    
 
     playerToken.updateCouplingForce();
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
@@ -365,10 +366,13 @@ class SimulationThread implements Runnable {
       text("!!!!!!!!!!", 
         edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
     }
-
+    
+    if (playerToken.h_avatar.isTouchingBody( )) {
+      
+    }
+    
     world.step(1.0f/1000.0f);
-
-    renderingForce = false;
+    renderingForce = false  ;
   }
 }
 /* end simulation section **********************************************************************************************/
@@ -433,15 +437,15 @@ void createMazeEnd(float x, float y) {
 
 void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsException {
 
-  //println(wallList);
+  println(wallList);
   FBox wall;
   for (Wall item : wallList) {
     /* creation of wall */
     wall = new FBox(item.getW(), item.getH());
     wall.setPosition(item.getX(), item.getY());
     wall.setStatic(true);
-    int c = item.getColor();
-    wall.setFill(c);
+    //int c = item.getColor();
+    wall.setFill(255,0,0);
     wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
