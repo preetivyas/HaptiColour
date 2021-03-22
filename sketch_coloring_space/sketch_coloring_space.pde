@@ -367,9 +367,9 @@ class SimulationThread implements Runnable {
         edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
     }
     
-    if (playerToken.h_avatar.isTouchingBody( )) {
+    //if (playerToken.h_avatar.isTouchingBody(FBox)) {
       
-    }
+    //}
     
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
@@ -437,11 +437,11 @@ void createMazeEnd(float x, float y) {
 
 void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsException {
 
-  println(wallList);
+  
   FBox wall;
   for (Wall item : wallList) {
     /* creation of wall */
-    wall = new FBox(item.getW(), item.getH());
+    wall = new FBox(item.getW(), item.getH()) ;
     wall.setPosition(item.getX(), item.getY());
     wall.setStatic(true);
     //int c = item.getColor();
@@ -449,14 +449,17 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
+  
+  println(wallList);
+  
 }
 
 void createPlayerToken(float x, float y) {
   /* Player circle */
   /* Setup the Virtual Coupling Contact Rendering Technique */
   playerToken = new HVirtualCoupling((tooltipsize)); 
-  playerToken.h_avatar.setDensity(4); 
-  haplyAvatar = loadImage(tooltip); 
+  playerToken.h_avatar.setDensity(4);
+  haplyAvatar = loadImage(tooltip)  ;
   haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
   playerToken.h_avatar.attachImage(haplyAvatar); 
   //playerToken.h_avatar.setFill(random(255),random(255),random(255)); 
