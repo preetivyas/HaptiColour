@@ -9,6 +9,15 @@ public class ColorSwatch{
     this.b = b;
   }
   
+  public ColorSwatch(int[] c){
+    this(c[0], c[1], c[2]);
+  }
+  
+  //default to black
+  public ColorSwatch(){
+   this(0, 0, 0); 
+  }
+  
   public int getRed(){
     return this.r;
   }
@@ -30,6 +39,12 @@ public class ColorSwatch{
     this.r = c[0];
     this.g = c[1];
     this.b = c[2];
+  }
+  
+  public void setColor(int r, int g, int b){
+    this.r = r;
+    this.g = g;
+    this.b = b;
   }
   
 }

@@ -7,6 +7,15 @@ public class ColorPalette{
     }
   }
   
+  public ColorPalette(ColorSwatch s0, ColorSwatch s1, ColorSwatch s2, ColorSwatch s3, ColorSwatch s4, ColorSwatch s5){
+    this(new ColorSwatch[] {s0, s1, s2, s3, s4, s5});
+  }
+  
+  //create empty (black) color palette
+  public ColorPalette(){
+    this(new ColorSwatch[] {});
+  }
+  
   //returns black if swatch doesn't exist
   public ColorSwatch getSwatch(int index){
     if(this.palette[index] != null){

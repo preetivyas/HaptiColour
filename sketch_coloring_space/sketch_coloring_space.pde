@@ -32,7 +32,7 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 public final String FILENAME = "maze.txt";
 public final boolean PRINTMAZE = true;
 public final int NUM_SHAPES = 2;
-public final boolean BEGIN_IN_DRAWING_MODE = true;
+public final boolean BEGIN_IN_DRAWING_MODE = false;
 public final String PORT = "/dev/cu.usbmodem14201";
 
 ControlP5 cp5;
@@ -115,6 +115,7 @@ float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 s
 PImage            haplyAvatar, bi;
 String            tooltip;
 Brush brush;
+ArrayList<ColorPalette> palettes;
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -163,8 +164,8 @@ void setup() {
 
 
   createBrushes();
-
-  createColorPicker();
+  createPalettes();
+  createColorPicker(palettes.get(0));
 
   world.draw();
 
@@ -392,7 +393,36 @@ void setDrawingColor(int r, int g, int b) {
   colorSwatch[6].setFillColor(color(r, g, b));
 }
 
-void createBrush(){
+void createPalettes() {
+  palettes = new ArrayList<ColorPalette>();
+  palettes.add(createPalette(0)); //add rainbow palette
+}
+
+ColorPalette createPalette(int index) {
+  ColorSwatch[] palette = new ColorSwatch[6];
+  switch(index) {
+    case(0): //rainbow
+    palette[0] = new ColorSwatch(255, 0, 0); //red
+    palette[1] = new ColorSwatch(255, 127, 0); //orange
+    palette[2] = new ColorSwatch(255, 255, 0); //yellow
+    palette[3] = new ColorSwatch(0, 255, 0); //green
+    palette[4] = new ColorSwatch(0, 0, 255); //blue
+    palette[5] = new ColorSwatch(255, 0, 127); //purple
+    break;
+  default: //rainbow
+    palette[0] = new ColorSwatch(255, 0, 0); //red
+    palette[1] = new ColorSwatch(255, 127, 0); //orange
+    palette[2] = new ColorSwatch(255, 255, 0); //yellow
+    palette[3] = new ColorSwatch(0, 255, 0); //green
+    palette[4] = new ColorSwatch(0, 0, 255); //blue
+    palette[5] = new ColorSwatch(255, 0, 127); //purple
+    break;
+  }
+
+  return new ColorPalette(palette);
+}
+
+void createBrush() {
   brush = new Brush(drawingColor);
   int[] coords = {0, 0};
   Bristle b = new Bristle(1.0, brush, coords); //centered bristle
@@ -414,21 +444,21 @@ void drawShape(PGraphics layer) {
 }
 
 void drawCursor(PGraphics layer) {
-  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 2, 2);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 30, 30);
   world.draw();
 }
 
 void drawCircle(PGraphics layer) {
-  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 20, 20);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 30, 30);
   world.draw();
 }
 
 void drawSquare(PGraphics layer) {
-  layer.rect(playerToken.getAvatarPositionX()*40-10, playerToken.getAvatarPositionY()*40-10, 20, 20);
+  layer.rect(playerToken.getAvatarPositionX()*40-10, playerToken.getAvatarPositionY()*40-10, 30, 30);
   world.draw();
 }
 
-void createColorPicker() {
+void createColorPicker(ColorPalette palette) {
   float x = 0f;
   float y = 0f;
   for (int i=0; i< 6; i++) {
@@ -438,42 +468,37 @@ void createColorPicker() {
     colorSwatch[i].setPosition(x, y);
     colorSwatch[i].setStatic(true);
     colorSwatch[i].setSensor(true);
+    ColorSwatch swatch;
     switch(i) {
     case 0:
-      colorSwatch[i].setFillColor(color(255, 0, 0));
-      world.add(colorSwatch[i]);
-      fill(255, 255, 255, 50);
-      text("+", x, y);
+      swatch = palette.getSwatch(0);
+      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
+      world.add(colorSwatch[0]);
       break;
     case 1:
-      colorSwatch[i].setFillColor(color(255, 233, 236));
-      world.add(colorSwatch[i]);
-      fill(0, 0, 0, 50);
-      text("-", x, y);
+      swatch = palette.getSwatch(1);
+      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
+      world.add(colorSwatch[1]);
       break;
     case 2:
-      colorSwatch[i].setFillColor(color(0, 255, 0));
-      world.add(colorSwatch[i]);
-      fill(255, 255, 255, 50);
-      text("+", x, y);
+      swatch = palette.getSwatch(2);
+      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
+      world.add(colorSwatch[2]);
       break;
     case 3:
-      colorSwatch[i].setFillColor(color(233, 255, 233));
-      world.add(colorSwatch[i]);
-      fill(0, 0, 0, 50);
-      text("-", x, y);
+      swatch = palette.getSwatch(3);
+      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
+      world.add(colorSwatch[3]);
       break;
     case 4:
-      colorSwatch[i].setFillColor(color(0, 0, 255));
-      world.add(colorSwatch[i]);
-      fill(255, 255, 255, 50);
-      text("+", x, y);
+      swatch = palette.getSwatch(4);
+      colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
+      world.add(colorSwatch[4]);
       break;
     case 5:
-      colorSwatch[i].setFillColor(color(233, 233, 255));
+      swatch = palette.getSwatch(5);
+      colorSwatch[5].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
       world.add(colorSwatch[i]);
-      fill(0, 0, 0, 50);
-      text("-", x, y);
       break;
     }
 
