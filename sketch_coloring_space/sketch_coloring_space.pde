@@ -220,15 +220,14 @@ void draw() {
     drawShape(layers[1]);
     layers[1].endDraw();
     image(layers[1], 0, 0);
-  } else {
+  } //else {
     layers[2].beginDraw();
     layers[2].clear();
     layers[2].background(0, 0);
-    layers[2].stroke(255, 0, 0);
     drawCursor(layers[2]);
     layers[2].endDraw();
     image(layers[2], 0, 0, width, height);
-  }
+  //}
   world.draw();
 }
 /* end draw section ****************************************************************************************************/
@@ -445,7 +444,13 @@ void drawShape(PGraphics layer) {
 }
 
 void drawCursor(PGraphics layer) {
-  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 30, 30);
+  layer.noFill();
+  layer.stroke(0, 0, 0);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 30, 30);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 2, 2);
+  layer.stroke(255, 255, 255);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 32, 32);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 4, 4);
   world.draw();
 }
 
@@ -455,7 +460,8 @@ void drawCircle(PGraphics layer) {
 }
 
 void drawSquare(PGraphics layer) {
-  layer.rect(playerToken.getAvatarPositionX()*40-10, playerToken.getAvatarPositionY()*40-10, 30, 30);
+  int size = 30;
+  layer.rect(playerToken.getAvatarPositionX()*40-size/2, playerToken.getAvatarPositionY()*40-size/2, size, size);
   world.draw();
 }
 
@@ -539,7 +545,9 @@ void createLayers() {
   //  layers[i] = createGraphics((int)worldWidth, (int)worldHeight + 2);
   //}
   layers[0] = g;
-  layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
-  layers[2] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
+  layers[1] = createGraphics(1200, 680);
+  layers[2] = createGraphics(1200, 680);
+  //layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
+  //layers[2] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
 }
 /* end helper functions section ****************************************************************************************/
