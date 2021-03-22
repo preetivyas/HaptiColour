@@ -90,7 +90,10 @@ HashMap<Wall, FBox> wallToWorldList;
 
 /* Definition of maze end */
 FCircle end;
-FBox l1; 
+FBox l1    ;
+
+/* Translucent circle */
+FCircle  C ;
 
 /* Initialization of player token */
 HVirtualCoupling  playerToken;
@@ -119,6 +122,24 @@ void setup() {
   cp5 = new ControlP5(this);
 
   tooltip = button_img[0];
+
+
+
+  hAPI_Fisica.init(this); 
+  hAPI_Fisica.setScale(pixelsPerCentimeter); 
+  world = new FWorld();
+
+/* Translucent circle */
+  C = new FCircle(1.5);
+  C.setDensity(0.01)  ;
+  C.setSensor(true)   ;
+  C.setNoFill()       ;
+  C.setStroke(0,0,0)  ;
+  C.setPosition(3,3)  ;
+  world.add(C)        ;
+
+  
+  
 
   /* screen size definition */
   size(1200, 680);
@@ -300,20 +321,20 @@ void draw() {
   
   
   
-  ellipse(xH,yH,20,20);
+  //ellipse(xH,yH,20,20);
   
-  xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
-  yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
-  float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
-  println(d);
+  //xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
+  //yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
+  //float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
+  //println(d);
   
-  if (d<10){
-    noFill();
-    stroke(255,0,0);
-    ellipse(xH, yH, 30, 30);
-    noFill();
-    noStroke();
-  }
+  //if (d<10){
+  //  noFill();
+  //  stroke(255,0,0);
+  //  ellipse(xH, yH, 30, 30);
+  //  noFill();
+  //  noStroke();
+  //}
   
   
 }
@@ -336,7 +357,8 @@ class SimulationThread implements Runnable {
       posEE.set(posEE.copy().mult(200));
     }
 
-    playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7); 
+    playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
+    C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
 
 
     playerToken.updateCouplingForce();
