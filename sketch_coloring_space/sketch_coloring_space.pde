@@ -122,24 +122,7 @@ void setup() {
   cp5 = new ControlP5(this);
 
   tooltip = button_img[0];
-
-
-
-  hAPI_Fisica.init(this); 
-  hAPI_Fisica.setScale(pixelsPerCentimeter); 
-  world = new FWorld();
-
-/* Translucent circle */
-  C = new FCircle(1.5);
-  C.setDensity(0.01)  ;
-  C.setSensor(true)   ;
-  C.setNoFill()       ;
-  C.setStroke(0,0,0)  ;
-  C.setPosition(3,3)  ;
-  world.add(C)        ;
-
-  
-  
+ 
 
   /* screen size definition */
   size(1200, 680);
@@ -163,8 +146,7 @@ void setup() {
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
-
-  widgetOne.set_mechanism(pantograph);
+  widgetOne.set_mechanism(pantograph)   ;
 
   widgetOne.add_actuator(1, CCW, 2);
   widgetOne.add_actuator(2, CW, 1);
@@ -190,10 +172,21 @@ void setup() {
   }
 
   /* world conditions setup */
-  world.setGravity((0.0), (1000.0)); //1000 cm/(s^2)
+  world.setGravity((0.0), (100.0)); //1000 cm/(s^2)
   world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
   world.setEdgesRestitution(.4);
   world.setEdgesFriction(0.5);
+
+
+
+/* Translucent circle */
+  C = new FCircle(1.5);
+  C.setDensity(1)     ;
+  C.setSensor(true)   ;
+  C.setNoFill()       ;
+  C.setStroke(0,0,0)  ;
+  C.setPosition(3,3)  ;
+  world.add(C)        ;
 
 
   //gui specific buttons
@@ -315,7 +308,7 @@ public void b10(int theValue) {
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   if (renderingForce == false) {
-    //background(255);
+    background(255);
     world.draw();
   }
   
