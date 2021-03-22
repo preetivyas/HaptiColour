@@ -180,13 +180,13 @@ void setup() {
 
 
 /* Translucent circle */
-  C = new FCircle(1.5);
-  C.setDensity(1)     ;
-  C.setSensor(true)   ;
-  C.setNoFill()       ;
-  C.setStroke(0,0,0)  ;
-  C.setPosition(3,3)  ;
-  world.add(C)        ;
+  C = new FCircle(1.5) ;
+  C.setDensity(1)      ;
+  C.setSensor(true)    ;
+  C.setNoFill()        ;
+  C.setStroke(0,0,0,50);
+  C.setPosition(3,3)   ;
+  world.add(C)         ;
 
 
   //gui specific buttons
