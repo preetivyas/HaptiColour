@@ -348,9 +348,8 @@ class SimulationThread implements Runnable {
     }
 
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
-    //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
-    
-    println(playerToken.h_avatar.getTouching());
+    //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
+    //println(playerToken.h_avatar.getTouching())                                             ;
     
 
     playerToken.updateCouplingForce();
