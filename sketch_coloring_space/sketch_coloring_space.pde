@@ -137,7 +137,6 @@ void setup() {
    * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
    * In the base example, a connection is setup to the first detected serial device, this parameter can be changed
    * to explicitly state the serial port will look like the following for different OS:
-   *
    *      windows:      haplyBoard = new Board(this, "COM10", 0);
    *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
@@ -185,7 +184,7 @@ void setup() {
   C.setSensor(true)     ;
   C.setNoFill()         ;
   C.setStroke(0,0,0,255);
-  C.setPosition(3,3)    ;
+  C.setPosition(-3,3)   ;
   world.add(C)          ;
 
 
@@ -351,7 +350,7 @@ class SimulationThread implements Runnable {
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
     //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
     
-    //println(playerToken.h_avatar.getTouching());
+    println(playerToken.h_avatar.getTouching());
     
 
     playerToken.updateCouplingForce();
@@ -367,9 +366,9 @@ class SimulationThread implements Runnable {
         edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
     }
     
-    if (playerToken.h_avatar.isTouchingBody(item)) {
+    //if (playerToken.h_avatar.isTouchingBody( SOMETHING )) {
       
-    }
+    //}
     
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
