@@ -114,6 +114,7 @@ boolean           colour;
 float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
 PImage            haplyAvatar, bi;
 String            tooltip;
+Brush brush;
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -389,6 +390,12 @@ void setDrawingColor(int r, int g, int b) {
   drawingColor[1] = g;
   drawingColor[2] = b;
   colorSwatch[6].setFillColor(color(r, g, b));
+}
+
+void createBrush(){
+  brush = new Brush(drawingColor);
+  Bristle b = new Bristle(1.0, brush, {0, 0}); //centered bristle
+  brush.addBristle(b);
 }
 
 void drawShape(PGraphics layer) {
