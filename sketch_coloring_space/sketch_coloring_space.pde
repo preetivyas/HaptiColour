@@ -180,13 +180,13 @@ void setup() {
 
 
 /* Translucent circle */
-  C = new FCircle(1.5) ;
-  C.setDensity(1)      ;
-  C.setSensor(true)    ;
-  C.setNoFill()        ;
-  C.setStroke(0,0,0)   ;
-  C.setPosition(3,3)   ;
-  world.add(C)         ;
+  C = new FCircle(1.5)  ;
+  C.setDensity(1)       ;
+  C.setSensor(true)     ;
+  C.setNoFill()         ;
+  C.setStroke(0,0,0,255);
+  C.setPosition(3,3)    ;
+  world.add(C)          ;
 
 
   //gui specific buttons
@@ -307,7 +307,7 @@ public void b10(int theValue) {
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
   if (renderingForce == false) {
-    background(255);
+    //background(255);
     world.draw();
   }
   
