@@ -184,13 +184,12 @@ void setup() {
   C.setDensity(1)      ;
   C.setSensor(true)    ;
   C.setNoFill()        ;
-  C.setStroke(0,0,0,50);
+  C.setStroke(0,0,0)   ;
   C.setPosition(3,3)   ;
   world.add(C)         ;
 
 
   //gui specific buttons
-
 
 
   for (int i = 0; i <button_img.length; i++) {
