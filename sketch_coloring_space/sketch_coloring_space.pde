@@ -68,8 +68,8 @@ PVector           posEE                               = new PVector(0, 0);
 PVector           fEE                                 = new PVector(0, 0); 
 
 /* outside circle parameters for Haply */
-float xH = 0;
-float yH = 0;
+//float xH = 0;
+//float yH = 0;
 
 
 /* World boundaries in centimeters */
@@ -351,7 +351,7 @@ class SimulationThread implements Runnable {
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
     //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
     
-    println(playerToken.h_avatar.getTouching());
+    //println(playerToken.h_avatar.getTouching());
     
 
     playerToken.updateCouplingForce();
@@ -367,9 +367,9 @@ class SimulationThread implements Runnable {
         edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
     }
     
-    //if (playerToken.h_avatar.isTouchingBody(FBox)) {
+    if (playerToken.h_avatar.isTouchingBody(item)) {
       
-    //}
+    }
     
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
@@ -382,9 +382,9 @@ class SimulationThread implements Runnable {
 /* helper functions section, place helper functions here ***************************************************************/
 
 ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
-  wallList = new ArrayList<Wall>();
+  wallList = new ArrayList<Wall>()           ;
   wallToWorldList = new HashMap<Wall, FBox>();
-  Wall w;
+  Wall w                                     ;
 
   String[] lines = loadStrings(FILENAME);
 
@@ -427,17 +427,17 @@ ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
 
 void createMazeEnd(float x, float y) {
   /* Finish Button */
-  end = new FCircle(1.0);
-  end.setPosition(x, y);
-  end.setFill(200, 0, 0);
-  end.setStaticBody(true);
-  end.setSensor(true);
-  world.add(end);
+  end = new FCircle(1.0)  ;
+  end.setPosition(x, y)   ;
+  end.setFill(200, 0, 0)  ;
+  end.setStaticBody(true) ;
+  end.setSensor(true)     ;
+  world.add(end)          ;
 }
 
 void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsException {
 
-  
+  //println(wallList);
   FBox wall;
   for (Wall item : wallList) {
     /* creation of wall */
