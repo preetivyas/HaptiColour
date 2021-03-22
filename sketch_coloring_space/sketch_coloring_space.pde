@@ -143,7 +143,7 @@ void setup() {
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
   haplyBoard = new Board(this, "COM3", 0);
-
+  
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
   widgetOne.set_mechanism(pantograph)   ;
@@ -161,7 +161,7 @@ void setup() {
   /* 2D physics scaling and world creation */
   hAPI_Fisica.init(this); 
   hAPI_Fisica.setScale(pixelsPerCentimeter); 
-  world               = new FWorld();
+  world = new FWorld();
 
   /* create the maze!!! */
   try {
@@ -172,10 +172,10 @@ void setup() {
   }
 
   /* world conditions setup */
-  world.setGravity((0.0), (100.0)); //1000 cm/(s^2)
+  world.setGravity((0.0), (100.0)); //100 cm/(s^2)
   world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
-  world.setEdgesRestitution(.4);
-  world.setEdgesFriction(0.5);
+  world.setEdgesRestitution(.4)   ;
+  world.setEdgesFriction(0.5)     ;
 
 
 
