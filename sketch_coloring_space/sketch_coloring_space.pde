@@ -72,8 +72,8 @@ PVector           posEE                               = new PVector(0, 0);
 PVector           fEE                                 = new PVector(0, 0); 
 
 /* outside circle parameters for Haply */
-float xH = 0;
-float yH = 0;
+//float xH = 0;
+//float yH = 0;
 
 
 /* World boundaries in centimeters */
@@ -96,7 +96,10 @@ HashMap<Wall, FBox> wallToWorldList;
 
 /* Definition of maze end */
 FCircle end;
-FBox l1; 
+FBox l1    ;
+
+/* Translucent circle */
+FCircle  C ;
 
 /* Initialization of player token */
 HVirtualCoupling  playerToken;
@@ -135,7 +138,9 @@ void setup() {
 
   createLayers();
 
+
   //tooltip = button_img[0];
+
 
   /* screen size definition */
   size(1200, 680);
@@ -144,7 +149,40 @@ void setup() {
   font = loadFont("SansSerif-28.vlw");
   textFont(font);
 
+
   setUpDevice();
+
+  /* device setup */
+
+  /**  
+   * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
+   * In the base example, a connection is setup to the first detected serial device, this parameter can be changed
+   * to explicitly state the serial port will look like the following for different OS:
+   *      windows:      haplyBoard = new Board(this, "COM10", 0);
+   *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
+   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
+   */
+  haplyBoard = new Board(this, "COM3", 0);
+  
+  widgetOne           = new Device(widgetOneID, haplyBoard);
+  pantograph          = new Pantograph();
+  widgetOne.set_mechanism(pantograph)   ;
+
+  widgetOne.add_actuator(1, CCW, 2);
+  widgetOne.add_actuator(2, CW, 1);
+
+  widgetOne.add_encoder(1, CCW, 241, 10752, 2);
+  widgetOne.add_encoder(2, CW, -61, 10752, 1);
+
+
+  widgetOne.device_set_parameters();
+
+
+  /* 2D physics scaling and world creation */
+  hAPI_Fisica.init(this); 
+  hAPI_Fisica.setScale(pixelsPerCentimeter); 
+  world = new FWorld();
+
 
   /* create the maze!!! */
   try {
@@ -155,14 +193,24 @@ void setup() {
   }
 
   /* world conditions setup */
-  world.setGravity((0.0), (1000.0)); //1000 cm/(s^2)
+  world.setGravity((0.0), (100.0)); //100 cm/(s^2)
   world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
-  world.setEdgesRestitution(.4);
-  world.setEdgesFriction(0.5);
+  world.setEdgesRestitution(.4)   ;
+  world.setEdgesFriction(0.5)     ;
+
+
+
+/* Translucent circle */
+  C = new FCircle(1.5)  ;
+  C.setDensity(1)       ;
+  C.setSensor(true)     ;
+  C.setNoFill()         ;
+  C.setStroke(0,0,0,255);
+  C.setPosition(-3,3)   ;
+  world.add(C)          ;
 
 
   //gui specific buttons
-
 
 
   createBrushes();
@@ -207,10 +255,10 @@ void keyPressed() {
 /* end button action section ****************************************************************************************************/
 
 
-
 /* draw section ********************************************************************************************************/
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
+
   g.background(255);
   image(layers[1], 0, 0);
   if (isDrawingModeEngaged()) {
@@ -237,6 +285,31 @@ void draw() {
   layers[2].endDraw();
   image(layers[2], 0, 0, width, height);
   world.draw();
+
+  //if (renderingForce == false) {
+  //  background(255);
+  //  world.draw();
+  //}
+  
+  
+  
+  //ellipse(xH,yH,20,20);
+  
+  //xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
+  //yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
+  //float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
+  //println(d);
+  
+  //if (d<10){
+  //  noFill();
+  //  stroke(255,0,0);
+  //  ellipse(xH, yH, 30, 30);
+  //  noFill();
+  //  noStroke();
+  //}
+  
+  
+
 }
 /* end draw section ****************************************************************************************************/
 
@@ -257,8 +330,10 @@ class SimulationThread implements Runnable {
       posEE.set(posEE.copy().mult(200));
     }
 
-    playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7); 
-
+    playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
+    //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
+    //println(playerToken.h_avatar.getTouching())                                             ;
+    
 
     playerToken.updateCouplingForce();
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
@@ -267,9 +342,20 @@ class SimulationThread implements Runnable {
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
 
-    world.step(1.0f/1000.0f);
 
-    renderingForce = false;
+   // if (playerToken.h_avatar.isTouchingBody(end)) {
+   //   fill(random(255), random(255), random(255));
+    //  text("!!!!!!!!!!", 
+   //     edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
+   // }
+    
+    //if (playerToken.h_avatar.isTouchingBody( SOMETHING )) {
+      
+    //}
+    
+
+    world.step(1.0f/1000.0f);
+    renderingForce = false  ;
   }
 }
 /* end simulation section **********************************************************************************************/
@@ -279,9 +365,9 @@ class SimulationThread implements Runnable {
 /* helper functions section, place helper functions here ***************************************************************/
 
 ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
-  wallList = new ArrayList<Wall>();
+  wallList = new ArrayList<Wall>()           ;
   wallToWorldList = new HashMap<Wall, FBox>();
-  Wall w;
+  Wall w                                     ;
 
   String[] lines = loadStrings(FILENAME);
 
@@ -324,22 +410,24 @@ ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
 
 void createMazeEnd(float x, float y) {
   /* Finish Button */
-  end = new FCircle(1.0);
-  end.setPosition(x, y);
-  end.setFill(200, 0, 0);
-  end.setStaticBody(true);
-  end.setSensor(true);
-  world.add(end);
+  end = new FCircle(1.0)  ;
+  end.setPosition(x, y)   ;
+  end.setFill(200, 0, 0)  ;
+  end.setStaticBody(true) ;
+  end.setSensor(true)     ;
+  world.add(end)          ;
 }
 
 void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsException {
 
+  //println(wallList);
   FBox wall;
   for (Wall item : wallList) {
     /* creation of wall */
-    wall = new FBox(item.getW(), item.getH());
+    wall = new FBox(item.getW(), item.getH()) ;
     wall.setPosition(item.getX(), item.getY());
     wall.setStatic(true);
+
     color c;
     if (BEGIN_IN_DRAWING_MODE) {
       c = color(0, 0, 0);
@@ -348,9 +436,16 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     }
     wall.setFillColor(c);
     wall.setStrokeColor(c);
+
+    //int c = item.getColor();
+    //wall.setFill(255,0,0);
+
     wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
+  
+  println(wallList);
+  
 }
 
 void createPlayerToken(float x, float y) {
@@ -358,9 +453,16 @@ void createPlayerToken(float x, float y) {
   /* Setup the Virtual Coupling Contact Rendering Technique */
   playerToken = new HVirtualCoupling((tooltipsize)); 
   playerToken.h_avatar.setDensity(4);
+
   playerToken.h_avatar.setNoFill(); 
   //playerToken.h_avatar.setStroke(0, 0);
   playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
+ // haplyAvatar = loadImage(tooltip)  ;
+  //haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  //playerToken.h_avatar.attachImage(haplyAvatar); 
+  //playerToken.h_avatar.setFill(random(255),random(255),random(255)); 
+  //playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
+
   playerToken.init(world, x, y);
 }
 
