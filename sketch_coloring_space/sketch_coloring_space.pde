@@ -20,6 +20,7 @@ import processing.serial.*;
 import static java.util.concurrent.TimeUnit.*;
 import java.util.concurrent.*;
 import controlP5.*;
+import java.util.ConcurrentModificationException;
 /* end library imports *************************************************************************************************/
 
 
@@ -220,14 +221,21 @@ void draw() {
     drawShape(layers[1]);
     layers[1].endDraw();
     image(layers[1], 0, 0);
-  } //else {
-    layers[2].beginDraw();
-    layers[2].clear();
-    layers[2].background(0, 0);
-    drawCursor(layers[2]);
-    layers[2].endDraw();
-    image(layers[2], 0, 0, width, height);
-  //}
+  }
+  else if(millis() % 1000 > 500 && millis() % 1000 > 750 || millis() % 1000 < 250){
+    try{
+      checkChangeColor();
+    }
+    catch(ConcurrentModificationException e){
+      //TODO
+    }
+  }
+  layers[2].beginDraw();
+  layers[2].clear();
+  layers[2].background(0, 0);
+  drawCursor(layers[2]);
+  layers[2].endDraw();
+  image(layers[2], 0, 0, width, height);
   world.draw();
 }
 /* end draw section ****************************************************************************************************/
@@ -392,6 +400,10 @@ void setDrawingColor(int r, int g, int b) {
   colorSwatch[6].setFillColor(color(r, g, b));
 }
 
+void setDrawingColor(int[] rgb){
+  setDrawingColor(rgb[0], rgb[1], rgb[2]);
+}
+
 void createPalettes() {
   palettes = new ArrayList<ColorPalette>();
   palettes.add(createPalette(0)); //add rainbow palette
@@ -402,20 +414,20 @@ ColorPalette createPalette(int index) {
   paletteIndex = index;
   switch(index) {
     case(0): //rainbow
-    palette[5] = new ColorSwatch(255, 0, 0); //red
-    palette[4] = new ColorSwatch(255, 127, 0); //orange
-    palette[3] = new ColorSwatch(255, 255, 0); //yellow
-    palette[2] = new ColorSwatch(0, 255, 0); //green
-    palette[1] = new ColorSwatch(0, 0, 255); //blue
-    palette[0] = new ColorSwatch(127, 0, 255); //purple
+    palette[5] = new ColorSwatch(255, 0, 0, 5); //red
+    palette[4] = new ColorSwatch(255, 127, 0, 4); //orange
+    palette[3] = new ColorSwatch(255, 255, 0, 3); //yellow
+    palette[2] = new ColorSwatch(0, 255, 0, 2); //green
+    palette[1] = new ColorSwatch(0, 0, 255, 1); //blue
+    palette[0] = new ColorSwatch(127, 0, 255, 0); //purple
     break;
   default: //rainbow
-    palette[5] = new ColorSwatch(255, 0, 0); //red
-    palette[4] = new ColorSwatch(255, 127, 0); //orange
-    palette[3] = new ColorSwatch(255, 255, 0); //yellow
-    palette[2] = new ColorSwatch(0, 255, 0); //green
-    palette[1] = new ColorSwatch(0, 0, 255); //blue
-    palette[0] = new ColorSwatch(127, 0, 255); //purple
+    palette[5] = new ColorSwatch(255, 0, 0, 5); //red
+    palette[4] = new ColorSwatch(255, 127, 0, 4); //orange
+    palette[3] = new ColorSwatch(255, 255, 0, 3); //yellow
+    palette[2] = new ColorSwatch(0, 255, 0, 2); //green
+    palette[1] = new ColorSwatch(0, 0, 255, 1); //blue
+    palette[0] = new ColorSwatch(127, 0, 255, 0); //purple
     break;
   }
 
@@ -469,14 +481,15 @@ void createColorPicker(ColorPalette palette) {
   float x = 0f;
   float y = 0f;
   ColorSwatch swatch;
-  for (int i=0; i< 6; i++) {
+  for (Integer i=0; i< 6; i++) {
     x = edgeBottomRightX - 1.25*(i+1);
     y = edgeBottomRightY - 1.8;
     colorSwatch[i] = new FBox(1, 1);
     colorSwatch[i].setPosition(x, y);
     colorSwatch[i].setStatic(true);
     colorSwatch[i].setSensor(true);
-    
+    colorSwatch[i].setName(i.toString());
+
     swatch = palette.getSwatch(i);
     colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
     world.add(colorSwatch[i]);
@@ -491,6 +504,15 @@ void createColorPicker(ColorPalette palette) {
   swatch = palette.getSwatch(0);
   setDrawingColor(swatch.getRed(), swatch.getGreen(), swatch.getBlue());
   world.add(colorSwatch[6]);
+}
+
+void checkChangeColor(){
+  ColorPalette palette = palettes.get(paletteIndex);
+  for(int i=0; i<palette.getLength(); i++){
+    if(colorSwatch[i].isTouchingBody(playerToken.h_avatar)){
+      setDrawingColor(palette.getSwatch(i).getColor());
+    }
+  }
 }
 
 void setUpDevice() {

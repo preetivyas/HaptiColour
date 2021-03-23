@@ -16,6 +16,10 @@ public class ColorPalette{
     this(new ColorSwatch[] {});
   }
   
+  public int getLength(){
+    return palette.length;
+  }
+  
   //returns black if swatch doesn't exist
   public ColorSwatch getSwatch(int index){
     if(this.palette[index] != null){
