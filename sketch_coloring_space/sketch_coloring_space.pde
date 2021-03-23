@@ -20,6 +20,7 @@ import processing.serial.*;
 import static java.util.concurrent.TimeUnit.*;
 import java.util.concurrent.*;
 import controlP5.*;
+import java.util.ConcurrentModificationException;
 /* end library imports *************************************************************************************************/
 
 
@@ -31,6 +32,9 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 /* DEFINE USER-SET PARAMETERS HERE! */
 public final String FILENAME = "maze.txt";
 public final boolean PRINTMAZE = true;
+public final int NUM_SHAPES = 2;
+public final boolean BEGIN_IN_DRAWING_MODE = false;
+public final String PORT = "/dev/cu.usbmodem14201";
 
 ControlP5 cp5;
 
@@ -80,7 +84,9 @@ float             worldHeight                         = 15.0;
 float             edgeTopLeftX                        = 0.0; 
 float             edgeTopLeftY                        = 0.0; 
 float             edgeBottomRightX                    = worldWidth; 
-float             edgeBottomRightY                    = worldHeight;
+float             edgeBottomRightY                    = worldHeight + 2;
+
+PGraphics[] layers = new PGraphics[3];
 
 
 /* Definition of wallList */
@@ -104,10 +110,17 @@ PFont font;
 /* end elements definition *********************************************************************************************/
 
 /*colouring specific variables*/
+boolean drawingModeEngaged;
+int[] drawingColor = new int[3];
+FBox[] colorSwatch = new FBox[7];
+int shape; //what shape is the being drawn?
 boolean           colour;
 float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
 PImage            haplyAvatar, bi;
 String            tooltip;
+Brush brush;
+ArrayList<ColorPalette> palettes;
+int paletteIndex;
 
 String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -120,16 +133,24 @@ void setup() {
   /* put setup code here, run once: */
   background(255);
   cp5 = new ControlP5(this);
+  drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
+  shape = 0;
 
-  tooltip = button_img[0];
- 
+  createLayers();
+
+
+  //tooltip = button_img[0];
+
 
   /* screen size definition */
   size(1200, 680);
 
   /* set font type and size */
-  font = loadFont("ComicSansMS-72.vlw");
+  font = loadFont("SansSerif-28.vlw");
   textFont(font);
+
+
+  setUpDevice();
 
   /* device setup */
 
@@ -162,6 +183,7 @@ void setup() {
   hAPI_Fisica.setScale(pixelsPerCentimeter); 
   world = new FWorld();
 
+
   /* create the maze!!! */
   try {
     createMaze(parseTextFile());
@@ -191,22 +213,9 @@ void setup() {
   //gui specific buttons
 
 
-  for (int i = 0; i <button_img.length; i++) {
-    bi = loadImage(button_img[i]);
-    bi.resize(50, 50);
-    cp5.addButton(button_label[i]).setImage(bi)
-      .setPosition((50+100*i), 600)
-      .setValue(0);
-  }
-
-  //cp5.addButton("resetHaply").setImage(bi)
-  //  .setPosition((50+100*i), 600)
-  //  .setValue(0);
-
-  //cp5.addButton("move").setImage(bi)
-  //  .setPosition((50+100*i), 600)
-  //  .setValue(0);
-
+  createBrushes();
+  createPalettes();
+  createColorPicker(palettes.get(0));
 
   world.draw();
 
@@ -226,88 +235,61 @@ void setup() {
 /* start button action section ****************************************************************************************************/
 //PV: need to update this section; really bad (but working) code
 
-void keyPressed(){
-  if (key == ' '){ // pressing spacebar makes walls flexible
-    setWallFlexibility(true, color(255, 0, 0));
+void keyPressed() {
+  if (key == ' ') { // pressing spacebar makes walls flexible
+    if (isDrawingModeEngaged()) {
+      disengageDrawingMode();
+    } else {
+      engageDrawingMode();
+    }
+  }
+  if (key == 'c' || key == 'C') { // pressing c changes to a random colour
+    setDrawingColor((int)random(255), (int)random(255), (int)random(255));
+  }
+  if (key == 'v' || key == 'V') { // pressing v changes to a random shape
+    shape = (shape + 1) % (NUM_SHAPES);
   }
 }
 
-void keyReleased(){
-  if (key == ' '){
-    setWallFlexibility(false, color(0, 0, 0));
-  }
-}
 
-public void b1(int theValue) {
-  tooltip = button_img[0];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b2(int theValue) {
-  tooltip = button_img[1];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b3(int theValue) {
-  tooltip = button_img[2];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b4(int theValue) {
-  tooltip = button_img[3];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b5(int theValue) {
-  tooltip = button_img[4];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b6(int theValue) {
-  tooltip = button_img[5];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b7(int theValue) {
-  tooltip = button_img[6];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b8(int theValue) {
-  tooltip = button_img[7];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b9(int theValue) {
-  tooltip = button_img[8];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
-public void b10(int theValue) {
-  tooltip = button_img[9];
-  haplyAvatar = loadImage(tooltip); 
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar);
-}
 /* end button action section ****************************************************************************************************/
 
 
 /* draw section ********************************************************************************************************/
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
-  if (renderingForce == false) {
-    background(255);
-    world.draw();
+
+  g.background(255);
+  image(layers[1], 0, 0);
+  if (isDrawingModeEngaged()) {
+    layers[1].beginDraw();
+    layers[1].noStroke();
+    int[] c = getDrawingColor();
+    layers[1].fill(color(c[0], c[1], c[2]));
+    drawShape(layers[1]);
+    layers[1].endDraw();
+    image(layers[1], 0, 0);
   }
+  else if(millis() % 1000 > 500 && millis() % 1000 > 750 || millis() % 1000 < 250){
+    try{
+      checkChangeColor();
+    }
+    catch(ConcurrentModificationException e){
+      //TODO
+    }
+  }
+  layers[2].beginDraw();
+  layers[2].clear();
+  layers[2].background(0, 0);
+  drawCursor(layers[2]);
+  layers[2].endDraw();
+  image(layers[2], 0, 0, width, height);
+  world.draw();
+
+  //if (renderingForce == false) {
+  //  background(255);
+  //  world.draw();
+  //}
   
   
   
@@ -327,6 +309,7 @@ void draw() {
   //}
   
   
+
 }
 /* end draw section ****************************************************************************************************/
 
@@ -359,16 +342,18 @@ class SimulationThread implements Runnable {
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
 
-    if (playerToken.h_avatar.isTouchingBody(end)) {
-      fill(random(255), random(255), random(255));
-      text("!!!!!!!!!!", 
-        edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
-    }
+
+   // if (playerToken.h_avatar.isTouchingBody(end)) {
+   //   fill(random(255), random(255), random(255));
+    //  text("!!!!!!!!!!", 
+   //     edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
+   // }
     
     //if (playerToken.h_avatar.isTouchingBody( SOMETHING )) {
       
     //}
     
+
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
   }
@@ -442,8 +427,19 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wall = new FBox(item.getW(), item.getH()) ;
     wall.setPosition(item.getX(), item.getY());
     wall.setStatic(true);
+
+    color c;
+    if (BEGIN_IN_DRAWING_MODE) {
+      c = color(0, 0, 0);
+    } else {
+      c = color(0, 255, 0);
+    }
+    wall.setFillColor(c);
+    wall.setStrokeColor(c);
+
     //int c = item.getColor();
-    wall.setFill(255,0,0);
+    //wall.setFill(255,0,0);
+
     wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
@@ -457,17 +453,22 @@ void createPlayerToken(float x, float y) {
   /* Setup the Virtual Coupling Contact Rendering Technique */
   playerToken = new HVirtualCoupling((tooltipsize)); 
   playerToken.h_avatar.setDensity(4);
-  haplyAvatar = loadImage(tooltip)  ;
-  haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
-  playerToken.h_avatar.attachImage(haplyAvatar); 
+
+  playerToken.h_avatar.setNoFill(); 
+  //playerToken.h_avatar.setStroke(0, 0);
+  playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
+ // haplyAvatar = loadImage(tooltip)  ;
+  //haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
+  //playerToken.h_avatar.attachImage(haplyAvatar); 
   //playerToken.h_avatar.setFill(random(255),random(255),random(255)); 
   //playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
+
   playerToken.init(world, x, y);
 }
 
 void setWallFlexibility(boolean flexibility, int wallColor) {
   FBox wallInWorld;
-  for (Wall item : wallList){
+  for (Wall item : wallList) {
     wallInWorld = wallToWorldList.get(item);
     wallInWorld.setSensor(flexibility);
     wallInWorld.setFillColor(wallColor);
@@ -475,4 +476,202 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
   }
 }
 
+private void disengageDrawingMode() {
+  setWallFlexibility(true, color(0, 255, 0));
+  drawingModeEngaged = false;
+}
+
+private void engageDrawingMode() {
+  setWallFlexibility(false, color(0, 0, 0));
+  drawingModeEngaged = true;
+}
+
+public boolean isDrawingModeEngaged() {
+  return drawingModeEngaged;
+}
+
+
+int[] getDrawingColor() {
+  return drawingColor;
+}
+
+void setDrawingColor(int r, int g, int b) {
+  drawingColor[0] = r;
+  drawingColor[1] = g;
+  drawingColor[2] = b;
+  colorSwatch[6].setFillColor(color(r, g, b));
+}
+
+void setDrawingColor(int[] rgb){
+  setDrawingColor(rgb[0], rgb[1], rgb[2]);
+}
+
+void createPalettes() {
+  palettes = new ArrayList<ColorPalette>();
+  palettes.add(createPalette(0)); //add rainbow palette
+}
+
+ColorPalette createPalette(int index) {
+  ColorSwatch[] palette = new ColorSwatch[6];
+  paletteIndex = index;
+  switch(index) {
+    case(0): //rainbow
+    palette[5] = new ColorSwatch(255, 0, 0, 5); //red
+    palette[4] = new ColorSwatch(255, 127, 0, 4); //orange
+    palette[3] = new ColorSwatch(255, 255, 0, 3); //yellow
+    palette[2] = new ColorSwatch(0, 255, 0, 2); //green
+    palette[1] = new ColorSwatch(0, 0, 255, 1); //blue
+    palette[0] = new ColorSwatch(127, 0, 255, 0); //purple
+    break;
+  default: //rainbow
+    palette[5] = new ColorSwatch(255, 0, 0, 5); //red
+    palette[4] = new ColorSwatch(255, 127, 0, 4); //orange
+    palette[3] = new ColorSwatch(255, 255, 0, 3); //yellow
+    palette[2] = new ColorSwatch(0, 255, 0, 2); //green
+    palette[1] = new ColorSwatch(0, 0, 255, 1); //blue
+    palette[0] = new ColorSwatch(127, 0, 255, 0); //purple
+    break;
+  }
+
+  return new ColorPalette(palette);
+}
+
+void createBrush() {
+  brush = new Brush(drawingColor);
+  int[] coords = {0, 0};
+  Bristle b = new Bristle(1.0, brush, coords); //centered bristle
+  brush.addBristle(b);
+}
+
+void drawShape(PGraphics layer) {
+  switch(shape) {
+  case 0: 
+    drawCircle(layer);
+    break;
+  case 1: 
+    drawSquare(layer);
+    break;
+  default: 
+    drawCircle(layer);
+    break;
+  }
+}
+
+void drawCursor(PGraphics layer) {
+  layer.noFill();
+  layer.stroke(0, 0, 0);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 30, 30);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 2, 2);
+  layer.stroke(255, 255, 255);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 32, 32);
+  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 4, 4);
+  world.draw();
+}
+
+void drawCircle(PGraphics layer) {
+  layer.ellipse(playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 30, 30);
+  world.draw();
+}
+
+void drawSquare(PGraphics layer) {
+  int size = 30;
+  layer.rect(playerToken.getAvatarPositionX()*40-size/2, playerToken.getAvatarPositionY()*40-size/2, size, size);
+  world.draw();
+}
+
+void createColorPicker(ColorPalette palette) {
+  float x = 0f;
+  float y = 0f;
+  ColorSwatch swatch;
+  for (Integer i=0; i< 6; i++) {
+    x = edgeBottomRightX - 1.25*(i+1);
+    y = edgeBottomRightY - 1.8;
+    colorSwatch[i] = new FBox(1, 1);
+    colorSwatch[i].setPosition(x, y);
+    colorSwatch[i].setStatic(true);
+    colorSwatch[i].setSensor(true);
+    colorSwatch[i].setName(i.toString());
+
+    swatch = palette.getSwatch(i);
+    colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
+    world.add(colorSwatch[i]);
+
+    world.draw();
+  }
+
+  //create color mixer swatch
+  colorSwatch[6] = new FBox(7.25, .5);
+  colorSwatch[6].setPosition(edgeBottomRightX - 1.25 * 3.5, edgeBottomRightY - 1);
+  colorSwatch[6].setStatic(true);
+  swatch = palette.getSwatch(0);
+  setDrawingColor(swatch.getRed(), swatch.getGreen(), swatch.getBlue());
+  world.add(colorSwatch[6]);
+}
+
+void checkChangeColor(){
+  ColorPalette palette = palettes.get(paletteIndex);
+  for(int i=0; i<palette.getLength(); i++){
+    if(colorSwatch[i].isTouchingBody(playerToken.h_avatar)){
+      setDrawingColor(palette.getSwatch(i).getColor());
+    }
+  }
+}
+
+void setUpDevice() {
+  /* device setup */
+
+  /**  
+   * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
+   * In the base example, a connection is setup to the first detected serial device, this parameter can be changed
+   * to explicitly state the serial port will look like the following for different OS:
+   *
+   *      windows:      haplyBoard = new Board(this, "COM10", 0);
+   *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
+   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
+   */
+
+
+  haplyBoard = new Board(this, PORT, 0);
+
+  widgetOne           = new Device(widgetOneID, haplyBoard);
+  pantograph          = new Pantograph();
+
+  widgetOne.set_mechanism(pantograph);
+
+  widgetOne.add_actuator(1, CCW, 2);
+  widgetOne.add_actuator(2, CW, 1);
+
+  widgetOne.add_encoder(1, CCW, 241, 10752, 2);
+  widgetOne.add_encoder(2, CW, -61, 10752, 1);
+
+
+  widgetOne.device_set_parameters();
+
+
+  /* 2D physics scaling and world creation */
+  hAPI_Fisica.init(this); 
+  hAPI_Fisica.setScale(pixelsPerCentimeter); 
+  world               = new FWorld();
+}
+
+void createBrushes() {
+  for (int i = 0; i <button_img.length; i++) {
+    bi = loadImage(button_img[i]);
+    bi.resize(50, 50);
+    cp5.addButton(button_label[i]).setImage(bi)
+      .setPosition((50+80*i), 590)
+      .setValue(0);
+  }
+}
+
+void createLayers() {
+  //for(int i = 0; i < layers.length; i++){
+  //  layers[i] = createGraphics((int)worldWidth, (int)worldHeight + 2);
+  //}
+  layers[0] = g;
+  layers[1] = createGraphics(1200, 680);
+  layers[2] = createGraphics(1200, 680);
+  //layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
+  //layers[2] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
+}
 /* end helper functions section ****************************************************************************************/
