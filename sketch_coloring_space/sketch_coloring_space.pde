@@ -442,8 +442,8 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wall = new FBox(item.getW(), item.getH()) ;
     wall.setPosition(item.getX(), item.getY());
     wall.setStatic(true);
-    //int c = item.getColor();
-    wall.setFill(255,0,0);
+    int c = item.getColor();
+    wall.setFill(c);
     wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
