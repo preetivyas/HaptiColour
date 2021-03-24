@@ -2,7 +2,7 @@ public class ColorPalette{
   public ColorSwatch[] palette = new ColorSwatch[6];
   
   public ColorPalette(ColorSwatch[] p){
-    for(int i=0; i<p.length; i++){
+    for(int i=0; i<palette.length; i++){
       this.palette[i] = p[i];
     }
   }

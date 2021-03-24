@@ -30,11 +30,11 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 /* end scheduler definition ********************************************************************************************/
 
 /* DEFINE USER-SET PARAMETERS HERE! */
-public final String FILENAME = "maze.txt";
-public final boolean PRINTMAZE = true;
+public final String PORT = "/dev/cu.usbmodem14201"; //<-- change the port name here!
+public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
+public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out?
 public final int NUM_SHAPES = 2;
-public final boolean BEGIN_IN_DRAWING_MODE = false;
-public final String PORT = "/dev/cu.usbmodem14201";
+public final boolean BEGIN_IN_DRAWING_MODE = true;
 
 ControlP5 cp5;
 
@@ -96,10 +96,10 @@ HashMap<Wall, FBox> wallToWorldList;
 
 /* Definition of maze end */
 FCircle end;
-FBox l1    ;
+FBox l1;
 
 /* Translucent circle */
-FCircle  C ;
+FCircle  C;
 
 /* Initialization of player token */
 HVirtualCoupling  playerToken;
@@ -115,18 +115,18 @@ int[] drawingColor = new int[3];
 FBox[] colorSwatch = new FBox[7];
 int shape; //what shape is the being drawn?
 boolean           colour;
-float             tooltipsize       =      1; //PV: set tooltip size (0.5 to 1 seems to work the best)
+float             tooltipsize = 1; //PV: set tooltip size (0.5 to 1 seems to work the best)
 PImage            haplyAvatar, bi;
 String            tooltip;
 Brush brush;
 ArrayList<ColorPalette> palettes;
 int paletteIndex;
 
-String[]          button_img        =      {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
+String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
   "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
   "../img/brush10.png"};
-String[]          button_label      =      {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
+String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
 /* setup section *******************************************************************************************************/
 void setup() {
@@ -138,10 +138,6 @@ void setup() {
 
   createLayers();
 
-
-  //tooltip = button_img[0];
-
-
   /* screen size definition */
   size(1200, 680);
 
@@ -149,39 +145,8 @@ void setup() {
   font = loadFont("SansSerif-28.vlw");
   textFont(font);
 
-
+  /* set up the Haply */
   setUpDevice();
-
-  /* device setup */
-
-  /**  
-   * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
-   * In the base example, a connection is setup to the first detected serial device, this parameter can be changed
-   * to explicitly state the serial port will look like the following for different OS:
-   *      windows:      haplyBoard = new Board(this, "COM10", 0);
-   *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
-   *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
-   */
-  haplyBoard = new Board(this, "COM3", 0);
-  
-  widgetOne           = new Device(widgetOneID, haplyBoard);
-  pantograph          = new Pantograph();
-  widgetOne.set_mechanism(pantograph)   ;
-
-  widgetOne.add_actuator(1, CCW, 2);
-  widgetOne.add_actuator(2, CW, 1);
-
-  widgetOne.add_encoder(1, CCW, 241, 10752, 2);
-  widgetOne.add_encoder(2, CW, -61, 10752, 1);
-
-
-  widgetOne.device_set_parameters();
-
-
-  /* 2D physics scaling and world creation */
-  hAPI_Fisica.init(this); 
-  hAPI_Fisica.setScale(pixelsPerCentimeter); 
-  world = new FWorld();
 
 
   /* create the maze!!! */
@@ -213,7 +178,7 @@ void setup() {
   //gui specific buttons
 
 
-  createBrushes();
+  //createBrushes();
   createPalettes();
   createColorPicker(palettes.get(0));
 
@@ -275,7 +240,7 @@ void draw() {
       checkChangeColor();
     }
     catch(ConcurrentModificationException e){
-      //TODO
+      //ignore these exceptions
     }
   }
   layers[2].beginDraw();
@@ -444,7 +409,7 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     world.add(wall);
   }
   
-  println(wallList);
+  //println(wallList);
   
 }
 
@@ -558,10 +523,11 @@ void drawShape(PGraphics layer) {
 }
 
 void drawCursor(PGraphics layer) {
-  layer.noFill();
+  layer.fill(color(drawingColor[0], drawingColor[1], drawingColor[2]));
   layer.stroke(0, 0, 0);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 30, 30);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 2, 2);
+  layer.noFill();
   layer.stroke(255, 255, 255);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 32, 32);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 4, 4);
@@ -671,7 +637,5 @@ void createLayers() {
   layers[0] = g;
   layers[1] = createGraphics(1200, 680);
   layers[2] = createGraphics(1200, 680);
-  //layers[1] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
-  //layers[2] = createGraphics((int)worldWidth*40, (int)worldHeight*40 + 2);
 }
 /* end helper functions section ****************************************************************************************/
