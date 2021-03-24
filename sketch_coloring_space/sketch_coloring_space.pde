@@ -34,7 +34,7 @@ public final String PORT = "/dev/cu.usbmodem14201"; //<-- change the port name h
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out?
 public final int NUM_SHAPES = 2;
-public final boolean BEGIN_IN_DRAWING_MODE = true;
+public final boolean BEGIN_IN_DRAWING_MODE = false;
 
 ControlP5 cp5;
 
@@ -112,7 +112,7 @@ PFont font;
 /*colouring specific variables*/
 boolean drawingModeEngaged;
 int[] drawingColor = new int[3];
-FBox[] colorSwatch = new FBox[7];
+FBox[] colorSwatch = new FBox[8];
 int shape; //what shape is the being drawn?
 boolean           colour;
 float             tooltipsize = 1; //PV: set tooltip size (0.5 to 1 seems to work the best)
@@ -398,6 +398,7 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
       c = color(0, 0, 0);
     } else {
       c = color(0, 255, 0);
+      wall.setSensor(true);
     }
     wall.setFillColor(c);
     wall.setStrokeColor(c);
@@ -464,7 +465,7 @@ void setDrawingColor(int r, int g, int b) {
   drawingColor[0] = r;
   drawingColor[1] = g;
   drawingColor[2] = b;
-  colorSwatch[6].setFillColor(color(r, g, b));
+  colorSwatch[7].setFillColor(color(r, g, b));
 }
 
 void setDrawingColor(int[] rgb){
@@ -546,12 +547,11 @@ void drawSquare(PGraphics layer) {
 }
 
 void createColorPicker(ColorPalette palette) {
-  float x = 0f;
-  float y = 0f;
+  float x = edgeBottomRightX;
+  float y = edgeBottomRightY - 1.8;
   ColorSwatch swatch;
   for (Integer i=0; i< 6; i++) {
-    x = edgeBottomRightX - 1.25*(i+1);
-    y = edgeBottomRightY - 1.8;
+    x = x - 1.25;
     colorSwatch[i] = new FBox(1, 1);
     colorSwatch[i].setPosition(x, y);
     colorSwatch[i].setStatic(true);
@@ -564,21 +564,36 @@ void createColorPicker(ColorPalette palette) {
 
     world.draw();
   }
+  
+  //create "eraser" (white swatch)
+  x = x - 1.25;
+  colorSwatch[6] = new FBox(1, 1);
+  colorSwatch[6].setPosition(x, y);
+  colorSwatch[6].setStatic(true);
+  colorSwatch[6].setSensor(true);
+  colorSwatch[6].setName("6");
+  colorSwatch[6].setFillColor(color(255, 255, 255));
+  world.add(colorSwatch[6]);
 
   //create color mixer swatch
-  colorSwatch[6] = new FBox(7.25, .5);
-  colorSwatch[6].setPosition(edgeBottomRightX - 1.25 * 3.5, edgeBottomRightY - 1);
-  colorSwatch[6].setStatic(true);
+  colorSwatch[7] = new FBox(7.25, .5);
+  colorSwatch[7].setPosition(edgeBottomRightX - 1.25 * 3.5, edgeBottomRightY - 1);
+  colorSwatch[7].setStatic(true);
   swatch = palette.getSwatch(0);
   setDrawingColor(swatch.getRed(), swatch.getGreen(), swatch.getBlue());
-  world.add(colorSwatch[6]);
+  world.add(colorSwatch[7]);
 }
 
 void checkChangeColor(){
   ColorPalette palette = palettes.get(paletteIndex);
-  for(int i=0; i<palette.getLength(); i++){
+  for(int i=0; i<palette.getLength()+1; i++){
     if(colorSwatch[i].isTouchingBody(playerToken.h_avatar)){
-      setDrawingColor(palette.getSwatch(i).getColor());
+      if(i == palette.getLength()){ //if "eraser" swatch
+        setDrawingColor(255, 255, 255);
+      }
+      else{
+        setDrawingColor(palette.getSwatch(i).getColor());
+      }
     }
   }
 }
@@ -617,7 +632,7 @@ void setUpDevice() {
   /* 2D physics scaling and world creation */
   hAPI_Fisica.init(this); 
   hAPI_Fisica.setScale(pixelsPerCentimeter); 
-  world               = new FWorld();
+  world = new FWorld();
 }
 
 void createBrushes() {
