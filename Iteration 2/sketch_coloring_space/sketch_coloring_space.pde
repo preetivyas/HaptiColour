@@ -308,27 +308,6 @@ void draw() {
   image(layers[2], 0, 0, width, height);
   world.draw();
 
-  //if (renderingForce == false) {
-  //  background(255);
-  //  world.draw();
-  //}
-
-
-
-  //ellipse(xH,yH,20,20);
-
-  //xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
-  //yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
-  //float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
-  //println(d);
-
-  //if (d<10){
-  //  noFill();
-  //  stroke(255,0,0);
-  //  ellipse(xH, yH, 30, 30);
-  //  noFill();
-  //  noStroke();
-  //}
 }
 /* end draw section ****************************************************************************************************/
 
@@ -366,17 +345,17 @@ class SimulationThread implements Runnable {
     
     //* MARCO IS HERE NOW: downloaded the code to work locally *//
     
-    //playerToken.h_avatar.setDamping(200);    
-    //C.setStroke(0,0,0)                  ;
+    playerToken.h_avatar.setDamping(200);    
+    C.setStroke(0,0,0)                  ;
     
-    //FBox wallInWorld1 ;
-    //  for (Wall item : wallList) {
-    //  wallInWorld1 = wallToWorldList.get(item);
-    //    if(C.isTouchingBody(wallInWorld1)){
-    //      playerToken.h_avatar.setDamping(850);
-    //      C.setStroke(255,0,0)                ;
-    //    } 
-    //}
+    FBox wallInWorld1 ;
+      for (Wall item : wallList) {
+      wallInWorld1 = wallToWorldList.get(item);
+        if(C.isTouchingBody(wallInWorld1)){
+          playerToken.h_avatar.setDamping(850);
+          C.setStroke(255,0,0)                ;
+        }
+    }
     
     ////////////////////////////
 
@@ -504,7 +483,9 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
 
 private void disengageDrawingMode() {
   setWallFlexibility(true, color(102, 205, 170));
-  drawingModeEngaged = false;
+  drawingModeEngaged = false          ;
+  playerToken.h_avatar.setDamping(200);
+  world.remove(C);
   //disable texture
   damp = 0;
 }
