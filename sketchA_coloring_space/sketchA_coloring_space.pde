@@ -107,6 +107,9 @@ HVirtualCoupling  playerToken;
 /* text font */
 PFont font;
 
+/* Translucent circle */
+boolean InPalette = false; 
+
 /* end elements definition *********************************************************************************************/
 
 /*colouring specific variables*/
@@ -173,7 +176,6 @@ void setup() {
   C.setStroke(0,0,0,255);
   C.setPosition(-3,3)   ;
   world.add(C)          ;
-
 
   //gui specific buttons
 
@@ -271,9 +273,7 @@ class SimulationThread implements Runnable {
     }
 
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7); 
-    C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
-    //println(playerToken.h_avatar.getTouching())                                             ;
-    
+    C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
 
     playerToken.updateCouplingForce();
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
@@ -283,9 +283,11 @@ class SimulationThread implements Runnable {
     widgetOne.device_write_torques();
 
     if((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5]))){
-      playerToken.h_avatar.setDamping(850);
+      playerToken.h_avatar.setDamping(850) ;
+      InPalette = true                     ;
     } else {
-        playerToken.h_avatar.setDamping(200);
+        playerToken.h_avatar.setDamping(200) ;
+        InPalette = false                    ;
     }
     
     playerToken.h_avatar.setDamping(200);    
@@ -294,9 +296,13 @@ class SimulationThread implements Runnable {
     FBox wallInWorld1 ;
     for (Wall item : wallList) {
       wallInWorld1 = wallToWorldList.get(item);
-      if(C.isTouchingBody(wallInWorld1)){
-        playerToken.h_avatar.setDamping(850)  ;
-        C.setStroke(255,0,0)                  ;
+      if((C.isTouchingBody(wallInWorld1)) && (InPalette = false )){
+        playerToken.h_avatar.setDamping(850);
+        C.setStroke(255,0,0)                ;
+      }
+      if((playerToken.h_avatar.isTouchingBody(wallInWorld1)) && (C.isTouchingBody(wallInWorld1)) && (InPalette = true)){
+        playerToken.h_avatar.setDamping(200);
+        C.setStroke(0,0,0)                  ;
       }
     }
 
@@ -568,21 +574,17 @@ void setUpDevice() {
    */
 
 
-   haplyBoard          = new Board(this, "COM3", 0);
-
+  haplyBoard          = new Board(this, "COM3", 0)         ;
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
-
-  widgetOne.set_mechanism(pantograph);
+  widgetOne.set_mechanism(pantograph)   ;
 
   widgetOne.add_actuator(1, CCW, 2);
-  widgetOne.add_actuator(2, CW, 1);
+  widgetOne.add_actuator(2, CW, 1) ;
 
   widgetOne.add_encoder(1, CCW, 241, 10752, 2);
-  widgetOne.add_encoder(2, CW, -61, 10752, 1);
-
-
-  widgetOne.device_set_parameters();
+  widgetOne.add_encoder(2, CW, -61, 10752, 1) ;
+  widgetOne.device_set_parameters()           ;
 
 
   /* 2D physics scaling and world creation */
