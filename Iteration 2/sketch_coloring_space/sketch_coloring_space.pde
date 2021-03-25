@@ -234,7 +234,7 @@ void setup() {
   /****************************************************************/
 
   //gui specific buttons
- 
+
 
   //createBrushes();
   createPalettes();
@@ -489,11 +489,14 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
 private void disengageDrawingMode() {
   setWallFlexibility(true, color(102, 205, 170));
   drawingModeEngaged = false;
+  //disable texture
+  damp = 0;
 }
 
 private void engageDrawingMode() {
   setWallFlexibility(false, color(0, 0, 0));
   drawingModeEngaged = true;
+  damp = 367;
 }
 
 public boolean isDrawingModeEngaged() {
@@ -700,14 +703,16 @@ void createLayers() {
 }
 
 void textureUpdate() {
-  
-  //tgrid damp 356
-  for (int j=0; j<jloop; j++) {
-    for (int i=0; i<iloop; i++) {
-      if (playerToken.h_avatar.isTouchingBody(tgrid[i][j])) {
-        playerToken.h_avatar.setDamping(damp);
-      }
-    }//println(s);
+
+  if (drawingModeEngaged == true) {
+    //tgrid damp 356
+    for (int j=0; j<jloop; j++) {
+      for (int i=0; i<iloop; i++) {
+        if (playerToken.h_avatar.isTouchingBody(tgrid[i][j])) {
+          playerToken.h_avatar.setDamping(damp);
+        }
+      }//println(s);
+    }
   }
 }
 /* end helper functions section ****************************************************************************************/
