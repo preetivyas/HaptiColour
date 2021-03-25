@@ -300,7 +300,7 @@ class SimulationThread implements Runnable {
         playerToken.h_avatar.setDamping(850);
         C.setStroke(255,0,0)                ;
       }
-      if((playerToken.h_avatar.isTouchingBody(wallInWorld1)) && (C.isTouchingBody(wallInWorld1)) && (InPalette = true)){
+      if((playerToken.h_avatar.isTouchingBody(wallInWorld1)) && (C.isTouchingBody(wallInWorld1)) && (InPalette = false)){
         playerToken.h_avatar.setDamping(200);
         C.setStroke(0,0,0)                  ;
       }
