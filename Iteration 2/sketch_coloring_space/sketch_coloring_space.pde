@@ -205,8 +205,7 @@ void setup() {
   C.setSensor(true)     ;
   C.setNoFill()         ;
   C.setStroke(0, 0, 0, 255);
-  C.setPosition(-3, 3)   ;
-  world.add(C)          ;
+  C.setPosition(-3, 3)     ;
 
   /*texture specific code*********************************************/
   space = 1.2;
@@ -493,6 +492,7 @@ private void disengageDrawingMode() {
 private void engageDrawingMode() {
   setWallFlexibility(false, color(0, 0, 0));
   drawingModeEngaged = true;
+  world.add(C)             ;
   damp = 367;
 }
 
