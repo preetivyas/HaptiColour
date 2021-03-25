@@ -364,19 +364,19 @@ class SimulationThread implements Runnable {
     textureUpdate();   
     
     
-    //* MARCO IS HERE NOW *//
+    //* MARCO IS HERE NOW: downloaded the code to work locally *//
     
-    playerToken.h_avatar.setDamping(200);    
-    C.setStroke(0,0,0)                  ;
+    //playerToken.h_avatar.setDamping(200);    
+    //C.setStroke(0,0,0)                  ;
     
-    FBox wallInWorld1 ;
-      for (Wall item : wallList) {
-      wallInWorld1 = wallToWorldList.get(item);
-        if(C.isTouchingBody(wallInWorld1)){
-          playerToken.h_avatar.setDamping(850);
-          C.setStroke(255,0,0)                ;
-        } 
-    }
+    //FBox wallInWorld1 ;
+    //  for (Wall item : wallList) {
+    //  wallInWorld1 = wallToWorldList.get(item);
+    //    if(C.isTouchingBody(wallInWorld1)){
+    //      playerToken.h_avatar.setDamping(850);
+    //      C.setStroke(255,0,0)                ;
+    //    } 
+    //}
     
     ////////////////////////////
 
