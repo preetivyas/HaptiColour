@@ -348,12 +348,12 @@ class SimulationThread implements Runnable {
       posEE.set(widgetOne.get_device_position(angles.array()));
       posEE.set(posEE.copy().mult(200));
     }
-
+    
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
     //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
     //println(playerToken.h_avatar.getTouching())                                             ;
 
-
+    
     playerToken.updateCouplingForce();
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
     fEE.div(100000); //dynes to newtons
@@ -660,7 +660,7 @@ void setUpDevice() {
    */
 
 
-  haplyBoard = new Board(this, PORT, 0);
+  haplyBoard = new Board(this, "COM3", 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
