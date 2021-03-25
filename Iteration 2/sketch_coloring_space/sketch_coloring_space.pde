@@ -363,6 +363,9 @@ class SimulationThread implements Runnable {
 
     textureUpdate();   
     
+    
+    //* MARCO IS HERE NOW *//
+    
     playerToken.h_avatar.setDamping(200);    
     C.setStroke(0,0,0)                  ;
     
@@ -375,6 +378,7 @@ class SimulationThread implements Runnable {
         } 
     }
     
+    ////////////////////////////
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
