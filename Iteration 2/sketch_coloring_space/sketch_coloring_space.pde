@@ -162,7 +162,7 @@ void setup() {
     .setPosition(100, 605)
     .setSize(200, 30)
     .setRange(100, 1000) // values can range from big to small as well
-    .setValue(356)
+    .setValue(350)
     //.setFont(createFont("Verdana", 17))
     ;
 
@@ -341,8 +341,6 @@ class SimulationThread implements Runnable {
 
     textureUpdate();
     
-    
-
     playerToken.h_avatar.setDamping(damp);
     
     if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
@@ -482,15 +480,15 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
 
 private void disengageDrawingMode() {
   setWallFlexibility(true, color(102, 205, 170));
-  drawingModeEngaged = false          ;
-  //playerToken.h_avatar.setDamping(200);
-  world.remove(C);
+  drawingModeEngaged = false ;
+  world.remove(C)            ;
   //disable texture
   damp = 0;
 }
 
 private void engageDrawingMode() {
   setWallFlexibility(false, color(0, 0, 0));
+  //setWallFlexibility(true, color(0, 0, 0)); MARCO: If we uncomment this line and comment out the line above, the damping increase near the walls/borders is more useful
   drawingModeEngaged = true;
   world.add(C)             ;
   damp = 350               ;
