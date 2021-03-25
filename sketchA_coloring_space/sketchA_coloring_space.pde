@@ -297,12 +297,10 @@ class SimulationThread implements Runnable {
     FBox wallInWorld1 ;
     for (Wall item : wallList) {
       wallInWorld1 = wallToWorldList.get(item);
-      
       if(C.isTouchingBody(wallInWorld1)){
-        playerToken.h_avatar.setDamping(850);
-        C.setStroke(255,0,0)                ;
-      }
-       
+          playerToken.h_avatar.setDamping(850);
+          C.setStroke(255,0,0)                ;
+      } 
     }
 
 
