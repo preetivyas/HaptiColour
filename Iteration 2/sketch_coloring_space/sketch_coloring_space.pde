@@ -342,18 +342,12 @@ class SimulationThread implements Runnable {
     textureUpdate();   
     
     
-    //* MARCO IS HERE NOW!*//
+
+    playerToken.h_avatar.setDamping(damp);
     
-    
-    //if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
-    //  playerToken.h_avatar.setDamping(850) ;
-    //} else {
-    //   playerToken.h_avatar.setDamping(200);
-    //  //InPalette = false ;
-    //}
-    
-    
-    playerToken.h_avatar.setDamping(damp);    
+    if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
+      playerToken.h_avatar.setDamping(850) ;
+    }  
     
     FBox wallInWorld1 ;
       for (Wall item : wallList) {
@@ -363,7 +357,6 @@ class SimulationThread implements Runnable {
         }
     }
     
-    ////////////////////////////
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
