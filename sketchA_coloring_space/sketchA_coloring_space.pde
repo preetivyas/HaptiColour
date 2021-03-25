@@ -281,26 +281,30 @@ class SimulationThread implements Runnable {
 
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
+    
 
-    if(((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
-      playerToken.h_avatar.setDamping(850) ;
-      InPalette = true ;
-    } else {
-       playerToken.h_avatar.setDamping(200);
-       InPalette = false ;
-    }
+    //if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
+    //  playerToken.h_avatar.setDamping(850) ;
+    //  //InPalette = true ;
+    //} else {
+    //   playerToken.h_avatar.setDamping(200);
+    //  //InPalette = false ;
+    //}
     
-    //playerToken.h_avatar.setDamping(200);    
+    playerToken.h_avatar.setDamping(200);    
     C.setStroke(0,0,0)                  ;
-    
+
     FBox wallInWorld1 ;
     for (Wall item : wallList) {
       wallInWorld1 = wallToWorldList.get(item);
+      
       if(C.isTouchingBody(wallInWorld1)){
         playerToken.h_avatar.setDamping(850);
         C.setStroke(255,0,0)                ;
       }
+       
     }
+
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
@@ -415,13 +419,12 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
 
 private void disengageDrawingMode() {
   setWallFlexibility(true, color(0, 255, 0));
-  //playerToken.h_avatar.setDamping(200)      ;
   drawingModeEngaged = false                ;
 }
 
 private void engageDrawingMode() {
   setWallFlexibility(false, color(0, 0, 0));
-  drawingModeEngaged = true;
+  drawingModeEngaged = true                ;
 }
 
 public boolean isDrawingModeEngaged() {
