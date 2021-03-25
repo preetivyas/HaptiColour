@@ -128,11 +128,45 @@ String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.
   "../img/brush10.png"};
 String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
+/* texture variables**********************/
+FBox[][] tgrid =  new FBox[100][200];
+FBox[][] vgrid =  new FBox[100][200];
+FBox[][] bgrid =  new FBox[100][200];
+
+Slider damper;
+int damp = 500;
+float xdim = worldWidth;
+float ydim = worldHeight;
+float space = 1.5;
+float wall_h = 2;
+float wall_w = 0.1;
+int iloop, jloop;
+/*****************************************/
+
 /* setup section *******************************************************************************************************/
 void setup() {
   /* put setup code here, run once: */
   background(255);
   cp5 = new ControlP5(this);
+
+  PFont p = createFont("Verdana", 17); 
+  ControlFont cfont = new ControlFont(p);
+
+  // change the original colors
+  cp5.setColorForeground(0xffaa0000);
+  cp5.setFont(cfont);
+  cp5.setColorActive(0xffff0000);
+
+  //for testing only
+  damper = cp5.addSlider("damp")
+    .setPosition(100, 605)
+    .setSize(200, 30)
+    .setRange(100, 1000) // values can range from big to small as well
+    .setValue(356)
+    //.setFont(createFont("Verdana", 17))
+    ;
+
+
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
   shape = 0;
 
@@ -165,18 +199,42 @@ void setup() {
 
 
 
-/* Translucent circle */
+  /* Translucent circle */
   C = new FCircle(1.5)  ;
   C.setDensity(1)       ;
   C.setSensor(true)     ;
   C.setNoFill()         ;
-  C.setStroke(0,0,0,255);
-  C.setPosition(-3,3)   ;
+  C.setStroke(0, 0, 0, 255);
+  C.setPosition(-3, 3)   ;
   world.add(C)          ;
 
+  /*texture specific code*********************************************/
+  space = 1.2;
+  wall_h = 1.3;
+  wall_w = 0.1;
+
+  jloop = int(ydim/2);
+  iloop = int(xdim/space);
+
+  println (jloop, iloop);
+
+  for (int j = 0; j<jloop; j++) {
+    for (int i = 0; i<iloop; i++) {
+      tgrid[j][i] = new FBox(wall_w, wall_h);
+      tgrid[j][i].setPosition((i+1)*space, (j+0.8)*2);
+      tgrid[j][i].setFill(40, 62, 102, 0);
+      tgrid[j][i].setDensity(100); 
+      tgrid[j][i].setSensor(true);
+      tgrid[j][i].setNoStroke()  ;
+      tgrid[j][i].setStatic(true);
+      world.add(tgrid[j][i]);
+    }
+  }
+
+  /****************************************************************/
 
   //gui specific buttons
-
+ 
 
   //createBrushes();
   createPalettes();
@@ -234,12 +292,11 @@ void draw() {
     drawShape(layers[1]);
     layers[1].endDraw();
     image(layers[1], 0, 0);
-  }
-  else if(millis() % 1000 > 500 && millis() % 1000 > 750 || millis() % 1000 < 250){
-    try{
+  } else if (millis() % 1000 > 500 && millis() % 1000 > 750 || millis() % 1000 < 250) {
+    try {
       checkChangeColor();
     }
-    catch(ConcurrentModificationException e){
+    catch(ConcurrentModificationException e) {
       //ignore these exceptions
     }
   }
@@ -255,16 +312,16 @@ void draw() {
   //  background(255);
   //  world.draw();
   //}
-  
-  
-  
+
+
+
   //ellipse(xH,yH,20,20);
-  
+
   //xH = lerp(xH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 0.1);
   //yH = lerp(yH, 40*(edgeTopLeftY+(posEE).y-7), 0.1)           ;
   //float d = dist(xH, yH, 40*(edgeTopLeftX+worldWidth/2-(posEE).x), 40*(edgeTopLeftY+(posEE).y-7));
   //println(d);
-  
+
   //if (d<10){
   //  noFill();
   //  stroke(255,0,0);
@@ -272,9 +329,6 @@ void draw() {
   //  noFill();
   //  noStroke();
   //}
-  
-  
-
 }
 /* end draw section ****************************************************************************************************/
 
@@ -298,7 +352,7 @@ class SimulationThread implements Runnable {
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
     //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
     //println(playerToken.h_avatar.getTouching())                                             ;
-    
+
 
     playerToken.updateCouplingForce();
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
@@ -307,17 +361,8 @@ class SimulationThread implements Runnable {
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
 
+    textureUpdate();   
 
-   // if (playerToken.h_avatar.isTouchingBody(end)) {
-   //   fill(random(255), random(255), random(255));
-    //  text("!!!!!!!!!!", 
-   //     edgeTopLeftX+worldWidth/2, edgeTopLeftY+worldHeight/2);
-   // }
-    
-    //if (playerToken.h_avatar.isTouchingBody( SOMETHING )) {
-      
-    //}
-    
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
@@ -397,7 +442,7 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     if (BEGIN_IN_DRAWING_MODE) {
       c = color(0, 0, 0);
     } else {
-      c = color(102,205,170);
+      c = color(102, 205, 170);
       wall.setSensor(true);
     }
     wall.setFillColor(c);
@@ -409,9 +454,8 @@ void createMaze(ArrayList<Wall> wallList) throws incorrectMazeDimensionsExceptio
     wallToWorldList.put(item, wall); //associate wallList item to FBox representation
     world.add(wall);
   }
-  
+
   //println(wallList);
-  
 }
 
 void createPlayerToken(float x, float y) {
@@ -423,7 +467,7 @@ void createPlayerToken(float x, float y) {
   playerToken.h_avatar.setNoFill(); 
   //playerToken.h_avatar.setStroke(0, 0);
   playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
- // haplyAvatar = loadImage(tooltip)  ;
+  // haplyAvatar = loadImage(tooltip)  ;
   //haplyAvatar.resize((int)(hAPI_Fisica.worldToScreen(tooltipsize)), (int)(hAPI_Fisica.worldToScreen(tooltipsize)));
   //playerToken.h_avatar.attachImage(haplyAvatar); 
   //playerToken.h_avatar.setFill(random(255),random(255),random(255)); 
@@ -443,7 +487,7 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
 }
 
 private void disengageDrawingMode() {
-  setWallFlexibility(true, color(102,205,170));
+  setWallFlexibility(true, color(102, 205, 170));
   drawingModeEngaged = false;
 }
 
@@ -468,7 +512,7 @@ void setDrawingColor(int r, int g, int b) {
   colorSwatch[7].setFillColor(color(r, g, b));
 }
 
-void setDrawingColor(int[] rgb){
+void setDrawingColor(int[] rgb) {
   setDrawingColor(rgb[0], rgb[1], rgb[2]);
 }
 
@@ -566,7 +610,7 @@ void createColorPicker(ColorPalette palette) {
 
     world.draw();
   }
-  
+
   //create "eraser" (white swatch)
   x = x - 1.25;
   colorSwatch[6] = new FBox(1, 1);
@@ -586,14 +630,13 @@ void createColorPicker(ColorPalette palette) {
   world.add(colorSwatch[7]);
 }
 
-void checkChangeColor(){
+void checkChangeColor() {
   ColorPalette palette = palettes.get(paletteIndex);
-  for(int i=0; i<palette.getLength()+1; i++){
-    if(colorSwatch[i].isTouchingBody(playerToken.h_avatar)){
-      if(i == palette.getLength()){ //if "eraser" swatch
+  for (int i=0; i<palette.getLength()+1; i++) {
+    if (colorSwatch[i].isTouchingBody(playerToken.h_avatar)) {
+      if (i == palette.getLength()) { //if "eraser" swatch
         setDrawingColor(255, 255, 255);
-      }
-      else{
+      } else {
         setDrawingColor(palette.getSwatch(i).getColor());
       }
     }
@@ -654,5 +697,17 @@ void createLayers() {
   layers[0] = g;
   layers[1] = createGraphics(1200, 680);
   layers[2] = createGraphics(1200, 680);
+}
+
+void textureUpdate() {
+  
+  //tgrid damp 356
+  for (int j=0; j<jloop; j++) {
+    for (int i=0; i<iloop; i++) {
+      if (playerToken.h_avatar.isTouchingBody(tgrid[i][j])) {
+        playerToken.h_avatar.setDamping(damp);
+      }
+    }//println(s);
+  }
 }
 /* end helper functions section ****************************************************************************************/
