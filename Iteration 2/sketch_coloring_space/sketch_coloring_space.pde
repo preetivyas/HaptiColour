@@ -200,12 +200,12 @@ void setup() {
 
 
   /* Translucent circle */
-  C = new FCircle(1.5)  ;
+  C = new FCircle(1.25) ;
   C.setDensity(1)       ;
   C.setSensor(true)     ;
   C.setNoFill()         ;
-  C.setNoStroke()       ;
-  C.setPosition(-3, 3)  ;
+  C.setStroke(255,0,0,30);
+  C.setPosition(-3, 3)   ;
 
   /*texture specific code*********************************************/
   space = 1.2;
@@ -345,16 +345,15 @@ class SimulationThread implements Runnable {
     //* MARCO IS HERE NOW!*//
     
     
-        //if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
+    //if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
     //  playerToken.h_avatar.setDamping(850) ;
-    //  //InPalette = true ;
     //} else {
     //   playerToken.h_avatar.setDamping(200);
     //  //InPalette = false ;
     //}
     
     
-    playerToken.h_avatar.setDamping(200);    
+    playerToken.h_avatar.setDamping(damp);    
     
     FBox wallInWorld1 ;
       for (Wall item : wallList) {
@@ -491,7 +490,7 @@ void setWallFlexibility(boolean flexibility, int wallColor) {
 private void disengageDrawingMode() {
   setWallFlexibility(true, color(102, 205, 170));
   drawingModeEngaged = false          ;
-  playerToken.h_avatar.setDamping(200);
+  //playerToken.h_avatar.setDamping(200);
   world.remove(C);
   //disable texture
   damp = 0;
@@ -501,7 +500,7 @@ private void engageDrawingMode() {
   setWallFlexibility(false, color(0, 0, 0));
   drawingModeEngaged = true;
   world.add(C)             ;
-  damp = 367;
+  damp = 350               ;
 }
 
 public boolean isDrawingModeEngaged() {
