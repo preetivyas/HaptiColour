@@ -339,7 +339,7 @@ class SimulationThread implements Runnable {
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
 
-    textureUpdate();   
+    textureUpdate();
     
     
 
