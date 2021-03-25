@@ -204,8 +204,8 @@ void setup() {
   C.setDensity(1)       ;
   C.setSensor(true)     ;
   C.setNoFill()         ;
-  C.setStroke(0, 0, 0, 255);
-  C.setPosition(-3, 3)     ;
+  C.setNoStroke()       ;
+  C.setPosition(-3, 3)  ;
 
   /*texture specific code*********************************************/
   space = 1.2;
@@ -342,17 +342,25 @@ class SimulationThread implements Runnable {
     textureUpdate();   
     
     
-    //* MARCO IS HERE NOW: downloaded the code to work locally *//
+    //* MARCO IS HERE NOW!*//
+    
+    
+        //if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
+    //  playerToken.h_avatar.setDamping(850) ;
+    //  //InPalette = true ;
+    //} else {
+    //   playerToken.h_avatar.setDamping(200);
+    //  //InPalette = false ;
+    //}
+    
     
     playerToken.h_avatar.setDamping(200);    
-    C.setStroke(0,0,0)                  ;
     
     FBox wallInWorld1 ;
       for (Wall item : wallList) {
       wallInWorld1 = wallToWorldList.get(item);
-        if(C.isTouchingBody(wallInWorld1)){
-          playerToken.h_avatar.setDamping(850);
-          C.setStroke(255,0,0)                ;
+        if(C.isTouchingBody(wallInWorld1)) {
+          playerToken.h_avatar.setDamping(770);
         }
     }
     
