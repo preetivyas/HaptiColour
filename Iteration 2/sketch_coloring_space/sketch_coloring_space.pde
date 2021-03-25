@@ -350,7 +350,7 @@ class SimulationThread implements Runnable {
     }
     
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
-    //C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
+    C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
     //println(playerToken.h_avatar.getTouching())                                             ;
 
     
@@ -362,7 +362,19 @@ class SimulationThread implements Runnable {
     widgetOne.device_write_torques();
 
     textureUpdate();   
-
+    
+    playerToken.h_avatar.setDamping(200);    
+    C.setStroke(0,0,0)                  ;
+    
+    FBox wallInWorld1 ;
+      for (Wall item : wallList) {
+      wallInWorld1 = wallToWorldList.get(item);
+        if(C.isTouchingBody(wallInWorld1)){
+          playerToken.h_avatar.setDamping(850);
+          C.setStroke(255,0,0)                ;
+        } 
+    }
+    
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
