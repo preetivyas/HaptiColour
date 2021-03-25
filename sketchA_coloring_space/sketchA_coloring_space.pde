@@ -34,7 +34,7 @@ public final String FILENAME = "maze.txt";
 public final boolean PRINTMAZE = true;
 public final int NUM_SHAPES = 2;
 public final boolean BEGIN_IN_DRAWING_MODE = false;
-public final String PORT = "/dev/cu.usbmodem14201";
+public final String PORT = "COM4";
 
 ControlP5 cp5;
 
@@ -128,6 +128,9 @@ String[]          button_img        =      {"../img/brush1.png", "../img/brush2.
   "../img/brush10.png"};
 String[]          button_label      =      {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
+Slider damper;
+int damp = 500;
+
 /* setup section *******************************************************************************************************/
 void setup() {
   /* put setup code here, run once: */
@@ -135,6 +138,27 @@ void setup() {
   cp5 = new ControlP5(this);
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
   shape = 0;
+
+  PFont p = createFont("Verdana", 17); 
+  ControlFont cfont = new ControlFont(p);
+
+  // change the original colors
+  cp5.setColorForeground(0xffaa0000);
+  //cp5.setColorBackground(0xff660000);
+  cp5.setFont(cfont);
+  cp5.setColorActive(0xffff0000);
+
+  
+   
+  //for testing only
+  damper = cp5.addSlider("damp")
+    .setPosition(100, 605)
+    .setSize(200, 30)
+    .setRange(100, 1000) // values can range from big to small as well
+    .setValue(500)
+    //.setFont(createFont("Verdana", 17))
+    ;
+
 
   createLayers();
 
@@ -179,7 +203,7 @@ void setup() {
 
 
 
-  createBrushes() ;
+  //createBrushes() ;
   createPalettes();
   createColorPicker(palettes.get(0));
   
@@ -295,7 +319,7 @@ class SimulationThread implements Runnable {
     for (Wall item : wallList) {
       wallInWorld1 = wallToWorldList.get(item);
       if(C.isTouchingBody(wallInWorld1)){
-        playerToken.h_avatar.setDamping(850)  ;
+        playerToken.h_avatar.setDamping(damp)  ;
         C.setStroke(255,0,0)                  ;
       }
     }
@@ -568,7 +592,7 @@ void setUpDevice() {
    */
 
 
-   haplyBoard          = new Board(this, "COM3", 0);
+   haplyBoard          = new Board(this, PORT, 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
@@ -591,15 +615,15 @@ void setUpDevice() {
   world               = new FWorld()       ;
 }
 
-void createBrushes() {
-  for (int i = 0; i <button_img.length; i++) {
-    bi = loadImage(button_img[i]);
-    bi.resize(50, 50);
-    cp5.addButton(button_label[i]).setImage(bi)
-      .setPosition((50+80*i), 590)
-      .setValue(0);
-  }
-}
+//void createBrushes() {
+//  for (int i = 0; i <button_img.length; i++) {
+//    bi = loadImage(button_img[i]);
+//    bi.resize(50, 50);
+//    cp5.addButton(button_label[i]).setImage(bi)
+//      .setPosition((50+80*i), 590)
+//      .setValue(0);
+//  }
+//}
 
 void createLayers() {
   //for(int i = 0; i < layers.length; i++){
