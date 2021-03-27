@@ -192,7 +192,7 @@ void setup() {
   }
 
   /* world conditions setup */
-  world.setGravity((0.0), (0.0)); //100 cm/(s^2)
+  world.setGravity((0.0), (100.0)); //100 cm/(s^2)
   world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
   world.setEdgesRestitution(.4)   ;
   world.setEdgesFriction(0.5)     ;
@@ -200,12 +200,12 @@ void setup() {
 
 
   /* Translucent circle */
-  C = new FCircle(1.25) ;
+  C = new FCircle(1.50) ;
   C.setDensity(1)       ;
   C.setSensor(true)     ;
   C.setNoFill()         ;
-  C.setStroke(255,0,0,30);
-  C.setPosition(-3, 3)   ;
+  C.setStroke(255,0,0,5);
+  C.setPosition(-3, 3)  ;
 
   /*texture specific code*********************************************/
   space = 1.2;
