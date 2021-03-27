@@ -192,7 +192,7 @@ void setup() {
   }
 
   /* world conditions setup */
-  world.setGravity((0.0), (100.0)); //100 cm/(s^2)
+  world.setGravity((0.0), (0.0)); //100 cm/(s^2)
   world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
   world.setEdgesRestitution(.4)   ;
   world.setEdgesFriction(0.5)     ;
