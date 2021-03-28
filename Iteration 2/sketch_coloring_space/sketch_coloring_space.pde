@@ -37,9 +37,11 @@ public final String PORT = MAC; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
+public final boolean DEBUG = true; //<-- print helpful print statements to System.out
 public final int NUM_PALETTES = 2;
 public final float PALETTE_SPACER = 1.25; //space between palette elements
 public final float BUTTON_SPACER = 1.25*1.5; //space between GUI elements
+public final float BRUSH_SIZE_JUMP = 2.0; //how much bigger/smaller to make the brush?
 public final boolean BEGIN_IN_DRAWING_MODE = false;
 
 ControlP5 cp5;
@@ -188,7 +190,7 @@ void setup() {
 
   /* set up the Haply */
   setUpDevice();
-
+  createBrush();
 
   /* create the maze!!! */
   try {
@@ -197,8 +199,6 @@ void setup() {
   catch(incorrectMazeDimensionsException e) {
     System.out.println(e);
   }
-
-  createBrush();
 
   /* world conditions setup */
   world.setGravity((0.0), (0.0)); //100 cm/(s^2)
@@ -587,17 +587,28 @@ void drawBrush(PGraphics layer) {
 }
 
 void drawCursor(PGraphics layer) {
+  float brushScale = brush.getScale();
   layer.fill(color(drawingColor[0], drawingColor[1], drawingColor[2]));
   layer.strokeWeight(1);  // Thicker
   layer.stroke(0, 0, 0);
-  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 28, 28);
-  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 2, 2);
+  float x = playerToken.getAvatarPositionX()*pixelsPerCentimeter;
+  float y = playerToken.getAvatarPositionY()*pixelsPerCentimeter;
+  layer.ellipse(x, y, brushScale*28/30, brushScale*28/30);
+  if(brushScale > 10){
+    layer.ellipse(x, y, brushScale*2/30, brushScale*2/30);
+  }
   layer.noFill();
   layer.strokeWeight(1);  // Thicker
   layer.stroke(255, 255, 255);
-  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 30, 30);
-  layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 4, 4);
+  layer.ellipse(x, y, brushScale*30/30, brushScale*30/30);
+  if(brushScale > 10){
+    layer.ellipse(x, y, brushScale*4/30, brushScale*4/30);
+  }
+  if(DEBUG){
+    System.out.println("Brush scale: "+brushScale);
+  }
   world.draw();
+  
 }
 
 void updateColorPicker(ColorPalette palette) {
@@ -734,10 +745,14 @@ void checkButtonActivation() {
           updateColorPicker(palettes.get(paletteIndex));
         break;
         case("larger"):
-        System.out.println(item.getName());
+        brush.larger(BRUSH_SIZE_JUMP);
+        tooltipsize += BRUSH_SIZE_JUMP/pixelsPerCentimeter;
+        playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
         break;
         case("smaller"):
-        System.out.println(item.getName());
+        brush.smaller(BRUSH_SIZE_JUMP);
+        tooltipsize -= BRUSH_SIZE_JUMP/pixelsPerCentimeter;
+        playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
         break;
         case("save"):
         System.out.println(item.getName());
@@ -760,7 +775,7 @@ void createPlayerToken(float x, float y) {
 
   playerToken.h_avatar.setNoFill();
   //playerToken.h_avatar.setFill(0);
-  playerToken.h_avatar.setSize(30/pixelsPerCentimeter);
+  playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
   playerToken.h_avatar.setNoStroke();//PV: no stroke makes uniform color
 
   playerToken.init(world, x, y);

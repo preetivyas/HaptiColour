@@ -14,7 +14,7 @@ public class Brush {
   public Brush(int[] c) {
     this.paintColor = c;
     this.paintAmount = 0.0f;
-    this.scaleFactor = 30;
+    this.scaleFactor = 30f;
   }
 
   public void changeColor(int[] c) {
@@ -28,6 +28,10 @@ public class Brush {
   public void setScale(float s) {
     this.scaleFactor = s;
   }
+  
+  public float getScale() {
+    return this.scaleFactor;
+  }
 
   public void addBristle(Bristle b) {
     this.bristles.add(b);
@@ -39,6 +43,17 @@ public class Brush {
 
   public ArrayList<Bristle> getBristles() {
     return this.bristles;
+  }
+  
+  public void larger(float amount){
+    scaleFactor += amount;
+  }
+  
+  public void smaller(float amount){
+    scaleFactor -= amount;
+    if (scaleFactor < 1f) {
+      scaleFactor = 1f;
+    }
   }
 
   public void paint(PGraphics layer, float x, float y) {
