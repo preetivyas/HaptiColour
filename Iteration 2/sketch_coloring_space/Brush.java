@@ -14,7 +14,7 @@ public class Brush {
   public Brush(int[] c) {
     this.paintColor = c;
     this.paintAmount = 0.0f;
-    this.scaleFactor = 1;
+    this.scaleFactor = 30;
   }
 
   public void changeColor(int[] c) {
@@ -41,8 +41,7 @@ public class Brush {
     return this.bristles;
   }
 
-  public void paint(PGraphics layer, float x, float y, float scale) {
-    
-    layer.ellipse(x, y, scaleFactor*scale, scaleFactor*scale);
+  public void paint(PGraphics layer, float x, float y) {
+    layer.ellipse(x, y, scaleFactor, scaleFactor);
   }
 }

@@ -38,6 +38,7 @@ public final String PORT = MAC; //<-- change the port name here!
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
 public final int NUM_PALETTES = 2;
+public final float SPACER = 1.25; //space between GUI elements
 public final boolean BEGIN_IN_DRAWING_MODE = false;
 
 ControlP5 cp5;
@@ -117,6 +118,7 @@ PFont font;
 boolean drawingModeEngaged;
 int[] drawingColor = new int[3];
 FBox[] colorSwatch = new FBox[8];
+ArrayList<FBox> GUIButtons = new ArrayList<FBox>();
 int shape; //what shape is the being drawn?
 boolean           colour;
 float             tooltipsize = 1; //PV: set tooltip size (0.5 to 1 seems to work the best)
@@ -233,9 +235,7 @@ void setup() {
 
 
   //createBrushes();
-  createPalettes();
-  paletteIndex = 0;
-  createColorPicker(palettes.get(paletteIndex));
+  createGUI();
 
   world.draw();
 
@@ -259,7 +259,7 @@ void keyPressed() {
   if (key == ' ') { // pressing spacebar makes walls flexible
     if (isDrawingModeEngaged()) {
       disengageDrawingMode();
-    } else {
+    } else if (checkDraw()) {
       engageDrawingMode();
     }
   }
@@ -281,18 +281,27 @@ void keyPressed() {
 
 
 /* draw section ********************************************************************************************************/
+float x;
+float y;
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
 
   g.background(255);
   image(layers[1], 0, 0);
+  g.fill(0);
+  g.rect(0, height-2.5*pixelsPerCentimeter, width, 2.5*pixelsPerCentimeter);
+  world.draw();
+  
   if (isDrawingModeEngaged()) {
     layers[1].beginDraw();
     layers[1].noStroke();
     int[] c = getDrawingColor();
     layers[1].fill(color(c[0], c[1], c[2]));
-    //drawBrush(layers[1]);
-    brush.paint(layers[1], playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 30);
+    x = playerToken.getAvatarPositionX()*pixelsPerCentimeter;
+    y = playerToken.getAvatarPositionY()*pixelsPerCentimeter;
+    if (checkDraw()) {
+      brush.paint(layers[1], x, y); //30
+    }
     world.draw();
     layers[1].endDraw();
     image(layers[1], 0, 0);
@@ -370,6 +379,13 @@ class SimulationThread implements Runnable {
 
 
 /* helper functions section, place helper functions here ***************************************************************/
+
+private Boolean checkDraw(){
+  if(playerToken.getAvatarPositionY()*pixelsPerCentimeter < height-2.5*pixelsPerCentimeter){
+    return true;
+  }
+  return false;
+}
 
 ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
   wallList = new ArrayList<Wall>()           ;
@@ -548,7 +564,7 @@ void createBrush() {
 }
 
 void drawBrush(PGraphics layer) {
-  brush.paint(layer, playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 30);
+  brush.paint(layer, playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40);
   world.draw();
 }
 
@@ -576,12 +592,12 @@ void updateColorPicker(ColorPalette palette){
 
 }
 
-void createColorPicker(ColorPalette palette) {
+float createColorPicker(ColorPalette palette) {
   float x = edgeBottomRightX;
   float y = edgeBottomRightY - 1.8;
   ColorSwatch swatch;
   for (Integer i=0; i< 6; i++) {
-    x = x - 1.25;
+    x = x - SPACER;
     colorSwatch[i] = new FBox(1, 1);
     colorSwatch[i].setPosition(x, y);
     colorSwatch[i].setStatic(true);
@@ -596,7 +612,7 @@ void createColorPicker(ColorPalette palette) {
   }
 
   //create "eraser" (white swatch)
-  x = x - 1.25;
+  x = x - SPACER;
   colorSwatch[6] = new FBox(1, 1);
   colorSwatch[6].setPosition(x, y);
   colorSwatch[6].setStatic(true);
@@ -607,11 +623,51 @@ void createColorPicker(ColorPalette palette) {
 
   //create color mixer swatch
   colorSwatch[7] = new FBox(7.25, .5);
-  colorSwatch[7].setPosition(edgeBottomRightX - 1.25 * 3.5, edgeBottomRightY - 1);
+  colorSwatch[7].setPosition(edgeBottomRightX - SPACER * 3.5, edgeBottomRightY - 1);
   colorSwatch[7].setStatic(true);
   swatch = palette.getSwatch(0);
   setDrawingColor(swatch.getRed(), swatch.getGreen(), swatch.getBlue());
   world.add(colorSwatch[7]);
+  
+  return x;
+}
+
+void createGUI(){
+  createPalettes();
+  paletteIndex = 0;
+  float x = createColorPicker(palettes.get(paletteIndex)) - SPACER;
+  float y = edgeBottomRightY - 1.8;
+  
+  //prev + next color palette
+  FBox button = new FBox(1, 1);
+  button.setPosition(x, y);
+  button.setStatic(true);
+  button.setSensor(true);
+  button.setName("next");
+  button.setNoFill();
+  GUIButtons.add(button);
+  
+  x = x - SPACER;
+  button = new FBox(1, 1);
+  button.setPosition(x, y);
+  button.setStatic(true);
+  button.setSensor(true);
+  button.setName("prev");
+  button.setNoFill();
+  GUIButtons.add(button);
+  
+  for(FBox item : GUIButtons){
+    world.add(item);
+    world.draw();
+  }
+}
+
+void drawLabels(){
+  g.fill(color(0, 0, 0));
+  for(FBox item : GUIButtons){
+    g.text(item.getName(), item.getX(), item.getY());
+    System.out.println(item.getName());
+  }
 }
 
 void checkChangeColor() {
