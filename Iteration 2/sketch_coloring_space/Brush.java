@@ -4,7 +4,7 @@ import processing.core.PGraphics;
 public class Brush {
   private float paintAmount;
   private int[] paintColor = new int[3];
-  private ArrayList<Bristle> bristles;
+  private ArrayList<Bristle> bristles = new ArrayList<Bristle>();
   private float scaleFactor;
 
   public Brush() {
@@ -42,6 +42,7 @@ public class Brush {
   }
 
   public void paint(PGraphics layer, float x, float y, float scale) {
+    
     layer.ellipse(x, y, scaleFactor*scale, scaleFactor*scale);
   }
 }

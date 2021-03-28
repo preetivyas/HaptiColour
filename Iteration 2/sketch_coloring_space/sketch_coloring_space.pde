@@ -194,6 +194,8 @@ void setup() {
   catch(incorrectMazeDimensionsException e) {
     System.out.println(e);
   }
+  
+  createBrush();
 
   /* world conditions setup */
   world.setGravity((0.0), (0.0)); //100 cm/(s^2)
@@ -232,7 +234,8 @@ void setup() {
 
   //createBrushes();
   createPalettes();
-  createColorPicker(palettes.get(1));
+  paletteIndex = 0;
+  createColorPicker(palettes.get(paletteIndex));
 
   world.draw();
 
@@ -260,10 +263,14 @@ void keyPressed() {
       engageDrawingMode();
     }
   }
-  if (key == 'c' || key == 'C') { // pressing c changes to a random colour
-    setDrawingColor((int)random(255), (int)random(255), (int)random(255));
+  if (key == 'c' || key == 'C') { // pressing c changes to the previous palette
+    paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
+    if(paletteIndex < 0){
+      paletteIndex = NUM_PALETTES - 1;
+    }
+    updateColorPicker(palettes.get(paletteIndex));
   }
-  if (key == 'v' || key == 'V') { // pressing v changes to a random shape
+  if (key == 'v' || key == 'V') { // pressing v changes to the next palette
     paletteIndex = (paletteIndex + 1) % (NUM_PALETTES);
     updateColorPicker(palettes.get(paletteIndex));
   }
@@ -284,7 +291,9 @@ void draw() {
     layers[1].noStroke();
     int[] c = getDrawingColor();
     layers[1].fill(color(c[0], c[1], c[2]));
-    drawBrush(layers[1]);
+    //drawBrush(layers[1]);
+    brush.paint(layers[1], playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, 30);
+    world.draw();
     layers[1].endDraw();
     image(layers[1], 0, 0);
   } else if (millis() % 1000 > 500 && millis() % 1000 > 750 || millis() % 1000 < 250) {
@@ -501,7 +510,6 @@ void createPalettes() {
 
 ColorPalette createPalette(int index) {
   ColorSwatch[] palette = new ColorSwatch[6];
-  paletteIndex = index;
   switch(index) {
   case(0): //rainbow
     palette[5] = new ColorSwatch(255, 0, 0, 5); //red
