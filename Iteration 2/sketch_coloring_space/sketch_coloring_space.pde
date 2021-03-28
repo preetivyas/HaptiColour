@@ -38,7 +38,8 @@ public final String PORT = MAC; //<-- change the port name here!
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
 public final int NUM_PALETTES = 2;
-public final float SPACER = 1.25; //space between GUI elements
+public final float PALETTE_SPACER = 1.25; //space between palette elements
+public final float BUTTON_SPACER = 1.25*1.5; //space between GUI elements
 public final boolean BEGIN_IN_DRAWING_MODE = false;
 
 ControlP5 cp5;
@@ -513,7 +514,6 @@ public boolean isDrawingModeEngaged() {
   return drawingModeEngaged;
 }
 
-
 int[] getDrawingColor() {
   return drawingColor;
 }
@@ -583,12 +583,12 @@ void drawBrush(PGraphics layer) {
 void drawCursor(PGraphics layer) {
   layer.fill(color(drawingColor[0], drawingColor[1], drawingColor[2]));
   layer.strokeWeight(1);  // Thicker
-  layer.stroke(255, 255, 255);
+  layer.stroke(0, 0, 0);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 28, 28);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 2, 2);
   layer.noFill();
   layer.strokeWeight(1);  // Thicker
-  layer.stroke(0, 0, 0);
+  layer.stroke(255, 255, 255);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 30, 30);
   layer.ellipse(playerToken.getAvatarPositionX()*40, (playerToken.getAvatarPositionY())*40, 4, 4);
   world.draw();
@@ -608,7 +608,7 @@ float createColorPicker(ColorPalette palette) {
   float y = edgeBottomRightY - 1.8;
   ColorSwatch swatch;
   for (Integer i=0; i< 6; i++) {
-    x = x - SPACER;
+    x = x - PALETTE_SPACER;
     colorSwatch[i] = new FBox(1, 1);
     colorSwatch[i].setPosition(x, y);
     colorSwatch[i].setStatic(true);
@@ -623,18 +623,19 @@ float createColorPicker(ColorPalette palette) {
   }
 
   //create "eraser" (white swatch)
-  x = x - SPACER;
+  x = x - PALETTE_SPACER - .25;
   colorSwatch[6] = new FBox(1, 1);
-  colorSwatch[6].setPosition(x, y);
+  colorSwatch[6].setPosition(x, edgeBottomRightY - 1.5);
   colorSwatch[6].setStatic(true);
   colorSwatch[6].setSensor(true);
   colorSwatch[6].setName("6");
   colorSwatch[6].setFillColor(color(255, 255, 255));
+  addLabel(colorSwatch[6], "./img/erase.png");
   world.add(colorSwatch[6]);
 
   //create color mixer swatch
   colorSwatch[7] = new FBox(7.25, .5);
-  colorSwatch[7].setPosition(edgeBottomRightX - SPACER * 3.5, edgeBottomRightY - 1);
+  colorSwatch[7].setPosition(edgeBottomRightX - PALETTE_SPACER * 3.5, edgeBottomRightY - 1);
   colorSwatch[7].setStatic(true);
   swatch = palette.getSwatch(0);
   setDrawingColor(swatch.getRed(), swatch.getGreen(), swatch.getBlue());
@@ -646,31 +647,48 @@ float createColorPicker(ColorPalette palette) {
 void createGUI() {
   createPalettes();
   paletteIndex = 0;
-  float x = createColorPicker(palettes.get(paletteIndex)) - SPACER;
-  float y = edgeBottomRightY - 1.8;
+  float x = createColorPicker(palettes.get(paletteIndex)) - BUTTON_SPACER;
+  float y = edgeBottomRightY - 1.5;
 
   //prev + next color palette
-  FBox button = new FBox(1, 1);
-  button.setPosition(x, y);
-  button.setStatic(true);
-  button.setSensor(true);
-  button.setName("next");
-  button.setNoFill();
-  GUIButtons.add(button);
-
-  x = x - SPACER;
-  button = new FBox(1, 1);
-  button.setPosition(x, y);
-  button.setStatic(true);
-  button.setSensor(true);
-  button.setName("prev");
-  button.setNoFill();
-  GUIButtons.add(button);
+  GUIButtons.add(addButton("next", "./img/nextPalette.png", x, y));
+  x = x - BUTTON_SPACER;
+  GUIButtons.add(addButton("prev", "./img/prevPalette.png", x, y));
+  x = x - BUTTON_SPACER;
+  //larger + smaller brush
+  GUIButtons.add(addButton("larger", "./img/largerBrush.png", x, y));
+  x = x - BUTTON_SPACER;
+  GUIButtons.add(addButton("smaller", "./img/smallerBrush.png", x, y));
+  x = x - BUTTON_SPACER;
+  //save + clear canvas
+  GUIButtons.add(addButton("save", "./img/save.png", x, y));
+  x = x - BUTTON_SPACER;
+  GUIButtons.add(addButton("clear", "./img/clear.png", x, y));
 
   for (FBox item : GUIButtons) {
     world.add(item);
     world.draw();
   }
+}
+
+FBox addButton(String name, String path, float x, float y){
+  FBox button = new FBox(1.5, 1.5);
+  button.setPosition(x, y);
+  button.setStatic(true);
+  button.setSensor(true);
+  button.setName(name);
+  button.setNoFill();
+  addLabel(button, path);
+  return button;
+}
+
+void addLabel(FBox button, String path){
+  /* If you are developing on a Mac users must update the path below
+   * from "../img/Haply_avatar.png" to "./img/Haply_avatar.png"
+   */
+  PImage buttonImage = loadImage(path);
+  buttonImage.resize((int)(hAPI_Fisica.worldToScreen(1.5)), (int)(hAPI_Fisica.worldToScreen(1.5)));
+  button.attachImage(buttonImage);
 }
 
 void drawLabels() {
