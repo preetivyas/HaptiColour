@@ -37,7 +37,7 @@ public final String PORT = MAC; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
-public final boolean DEBUG = true; //<-- print helpful print statements to System.out
+public final boolean DEBUG = false; //<-- print helpful print statements to System.out
 public final int NUM_PALETTES = 2;
 public final float PALETTE_SPACER = 1.25; //space between palette elements
 public final float BUTTON_SPACER = 1.25*1.5; //space between GUI elements
@@ -130,6 +130,7 @@ String            tooltip;
 Brush brush;
 ArrayList<ColorPalette> palettes;
 int paletteIndex;
+int pageIndex = 0;
 
 String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -215,8 +216,6 @@ void setup() {
   jloop = int(ydim/2);
   iloop = int(xdim/space);
 
-  println (jloop, iloop);
-
   for (int j = 0; j<jloop; j++) {
     for (int i = 0; i<iloop; i++) {
       tgrid[j][i] = new FBox(wall_w, wall_h);
@@ -261,9 +260,9 @@ void keyPressed() {
     if (isDrawingModeEngaged()) {
       disengageDrawingMode();
     } else if (checkDraw()) {
-        if(!(isTouchingWall() instanceof FBox)){
-          engageDrawingMode();
-        }
+      if (!(isTouchingWall() instanceof FBox)) {
+        engageDrawingMode();
+      }
     }
   }
   if (key == 'c' || key == 'C') { // pressing c changes to the previous palette
@@ -310,14 +309,14 @@ void draw() {
     layers[1].endDraw();
     image(layers[1], 0, 0);
   } //else if (millis() % 1000 > 500 && millis() % 1000 < 750 || millis() % 1000 < 250) {
-  else if(pause % 5 == 0){
+  else if (pause % 5 == 0) {
     try {
       checkChangeColor();
     }
     catch(ConcurrentModificationException e) {
       //ignore these exceptions
     }
-    if(pause % 6 == 0){
+    if (pause % 6 == 0) {
       checkButtonActivation();
     }
   }
@@ -594,21 +593,20 @@ void drawCursor(PGraphics layer) {
   float x = playerToken.getAvatarPositionX()*pixelsPerCentimeter;
   float y = playerToken.getAvatarPositionY()*pixelsPerCentimeter;
   layer.ellipse(x, y, brushScale*28/30, brushScale*28/30);
-  if(brushScale > 10){
+  if (brushScale > 10) {
     layer.ellipse(x, y, brushScale*2/30, brushScale*2/30);
   }
   layer.noFill();
   layer.strokeWeight(1);  // Thicker
   layer.stroke(255, 255, 255);
   layer.ellipse(x, y, brushScale*30/30, brushScale*30/30);
-  if(brushScale > 10){
+  if (brushScale > 10) {
     layer.ellipse(x, y, brushScale*4/30, brushScale*4/30);
   }
-  if(DEBUG){
+  if (DEBUG) {
     System.out.println("Brush scale: "+brushScale);
   }
   world.draw();
-  
 }
 
 void updateColorPicker(ColorPalette palette) {
@@ -688,7 +686,7 @@ void createGUI() {
   }
 }
 
-FBox addButton(String name, String path, float x, float y){
+FBox addButton(String name, String path, float x, float y) {
   FBox button = new FBox(1.5, 1.5);
   button.setPosition(x, y);
   button.setStatic(true);
@@ -699,7 +697,7 @@ FBox addButton(String name, String path, float x, float y){
   return button;
 }
 
-void addLabel(FBox button, String path){
+void addLabel(FBox button, String path) {
   /* If you are developing on a Mac users must update the path below
    * from "../img/Haply_avatar.png" to "./img/Haply_avatar.png"
    */
@@ -732,35 +730,47 @@ void checkChangeColor() {
 void checkButtonActivation() {
   for (FBox item : GUIButtons) {
     if (playerToken.h_avatar.isTouchingBody(item)) {
-      switch(item.getName()){
-        case("next"):
-          paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
-          updateColorPicker(palettes.get(paletteIndex));
+      switch(item.getName()) {
+      case("next"):
+        paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
+        updateColorPicker(palettes.get(paletteIndex));
         break;
-        case("prev"):
-          paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
-          if (paletteIndex < 0) {
-            paletteIndex = NUM_PALETTES - 1;
-          }
-          updateColorPicker(palettes.get(paletteIndex));
+      case("prev"):
+        paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
+        if (paletteIndex < 0) {
+          paletteIndex = NUM_PALETTES - 1;
+        }
+        updateColorPicker(palettes.get(paletteIndex));
         break;
-        case("larger"):
+      case("larger"):
         brush.larger(BRUSH_SIZE_JUMP);
         tooltipsize += BRUSH_SIZE_JUMP/pixelsPerCentimeter;
         playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
+        C.setSize(brush.getScale()*1.5/30);
         break;
-        case("smaller"):
+      case("smaller"):
         brush.smaller(BRUSH_SIZE_JUMP);
         tooltipsize -= BRUSH_SIZE_JUMP/pixelsPerCentimeter;
         playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
+        C.setSize(brush.getScale()*1.5/30);
         break;
-        case("save"):
-        System.out.println(item.getName());
+      case("save"):
+        layers[0].save("./saved/screen"+pageIndex+".png");
+        layers[1].save("./saved/colors"+pageIndex+".png");
+        pageIndex += 1;
+        g.textAlign(CENTER, CENTER);
+        g.textSize(150);
+        g.fill(255);
+        g.text("saved!", width/2, height/2);
+        g.textSize(125);
+        g.fill(0);
+        g.text("saved!", width/2, height/2);
         break;
-        case("clear"):
-        System.out.println(item.getName());
+      case("clear"):
+        g.background(255);
+        createLayers();
         break;
-        default:
+      default:
         break;
       }
     }
