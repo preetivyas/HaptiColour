@@ -3,7 +3,7 @@
  * @file       lab2.pde
  * @author     Linnea Kirby, Preeti Vyas, Marco Moran
  * @date       01-March-2021
- * @brief      haptic maze loader based off of 
+ * @brief      haptic maze loader based off of
  - "sketch_4_Wall_Physics.pde" by Steve Ding and Colin Gallacher
  - "sketch_6_Maze_Physics.pde" by Elie Hymowitz, Steve Ding, and Colin Gallacher
  **********************************************************************************************************************
@@ -73,7 +73,7 @@ PVector           torques                             = new PVector(0, 0);
 
 /* task space */
 PVector           posEE                               = new PVector(0, 0);
-PVector           fEE                                 = new PVector(0, 0); 
+PVector           fEE                                 = new PVector(0, 0);
 
 /* outside circle parameters for Haply */
 //float xH = 0;
@@ -82,12 +82,12 @@ PVector           fEE                                 = new PVector(0, 0);
 
 /* World boundaries in centimeters */
 FWorld            world;
-float             worldWidth                          = 30.0;  
-float             worldHeight                         = 15.0; 
+float             worldWidth                          = 30.0;
+float             worldHeight                         = 15.0;
 
-float             edgeTopLeftX                        = 0.0; 
-float             edgeTopLeftY                        = 0.0; 
-float             edgeBottomRightX                    = worldWidth; 
+float             edgeTopLeftX                        = 0.0;
+float             edgeTopLeftY                        = 0.0;
+float             edgeBottomRightX                    = worldWidth;
 float             edgeBottomRightY                    = worldHeight + 2;
 
 PGraphics[] layers = new PGraphics[3];
@@ -126,9 +126,9 @@ Brush brush;
 ArrayList<ColorPalette> palettes;
 int paletteIndex;
 
-String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
-  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
-  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
+String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png",
+  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png",
+  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png",
   "../img/brush10.png"};
 String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
@@ -153,7 +153,7 @@ void setup() {
   background(255);
   cp5 = new ControlP5(this);
 
-  PFont p = createFont("Verdana", 17); 
+  PFont p = createFont("Verdana", 17);
   ControlFont cfont = new ControlFont(p);
 
   // change the original colors
@@ -196,8 +196,8 @@ void setup() {
   }
 
   /* world conditions setup */
-  world.setGravity((0.0), (100.0)); //100 cm/(s^2)
-  world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
+  world.setGravity((0.0), (0.0)); //100 cm/(s^2)
+  world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY));
   world.setEdgesRestitution(.4)   ;
   world.setEdgesFriction(0.5)     ;
 
@@ -217,7 +217,7 @@ void setup() {
       tgrid[j][i] = new FBox(wall_w, wall_h);
       tgrid[j][i].setPosition((i+1)*space, (j+0.8)*2);
       tgrid[j][i].setFill(40, 62, 102, 0);
-      tgrid[j][i].setDensity(100); 
+      tgrid[j][i].setDensity(100);
       tgrid[j][i].setSensor(true);
       tgrid[j][i].setNoStroke()  ;
       tgrid[j][i].setStatic(true);
@@ -318,16 +318,16 @@ class SimulationThread implements Runnable {
       /* GET END-EFFECTOR STATE (TASK SPACE) */
       widgetOne.device_read_data();
 
-      angles.set(widgetOne.get_device_angles()); 
+      angles.set(widgetOne.get_device_angles());
       posEE.set(widgetOne.get_device_position(angles.array()));
       posEE.set(posEE.copy().mult(200));
     }
-    
+
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
     C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
     //println(playerToken.h_avatar.getTouching())                                             ;
 
-    
+
     playerToken.updateCouplingForce();
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
     fEE.div(100000); //dynes to newtons
@@ -336,21 +336,21 @@ class SimulationThread implements Runnable {
     widgetOne.device_write_torques();
 
     textureUpdate();
-    
+
     playerToken.h_avatar.setDamping(damp);
-    
+
     if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
       playerToken.h_avatar.setDamping(850) ;
-    }  
-    
-    FBox wallInWorld1 ;
+    }
+
+    FBox touchWall ;
       for (Wall item : wallList) {
-      wallInWorld1 = wallToWorldList.get(item);
-        if(C.isTouchingBody(wallInWorld1)) {
-          playerToken.h_avatar.setDamping(770);
+      touchWall = wallToWorldList.get(item);
+        if(C.isTouchingBody(touchWall)) {
+          playerToken.h_avatar.setDamping(820);
         }
     }
-    
+
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
@@ -466,7 +466,7 @@ private void disengageDrawingMode() {
 
 private void engageDrawingMode() {
   setWallFlexibility(false, color(0, 0, 0));
-  //setWallFlexibility(true, color(0, 0, 0)); MARCO: If we uncomment this line and comment out the line above, the damping increase near the walls/borders is more useful
+  //setWallFlexibility(true, color(0, 0, 0)); // MARCO: If we uncomment this line and comment out the line above, the damping increase near the walls/borders is more useful
   drawingModeEngaged = true;
   world.add(C)             ;
   damp = 350               ;
@@ -565,7 +565,7 @@ void updateColorPicker(ColorPalette palette){
     colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
     world.draw();
   }
-  
+
 }
 
 void createColorPicker(ColorPalette palette) {
@@ -622,7 +622,7 @@ void checkChangeColor() {
 void createPlayerToken(float x, float y) {
   /* Player circle */
   /* Setup the Virtual Coupling Contact Rendering Technique */
-  playerToken = new HVirtualCoupling(tooltipsize); 
+  playerToken = new HVirtualCoupling(tooltipsize);
   playerToken.h_avatar.setDensity(4);
 
   playerToken.h_avatar.setNoFill();
@@ -647,7 +647,7 @@ void setUpPlayerTokenSensor(float x, float y){
 void setUpDevice() {
   /* device setup */
 
-  /**  
+  /**
    * The board declaration needs to be changed depending on which USB serial port the Haply board is connected.
    * In the base example, a connection is setup to the first detected serial device, this parameter can be changed
    * to explicitly state the serial port will look like the following for different OS:
@@ -676,8 +676,8 @@ void setUpDevice() {
 
 
   /* 2D physics scaling and world creation */
-  hAPI_Fisica.init(this); 
-  hAPI_Fisica.setScale(pixelsPerCentimeter); 
+  hAPI_Fisica.init(this);
+  hAPI_Fisica.setScale(pixelsPerCentimeter);
   world = new FWorld();
 }
 
