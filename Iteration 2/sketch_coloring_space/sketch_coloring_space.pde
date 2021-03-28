@@ -192,7 +192,7 @@ void setup() {
   }
 
   /* world conditions setup */
-  world.setGravity((0.0), (100.0)); //100 cm/(s^2)
+  world.setGravity((0.0), (0.0)); //100 cm/(s^2)
   world.setEdges((edgeTopLeftX), (edgeTopLeftY), (edgeBottomRightX), (edgeBottomRightY)); 
   world.setEdgesRestitution(.4)   ;
   world.setEdgesFriction(0.5)     ;
@@ -204,7 +204,7 @@ void setup() {
   C.setDensity(1)       ;
   C.setSensor(true)     ;
   C.setNoFill()         ;
-  C.setStroke(255,0,0,5);
+  C.setStroke(255,0,0,100);
   C.setPosition(-3, 3)  ;
 
   /*texture specific code*********************************************/
@@ -351,7 +351,7 @@ class SimulationThread implements Runnable {
       for (Wall item : wallList) {
       touchWall = wallToWorldList.get(item);
         if(C.isTouchingBody(touchWall)) {
-          playerToken.h_avatar.setDamping(770);
+          playerToken.h_avatar.setDamping(820);
         }
     }
     
@@ -488,7 +488,7 @@ private void disengageDrawingMode() {
 
 private void engageDrawingMode() {
   setWallFlexibility(false, color(0, 0, 0));
-  //setWallFlexibility(true, color(0, 0, 0)); MARCO: If we uncomment this line and comment out the line above, the damping increase near the walls/borders is more useful
+  //setWallFlexibility(true, color(0, 0, 0)); // MARCO: If we uncomment this line and comment out the line above, the damping increase near the walls/borders is more useful
   drawingModeEngaged = true;
   world.add(C)             ;
   damp = 350               ;
