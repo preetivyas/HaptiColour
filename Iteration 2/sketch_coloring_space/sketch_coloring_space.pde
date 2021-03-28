@@ -286,6 +286,7 @@ void keyPressed() {
 /* draw section ********************************************************************************************************/
 float x;
 float y;
+float pause = 0;
 void draw() {
   /* put graphical code here, runs repeatedly at defined framerate in setup, else default at 60fps: */
 
@@ -308,14 +309,19 @@ void draw() {
     world.draw();
     layers[1].endDraw();
     image(layers[1], 0, 0);
-  } else if (millis() % 1000 > 500 && millis() % 1000 > 750 || millis() % 1000 < 250) {
+  } //else if (millis() % 1000 > 500 && millis() % 1000 < 750 || millis() % 1000 < 250) {
+  else if(pause % 5 == 0){
     try {
       checkChangeColor();
     }
     catch(ConcurrentModificationException e) {
       //ignore these exceptions
     }
+    if(pause % 6 == 0){
+      checkButtonActivation();
+    }
   }
+  pause += 1;
   layers[2].beginDraw();
   layers[2].clear();
   layers[2].background(0, 0);
@@ -707,6 +713,40 @@ void checkChangeColor() {
         setDrawingColor(255, 255, 255);
       } else {
         setDrawingColor(palette.getSwatch(i).getColor());
+      }
+    }
+  }
+}
+
+void checkButtonActivation() {
+  for (FBox item : GUIButtons) {
+    if (playerToken.h_avatar.isTouchingBody(item)) {
+      switch(item.getName()){
+        case("next"):
+          paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
+          updateColorPicker(palettes.get(paletteIndex));
+        break;
+        case("prev"):
+          paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
+          if (paletteIndex < 0) {
+            paletteIndex = NUM_PALETTES - 1;
+          }
+          updateColorPicker(palettes.get(paletteIndex));
+        break;
+        case("larger"):
+        System.out.println(item.getName());
+        break;
+        case("smaller"):
+        System.out.println(item.getName());
+        break;
+        case("save"):
+        System.out.println(item.getName());
+        break;
+        case("clear"):
+        System.out.println(item.getName());
+        break;
+        default:
+        break;
       }
     }
   }
