@@ -128,9 +128,9 @@ Brush brush;
 ArrayList<ColorPalette> palettes;
 int paletteIndex;
 
-String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png",
-  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png",
-  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png",
+String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
+  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
+  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
   "../img/brush10.png"};
 String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
@@ -196,7 +196,7 @@ void setup() {
   catch(incorrectMazeDimensionsException e) {
     System.out.println(e);
   }
-  
+
   createBrush();
 
   /* world conditions setup */
@@ -260,12 +260,14 @@ void keyPressed() {
     if (isDrawingModeEngaged()) {
       disengageDrawingMode();
     } else if (checkDraw()) {
-      engageDrawingMode();
+        if(!(isTouchingWall() instanceof FBox)){
+          engageDrawingMode();
+        }
     }
   }
   if (key == 'c' || key == 'C') { // pressing c changes to the previous palette
     paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
-    if(paletteIndex < 0){
+    if (paletteIndex < 0) {
       paletteIndex = NUM_PALETTES - 1;
     }
     updateColorPicker(palettes.get(paletteIndex));
@@ -291,7 +293,7 @@ void draw() {
   g.fill(0);
   g.rect(0, height-2.5*pixelsPerCentimeter, width, 2.5*pixelsPerCentimeter);
   world.draw();
-  
+
   if (isDrawingModeEngaged()) {
     layers[1].beginDraw();
     layers[1].noStroke();
@@ -320,7 +322,6 @@ void draw() {
   layers[2].endDraw();
   image(layers[2], 0, 0, width, height);
   world.draw();
-
 }
 /* end draw section ****************************************************************************************************/
 
@@ -357,16 +358,16 @@ class SimulationThread implements Runnable {
 
     playerToken.h_avatar.setDamping(damp);
 
-    if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))){
+    if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))) {
       playerToken.h_avatar.setDamping(850) ;
     }
 
     FBox touchWall ;
-      for (Wall item : wallList) {
+    for (Wall item : wallList) {
       touchWall = wallToWorldList.get(item);
-        if(C.isTouchingBody(touchWall)) {
-          playerToken.h_avatar.setDamping(820);
-        }
+      if (C.isTouchingBody(touchWall)) {
+        playerToken.h_avatar.setDamping(820);
+      }
     }
 
 
@@ -380,11 +381,22 @@ class SimulationThread implements Runnable {
 
 /* helper functions section, place helper functions here ***************************************************************/
 
-private Boolean checkDraw(){
-  if(playerToken.getAvatarPositionY()*pixelsPerCentimeter < height-2.5*pixelsPerCentimeter){
+private Boolean checkDraw() {
+  if (playerToken.getAvatarPositionY()*pixelsPerCentimeter < height-2.5*pixelsPerCentimeter) {
     return true;
   }
   return false;
+}
+
+private FBox isTouchingWall() {
+  FBox touchWall ;
+  for (Wall item : wallList) {
+    touchWall = wallToWorldList.get(item);
+    if (playerToken.h_avatar.isTouchingBody(touchWall)) {
+      return touchWall;
+    }
+  }
+  return null;
 }
 
 ArrayList<Wall> parseTextFile() throws incorrectMazeDimensionsException {
@@ -519,7 +531,7 @@ void setDrawingColor(int[] rgb) {
 
 void createPalettes() {
   palettes = new ArrayList<ColorPalette>();
-  for (int i=0; i< NUM_PALETTES; i++){
+  for (int i=0; i< NUM_PALETTES; i++) {
     palettes.add(createPalette(i)); //add all defined palettes
   }
 }
@@ -527,7 +539,7 @@ void createPalettes() {
 ColorPalette createPalette(int index) {
   ColorSwatch[] palette = new ColorSwatch[6];
   switch(index) {
-  case(0): //rainbow
+    case(0): //rainbow
     palette[5] = new ColorSwatch(255, 0, 0, 5); //red
     palette[4] = new ColorSwatch(255, 127, 0, 4); //orange
     palette[3] = new ColorSwatch(255, 255, 0, 3); //yellow
@@ -535,7 +547,7 @@ ColorPalette createPalette(int index) {
     palette[1] = new ColorSwatch(0, 0, 255, 1); //blue
     palette[0] = new ColorSwatch(127, 0, 255, 0); //purple
     break;
-  case(1): //pastel rainbow
+    case(1): //pastel rainbow
     palette[5] = new ColorSwatch(255, 175, 175, 5); //pink
     palette[4] = new ColorSwatch(255, 202, 175, 4); //sherbet
     palette[3] = new ColorSwatch(255, 255, 175, 3); //lemon
@@ -582,14 +594,13 @@ void drawCursor(PGraphics layer) {
   world.draw();
 }
 
-void updateColorPicker(ColorPalette palette){
+void updateColorPicker(ColorPalette palette) {
   ColorSwatch swatch;
-  for(int i=0; i<palette.getLength(); i++){
+  for (int i=0; i<palette.getLength(); i++) {
     swatch = palette.getSwatch(i);
     colorSwatch[i].setFillColor(color(swatch.getRed(), swatch.getGreen(), swatch.getBlue()));
     world.draw();
   }
-
 }
 
 float createColorPicker(ColorPalette palette) {
@@ -628,16 +639,16 @@ float createColorPicker(ColorPalette palette) {
   swatch = palette.getSwatch(0);
   setDrawingColor(swatch.getRed(), swatch.getGreen(), swatch.getBlue());
   world.add(colorSwatch[7]);
-  
+
   return x;
 }
 
-void createGUI(){
+void createGUI() {
   createPalettes();
   paletteIndex = 0;
   float x = createColorPicker(palettes.get(paletteIndex)) - SPACER;
   float y = edgeBottomRightY - 1.8;
-  
+
   //prev + next color palette
   FBox button = new FBox(1, 1);
   button.setPosition(x, y);
@@ -646,7 +657,7 @@ void createGUI(){
   button.setName("next");
   button.setNoFill();
   GUIButtons.add(button);
-  
+
   x = x - SPACER;
   button = new FBox(1, 1);
   button.setPosition(x, y);
@@ -655,16 +666,16 @@ void createGUI(){
   button.setName("prev");
   button.setNoFill();
   GUIButtons.add(button);
-  
-  for(FBox item : GUIButtons){
+
+  for (FBox item : GUIButtons) {
     world.add(item);
     world.draw();
   }
 }
 
-void drawLabels(){
+void drawLabels() {
   g.fill(color(0, 0, 0));
-  for(FBox item : GUIButtons){
+  for (FBox item : GUIButtons) {
     g.text(item.getName(), item.getX(), item.getY());
     System.out.println(item.getName());
   }
@@ -698,13 +709,13 @@ void createPlayerToken(float x, float y) {
   setUpPlayerTokenSensor(x, y);
 }
 
-void setUpPlayerTokenSensor(float x, float y){
+void setUpPlayerTokenSensor(float x, float y) {
   /* Translucent circle */
   C = new FCircle(1.50) ;
   C.setDensity(1)       ;
   C.setSensor(true)     ;
   C.setNoFill()         ;
-  C.setStroke(255,0,0,5);
+  C.setStroke(255, 0, 0, 5);
   C.setPosition(x, y)  ;
 }
 
