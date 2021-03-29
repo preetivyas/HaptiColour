@@ -33,7 +33,7 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 public final String WINDOWS = "COM4";
 public final String MAC = "/dev/cu.usbmodem14201";
 //public final String LINUX = "/dev/ttyUSB0";
-public final String PORT = MAC; //<-- change the port name here!
+public final String PORT = WINDOWS; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
@@ -43,6 +43,7 @@ public final float PALETTE_SPACER = 1.25; //space between palette elements
 public final float BUTTON_SPACER = 1.25*1.5; //space between GUI elements
 public final float BRUSH_SIZE_JUMP = 2.0; //how much bigger/smaller to make the brush?
 public final boolean BEGIN_IN_DRAWING_MODE = false;
+public final boolean HIDE_TEXTURE = true;
 
 ControlP5 cp5;
 
@@ -137,9 +138,9 @@ FBox no;
 FBox forReal;
 Boolean checkingClear = false;
 
-String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
-  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
-  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
+String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png",
+  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png",
+  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png",
   "../img/brush10.png"};
 String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
@@ -149,13 +150,17 @@ FBox[][] vgrid =  new FBox[100][200];
 FBox[][] bgrid =  new FBox[100][200];
 
 Slider damper;
-int damp = 500;
+int damp = 680;
+int tvar = 1;
+int opacity;
 float xdim = worldWidth;
 float ydim = worldHeight;
 float space = 1.5;
 float wall_h = 2;
 float wall_w = 0.1;
 int iloop, jloop;
+PFont p;
+
 /*****************************************/
 
 /* setup section *******************************************************************************************************/
@@ -173,17 +178,19 @@ void setup() {
   cp5.setColorActive(0xffff0000);
 
   //for testing only
-  damper = cp5.addSlider("damp")
-    .setPosition(100, 605)
-    .setSize(200, 30)
-    .setRange(100, 1000) // values can range from big to small as well
-    .setValue(350)
-    //.setFont(createFont("Verdana", 17))
-    ;
+  //damper = cp5.addSlider("damp")
+  //  .setPosition(100, 605)
+  //  .setSize(200, 30)
+  //  .setRange(100, 1000) // values can range from big to small as well
+  //  .setValue(680)
+  //  //.setFont(createFont("Verdana", 17))
+  //  ;
 
+  damp = 680;
 
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
   shape = 0;
+
 
   createLayers();
 
@@ -221,11 +228,15 @@ void setup() {
   jloop = int(ydim/2);
   iloop = int(xdim/space);
 
+  if (HIDE_TEXTURE){
+    opacity = 0;
+  }
+
   for (int j = 0; j<jloop; j++) {
     for (int i = 0; i<iloop; i++) {
       tgrid[j][i] = new FBox(wall_w, wall_h);
       tgrid[j][i].setPosition((i+1)*space, (j+0.8)*2);
-      tgrid[j][i].setFill(40, 62, 102, 0);
+      tgrid[j][i].setFill(40, 62, 102, opacity) ;
       tgrid[j][i].setDensity(100);
       tgrid[j][i].setSensor(true);
       tgrid[j][i].setNoStroke()  ;
@@ -378,19 +389,31 @@ class SimulationThread implements Runnable {
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
 
-    textureUpdate();
+    //textureUpdate();
+    tvar = 0;
 
-    playerToken.h_avatar.setDamping(damp);
+    //playerToken.h_avatar.setDamping(damp);
 
-    if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))) {
-      playerToken.h_avatar.setDamping(850) ;
+    if(((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))) {
+      playerToken.h_avatar.setDamping(850) ; //850
     }
+    else {
+      if (drawingModeEngaged==true){
+        playerToken.h_avatar.setDamping(680) ;
+        textureUpdate();}
+      else{
+        playerToken.h_avatar.setDamping(0) ;
+      }
+    }
+    //else if (tvar == 0) {
+    //
+    //}
 
     FBox touchWall ;
     for (Wall item : wallList) {
       touchWall = wallToWorldList.get(item);
       if (C.isTouchingBody(touchWall)) {
-        playerToken.h_avatar.setDamping(900);
+        playerToken.h_avatar.setDamping(damp); //820
       }
     }
 
@@ -522,7 +545,7 @@ private void disengageDrawingMode() {
   drawingModeEngaged = false ;
   world.remove(C)            ;
   //disable texture
-  damp = 0;
+  //damp = 0;
 }
 
 private void engageDrawingMode() {
@@ -530,7 +553,7 @@ private void engageDrawingMode() {
   //setWallFlexibility(true, color(0, 0, 0)); // MARCO: If we uncomment this line and comment out the line above, the damping increase near the walls/borders is more useful
   drawingModeEngaged = true;
   world.add(C)             ;
-  damp = 350               ;
+  //damp = 350               ;
 }
 
 public boolean isDrawingModeEngaged() {
@@ -562,7 +585,7 @@ void createPalettes() {
 ColorPalette createPalette(int index) {
   ColorSwatch[] palette = new ColorSwatch[6];
   switch(index) {
-    case(0): //rainbow
+    case(1): //rainbow
     palette[5] = new ColorSwatch(255, 0, 0, 5); //red
     palette[4] = new ColorSwatch(255, 127, 0, 4); //orange
     palette[3] = new ColorSwatch(255, 255, 0, 3); //yellow
@@ -570,7 +593,7 @@ ColorPalette createPalette(int index) {
     palette[1] = new ColorSwatch(0, 0, 255, 1); //blue
     palette[0] = new ColorSwatch(127, 0, 255, 0); //purple
     break;
-    case(1): //pastel rainbow
+    case(0): //pastel rainbow
     palette[5] = new ColorSwatch(255, 175, 175, 5); //pink
     palette[4] = new ColorSwatch(255, 202, 175, 4); //sherbet
     palette[3] = new ColorSwatch(255, 255, 175, 3); //lemon
@@ -578,13 +601,13 @@ ColorPalette createPalette(int index) {
     palette[1] = new ColorSwatch(175, 175, 255, 1); //periwinkle
     palette[0] = new ColorSwatch(202, 175, 255, 0); //lavender
     break;
-  default: //rainbow
-    palette[5] = new ColorSwatch(255, 0, 0, 5); //red
-    palette[4] = new ColorSwatch(255, 127, 0, 4); //orange
-    palette[3] = new ColorSwatch(255, 255, 0, 3); //yellow
-    palette[2] = new ColorSwatch(0, 255, 0, 2); //green
-    palette[1] = new ColorSwatch(0, 0, 255, 1); //blue
-    palette[0] = new ColorSwatch(127, 0, 255, 0); //purple
+  default:  //pastel rainbow
+    palette[5] = new ColorSwatch(255, 175, 175, 5); //pink
+    palette[4] = new ColorSwatch(255, 202, 175, 4); //sherbet
+    palette[3] = new ColorSwatch(255, 255, 175, 3); //lemon
+    palette[2] = new ColorSwatch(175, 255, 175, 2); //lime
+    palette[1] = new ColorSwatch(175, 175, 255, 1); //periwinkle
+    palette[0] = new ColorSwatch(202, 175, 255, 0); //lavender
     break;
   }
 
@@ -660,7 +683,7 @@ float createColorPicker(ColorPalette palette) {
   colorSwatch[6].setSensor(true);
   colorSwatch[6].setName("6");
   colorSwatch[6].setFillColor(color(255, 255, 255));
-  addLabel(colorSwatch[6], "./img/erase.png");
+  addLabel(colorSwatch[6], "../img/erase.png");
   world.add(colorSwatch[6]);
 
   //create color mixer swatch
@@ -681,19 +704,19 @@ void createGUI() {
   float y = edgeBottomRightY - 1.5;
 
   //prev + next color palette
-  GUIButtons.add(addButton("next", "./img/nextPalette.png", x, y));
+  GUIButtons.add(addButton("next", "../img/nextPalette.png", x, y));
   x = x - BUTTON_SPACER;
-  GUIButtons.add(addButton("prev", "./img/prevPalette.png", x, y));
+  GUIButtons.add(addButton("prev", "../img/prevPalette.png", x, y));
   x = x - BUTTON_SPACER;
   //larger + smaller brush
-  GUIButtons.add(addButton("larger", "./img/largerBrush.png", x, y));
+  GUIButtons.add(addButton("larger", "../img/largerBrush.png", x, y));
   x = x - BUTTON_SPACER;
-  GUIButtons.add(addButton("smaller", "./img/smallerBrush.png", x, y));
+  GUIButtons.add(addButton("smaller", "../img/smallerBrush.png", x, y));
   x = x - BUTTON_SPACER;
   //save + clear canvas
-  GUIButtons.add(addButton("save", "./img/save.png", x, y));
+  GUIButtons.add(addButton("save", "../img/save.png", x, y));
   x = x - BUTTON_SPACER;
-  GUIButtons.add(addButton("clear", "./img/clear.png", x, y));
+  GUIButtons.add(addButton("clear", "../img/clear.png", x, y));
 
   for (FBox item : GUIButtons) {
     world.add(item);
@@ -924,15 +947,15 @@ void setUpDevice() {
   world = new FWorld();
 }
 
-void createBrushes() {
-  for (int i = 0; i <button_img.length; i++) {
-    bi = loadImage(button_img[i]);
-    bi.resize(50, 50);
-    cp5.addButton(button_label[i]).setImage(bi)
-      .setPosition((50+80*i), 590)
-      .setValue(0);
-  }
-}
+//void createBrushes() {
+//  for (int i = 0; i <button_img.length; i++) {
+//    bi = loadImage(button_img[i]);
+//    bi.resize(50, 50);
+//    cp5.addButton(button_label[i]).setImage(bi)
+//      .setPosition((50+80*i), 590)
+//      .setValue(0);
+//  }
+//}
 
 void createLayers() {
   //for(int i = 0; i < layers.length; i++){
@@ -945,15 +968,16 @@ void createLayers() {
 
 void textureUpdate() {
 
-  if (drawingModeEngaged == true) {
+  //if (drawingModeEngaged == true) {
     //tgrid damp 356
     for (int j=0; j<jloop; j++) {
       for (int i=0; i<iloop; i++) {
         if (playerToken.h_avatar.isTouchingBody(tgrid[i][j])) {
           playerToken.h_avatar.setDamping(damp);
+          tvar = 1;
         }
       }//println(s);
     }
-  }
+  //}
 }
 /* end helper functions section ****************************************************************************************/
