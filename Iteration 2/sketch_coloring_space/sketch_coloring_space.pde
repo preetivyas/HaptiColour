@@ -1,6 +1,6 @@
 /**
  **********************************************************************************************************************
- * @file       lab2.pde
+ * @file       sketch_coloring_space.pde
  * @author     Linnea Kirby, Preeti Vyas, Marco Moran
  * @date       01-March-2021
  * @brief      haptic maze loader based off of
@@ -37,7 +37,7 @@ public final String PORT = MAC; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
-public final boolean DEBUG = false; //<-- print helpful print statements to System.out
+public final boolean DEBUG = true; //<-- print helpful print statements to System.out
 public final int NUM_PALETTES = 2;
 public final float PALETTE_SPACER = 1.25; //space between palette elements
 public final float BUTTON_SPACER = 1.25*1.5; //space between GUI elements
@@ -131,6 +131,11 @@ Brush brush;
 ArrayList<ColorPalette> palettes;
 int paletteIndex;
 int pageIndex = 0;
+
+FBox yes;
+FBox no;
+FBox forReal;
+Boolean checkingClear = false;
 
 String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
@@ -295,32 +300,45 @@ void draw() {
   g.rect(0, height-2.5*pixelsPerCentimeter, width, 2.5*pixelsPerCentimeter);
   world.draw();
 
-  if (isDrawingModeEngaged()) {
-    layers[1].beginDraw();
-    layers[1].noStroke();
-    int[] c = getDrawingColor();
-    layers[1].fill(color(c[0], c[1], c[2]));
-    x = playerToken.getAvatarPositionX()*pixelsPerCentimeter;
-    y = playerToken.getAvatarPositionY()*pixelsPerCentimeter;
-    if (checkDraw()) {
-      brush.paint(layers[1], x, y); //30
+  if (checkingClear) {
+    if (DEBUG) {
+      System.out.println("checking clear!");
     }
-    world.draw();
-    layers[1].endDraw();
-    image(layers[1], 0, 0);
-  } //else if (millis() % 1000 > 500 && millis() % 1000 < 750 || millis() % 1000 < 250) {
-  else if (pause % 5 == 0) {
-    try {
-      checkChangeColor();
+    if (playerToken.h_avatar.isTouchingBody(yes)) {
+      g.background(255);
+      createLayers();
+      resetCheckingClear();
+    } else if (playerToken.h_avatar.isTouchingBody(no)) {
+      resetCheckingClear();
     }
-    catch(ConcurrentModificationException e) {
-      //ignore these exceptions
+  } else {
+    if (isDrawingModeEngaged()) {
+      layers[1].beginDraw();
+      layers[1].noStroke();
+      int[] c = getDrawingColor();
+      layers[1].fill(color(c[0], c[1], c[2]));
+      x = playerToken.getAvatarPositionX()*pixelsPerCentimeter;
+      y = playerToken.getAvatarPositionY()*pixelsPerCentimeter;
+      if (checkDraw()) {
+        brush.paint(layers[1], x, y); //30
+      }
+      world.draw();
+      layers[1].endDraw();
+      image(layers[1], 0, 0);
+    } //else if (millis() % 1000 > 500 && millis() % 1000 < 750 || millis() % 1000 < 250) {
+    else if (pause % 5 == 0) {
+      try {
+        checkChangeColor();
+      }
+      catch(ConcurrentModificationException e) {
+        //ignore these exceptions
+      }
+      if (pause % 6 == 0) {
+        checkButtonActivation();
+      }
     }
-    if (pause % 6 == 0) {
-      checkButtonActivation();
-    }
+    pause += 1;
   }
-  pause += 1;
   layers[2].beginDraw();
   layers[2].clear();
   layers[2].background(0, 0);
@@ -603,9 +621,6 @@ void drawCursor(PGraphics layer) {
   if (brushScale > 10) {
     layer.ellipse(x, y, brushScale*4/30, brushScale*4/30);
   }
-  if (DEBUG) {
-    System.out.println("Brush scale: "+brushScale);
-  }
   world.draw();
 }
 
@@ -731,30 +746,47 @@ void checkButtonActivation() {
   for (FBox item : GUIButtons) {
     if (playerToken.h_avatar.isTouchingBody(item)) {
       switch(item.getName()) {
-      case("next"):
+        case("next"):
+        if (DEBUG) {
+          System.out.println(item.getName());
+        }
         paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
         updateColorPicker(palettes.get(paletteIndex));
         break;
-      case("prev"):
+        case("prev"):
+        if (DEBUG) {
+          System.out.println(item.getName());
+        }
         paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
         if (paletteIndex < 0) {
           paletteIndex = NUM_PALETTES - 1;
         }
         updateColorPicker(palettes.get(paletteIndex));
         break;
-      case("larger"):
+        case("larger"):
+        if (DEBUG) {
+          System.out.println(item.getName());
+          System.out.println("Brush scale: "+brush.getScale());
+        }
         brush.larger(BRUSH_SIZE_JUMP);
         tooltipsize += BRUSH_SIZE_JUMP/pixelsPerCentimeter;
         playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
         C.setSize(brush.getScale()*1.5/30);
         break;
-      case("smaller"):
+        case("smaller"):
+        if (DEBUG) {
+          System.out.println(item.getName());
+          System.out.println("Brush scale: "+brush.getScale());
+        }
         brush.smaller(BRUSH_SIZE_JUMP);
         tooltipsize -= BRUSH_SIZE_JUMP/pixelsPerCentimeter;
         playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
         C.setSize(brush.getScale()*1.5/30);
         break;
-      case("save"):
+        case("save"):
+        if (DEBUG) {
+          System.out.println(item.getName());
+        }
         layers[0].save("./saved/screen"+pageIndex+".png");
         layers[1].save("./saved/colors"+pageIndex+".png");
         pageIndex += 1;
@@ -766,9 +798,13 @@ void checkButtonActivation() {
         g.fill(0);
         g.text("saved!", width/2, height/2);
         break;
-      case("clear"):
-        g.background(255);
+        case("clear"):
+        if (DEBUG) {
+          System.out.println(item.getName());
+        }
         createLayers();
+        g.background(255);
+        //checkActuallyClear();
         break;
       default:
         break;
@@ -777,7 +813,56 @@ void checkButtonActivation() {
   }
 }
 
-void createPlayerToken(float x, float y) {
+private void resetCheckingClear() {
+  world.remove(yes);
+  world.remove(no);
+  world.remove(forReal);
+  checkingClear = false;
+}
+
+private void checkActuallyClear() {
+  float x = width/2;
+  float y = height/2;
+
+  yes = new FBox(1.5, 1.5);
+  yes.setPosition(x - 2, y);
+  yes.setStatic(true);
+  yes.setSensor(true);
+  yes.setName("yes");
+  yes.setNoFill();
+  yes.setStroke(2);
+  addLabel(yes, "./img/yes.png");
+  world.add(yes);
+  world.draw();
+
+  no = new FBox(1.5, 1.5);
+  no.setPosition(x + 2, y);
+  no.setStatic(true);
+  no.setSensor(true);
+  no.setName("no");
+  no.setNoFill();
+  no.setStroke(2);
+  addLabel(no, "./img/no.png");
+  world.add(no);
+  world.draw();
+
+  forReal = new FBox(13, 1.5);
+  forReal.setPosition(x - 5, y - 2);
+  forReal.setStatic(true);
+  forReal.setSensor(true);
+  forReal.setName("forReal");
+  forReal.setNoFill();
+  forReal.setStroke(2);
+  PImage buttonImage = loadImage("./img/forReal.png");
+  buttonImage.resize((int)(hAPI_Fisica.worldToScreen(13)), (int)(hAPI_Fisica.worldToScreen(1.5)));
+  forReal.attachImage(buttonImage);
+  world.add(forReal);
+  world.draw();
+
+  checkingClear = true;
+}
+
+private void createPlayerToken(float x, float y) {
   /* Player circle */
   /* Setup the Virtual Coupling Contact Rendering Technique */
   playerToken = new HVirtualCoupling(tooltipsize);
