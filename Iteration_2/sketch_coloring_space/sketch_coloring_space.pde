@@ -395,11 +395,7 @@ class SimulationThread implements Runnable {
     for (Wall item : wallList) {
       touchWall = wallToWorldList.get(item);
       if (C.isTouchingBody(touchWall)) {
-<<<<<<< HEAD
         playerToken.h_avatar.setDamping(damp); //820
-=======
-        playerToken.h_avatar.setDamping(900);
->>>>>>> 1e1d4bcc57685cdc0e46cff3c6b66a5416931116
       }
     }
 
