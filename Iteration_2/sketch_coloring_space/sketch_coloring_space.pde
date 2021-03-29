@@ -395,7 +395,11 @@ class SimulationThread implements Runnable {
     for (Wall item : wallList) {
       touchWall = wallToWorldList.get(item);
       if (C.isTouchingBody(touchWall)) {
+<<<<<<< HEAD
         playerToken.h_avatar.setDamping(damp); //820
+=======
+        playerToken.h_avatar.setDamping(900);
+>>>>>>> 1e1d4bcc57685cdc0e46cff3c6b66a5416931116
       }
     }
 
@@ -834,7 +838,7 @@ void setUpPlayerTokenSensor(float x, float y) {
   C.setSensor(true)     ;
   C.setNoFill()         ;
   C.setStroke(255, 0, 0, 5);
-  C.setPosition(x, y)  ;
+  C.setPosition(x, y)   ;
 }
 
 void setUpDevice() {
@@ -850,7 +854,7 @@ void setUpDevice() {
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
 
-
+  //haplyBoard = new Board(this, "COM3", 0);
   haplyBoard = new Board(this, PORT, 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
