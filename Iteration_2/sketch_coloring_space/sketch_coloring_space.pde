@@ -702,6 +702,10 @@ void createGUI() {
   GUIButtons.add(addButton("save", "../img/save.png", x, y));
   x = x - BUTTON_SPACER;
   GUIButtons.add(addButton("clear", "../img/clear.png", x, y));
+  //prev + next texture
+  GUIButtons.add(addButton("next", "../img/nextTexture.png", x, y));
+  x = x - BUTTON_SPACER;
+  GUIButtons.add(addButton("prev", "../img/prevTexture.png", x, y));
 
   for (FBox item : GUIButtons) {
     world.add(item);
