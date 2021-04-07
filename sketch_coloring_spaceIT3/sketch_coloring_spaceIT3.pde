@@ -116,6 +116,7 @@ boolean T2 ;
 boolean T3 ;
 boolean T4 ;
 boolean T5 ;
+boolean touch=false;
 
 FCircle bumps ;
 float lasttimecheck ;
@@ -385,6 +386,15 @@ void draw() {
   layers[2].endDraw();
   image(layers[2], 0, 0, width, height);
   world.draw();
+  
+  text("touch = " + touch, 40, 110);
+  text("T4 = " + T4, 150, 110)     ;
+  text("fEEx = " + fEE.x, 40, 130) ;
+  text("fEEy = " + fEE.y, 40, 150) ;
+  text("timer = " + t2, 40, 170)   ;
+  textSize(16)                     ;
+  fill(0, 0, 0)                    ;
+  
 }
 /* end draw section ****************************************************************************************************/
 
@@ -405,9 +415,9 @@ class SimulationThread implements Runnable {
     }
 
     playerToken.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
-    C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                 ;
+    C.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY())                   ;
     //println(playerToken.h_avatar.getTouching())                                             ;
-    
+    //touch = false;
     
     playerToken.updateCouplingForce();
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
@@ -474,23 +484,23 @@ class SimulationThread implements Runnable {
     }
     
     
-    if ((T4 == true) && (drawingModeEngaged==true)) {
-
+    if ((T4 == true) && (drawingModeEngaged==true) && (touch=false)) {
+    
       t2 = millis() - lasttimecheck2;
-
+      
       if (millis() > lasttimecheck2 + timeinterval2) {
         lasttimecheck2 = millis()   ;
       }
-
+      
       if ((t2 >= 0) && (t2 < 500)) {
-
-        fEE.x = 1.6*m * t2;
-        fEE.y = 1.6*m * t2;
-      } else {
-
-        fEE.x = -m * t2;
-        fEE.y = -m * t2;
-      }
+        
+          fEE.x = 1.6*m * t2;
+          fEE.y = 1.6*m * t2;
+        
+        } else {
+              fEE.x = -m * t2;
+              fEE.y = -m * t2;
+        }
     }
     
     
@@ -562,7 +572,8 @@ class SimulationThread implements Runnable {
       touchWall = wallToWorldList.get(item);
       if (C.isTouchingBody(touchWall)) {
         playerToken.h_avatar.setDamping(820); //820
-      }    
+        touch = true ;
+      }
     }
     
 
