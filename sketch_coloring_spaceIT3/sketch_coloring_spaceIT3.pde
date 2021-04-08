@@ -165,11 +165,6 @@ ArrayList<ColorPalette> palettes ;
 int paletteIndex ;
 int pageIndex = 0;
 
-//String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
-//  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
-//  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
-//  "../img/brush10.png"};
-//String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
 /* texture variables**********************/
 FBox[][] tgrid =  new FBox[100][200];
