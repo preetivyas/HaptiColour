@@ -117,7 +117,6 @@ boolean T3 ;
 boolean T4 ;
 boolean T5 ;
 boolean touch=false;
-PImage  bi;
 
 FCircle bumps ;
 float lasttimecheck ;
@@ -159,7 +158,7 @@ ArrayList<FBox> GUIButtons = new ArrayList<FBox>();
 int shape; //what shape is the being drawn?
 boolean           colour;
 float             tooltipsize = 1; //PV: set tooltip size (0.5 to 1 seems to work the best)
-PImage            haplyAvatar, bi;
+PImage            haplyAvatar, bi, cover;
 String            tooltip        ;
 Brush brush                      ;
 ArrayList<ColorPalette> palettes ;
@@ -275,17 +274,18 @@ void setup() {
 /* Texture "buttons" */
 
   for (int i = 0; i<5; i++) {
-    bi = loadImage(texture_img[i])                ;
-    texture[i]  = new FBox(1.25,1.25)             ;
-    cp5.addButton(texture_label[i]).setImage(bi)  ;
-    texture[i].setPosition(dist, worldHeight/2+8) ;
-    texture[i].setDensity(1)                      ;
-    texture[i].setSensor(true)                    ;
-    texture[i].setStatic(true)                    ;
-    texture[i].setNoStroke()                      ;
-    texture[i].setFill(255,255,255)               ;
-    world.add(texture[i])                         ;
-    dist = dist + 1.5                             ;
+    textures = texture_img[i]                    ;
+    cover = loadImage(textures)                  ;
+    texture[i]  = new FBox(1.25,1.25)            ;
+    texture[i].attachImage(cover)                ;
+    texture[i].setPosition(dist, worldHeight/2+8);
+    texture[i].setDensity(1)                     ;
+    texture[i].setSensor(true)                   ;
+    texture[i].setStatic(true)                   ;
+    texture[i].setNoStroke()                     ;
+    texture[i].setFill(255,255,255)              ;
+    world.add(texture[i])                        ;
+    dist = dist + 1.5                            ;
   }
 
   /****************************************************************/
