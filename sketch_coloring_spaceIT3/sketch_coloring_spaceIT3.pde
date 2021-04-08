@@ -136,6 +136,7 @@ float m = 0.0011        ;
 
 String[] texture_img  = {"../img/texture1.png", "../img/texture2.png", "../img/texture3.png", "../img/texture4.png", "../img/texture5.png"} ;
 String[] texture_label = {"tex1", "tex2", "tex3", "tex4", "tex5"}                                                                           ;
+String textures                                                                                                                             ;
 
 //int[][] colors = { { 0, 0, 255, 100 }, { 0, 255, 0, 100 }, {255, 0, 0, 100}, {255, 205, 0, 100}, {255, 105, 180, 100}, {128, 0, 128, 100}, {139, 69, 19, 100}, {0, 0, 0, 100} };
 
