@@ -117,6 +117,7 @@ boolean T3 ;
 boolean T4 ;
 boolean T5 ;
 boolean touch=false;
+PImage  bi;
 
 FCircle bumps ;
 float lasttimecheck ;
@@ -273,7 +274,9 @@ void setup() {
 /* Texture "buttons" */
 
   for (int i = 0; i<5; i++) {
+    bi = loadImage(texture_img[i])                ;
     texture[i]  = new FBox(1.25,1.25)             ;
+    cp5.addButton(texture_label[i]).setImage(bi)  ;
     texture[i].setPosition(dist, worldHeight/2+8) ;
     texture[i].setDensity(1)                      ;
     texture[i].setSensor(true)                    ;
