@@ -271,7 +271,7 @@ void setup() {
   for (int i = 0; i<5; i++) {
     textures = texture_img[i]                    ;
     cover = loadImage(textures)                  ;
-    cover.resize(50, 50);
+    cover.resize(50, 50)                         ;
     texture[i]  = new FBox(1.25,1.25)            ;
     texture[i].attachImage(cover)                ;
     texture[i].setPosition(dist, worldHeight/2+8);
