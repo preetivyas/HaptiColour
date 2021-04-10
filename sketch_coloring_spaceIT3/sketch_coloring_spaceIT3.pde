@@ -129,7 +129,7 @@ float t1            ;
 float lasttimecheck2;
 float timeinterval2 ;
 float t2            ;
-float r = 1             ;
+float r = 1.1           ;
 float theta = 0         ;
 float theta_diff = 0.005;
 float m = 0.0011        ;
@@ -303,7 +303,7 @@ void setup() {
 
   /* Timers */
   lasttimecheck = millis() ;
-  timeinterval = 500       ;
+  timeinterval = 200       ;
 
   lasttimecheck1 = millis();
   timeinterval1 = 200      ;
@@ -395,7 +395,7 @@ void draw() {
   text("T4 = " + T4, 150, 110)     ;
   text("fEEx = " + fEE.x, 40, 130) ;
   text("fEEy = " + fEE.y, 40, 150) ;
-  text("timer = " + t2, 40, 170)   ;
+  text("timer = " + t, 40, 170)   ;
   textSize(16)                     ;
   fill(0, 0, 0)                    ;
   
@@ -488,7 +488,8 @@ class SimulationThread implements Runnable {
     }
     
     
-    if ((T4 == true) && (drawingModeEngaged==true) && (touch=false)) {
+    if ((T4 == true) && (drawingModeEngaged==true)) {
+    //if ((T4 == true) && (drawingModeEngaged==true) && (touch=false)) {
     
       t2 = millis() - lasttimecheck2;
       
@@ -521,15 +522,14 @@ class SimulationThread implements Runnable {
         lasttimecheck = millis()  ;
       }
 
-      if ((t >= 350) && (t < 500)) {
-        playerToken.h_avatar.setDamping(random(975, 995)) ;
+      if ((t >= 1) && (t < 100)) {
+        playerToken.h_avatar.setDamping(random(980, 995)) ;
       } else {
         playerToken.h_avatar.setDamping(damp) ;
       }
     }
     
-    
-    if ((T5 == true) && (drawingModeEngaged==true)) {
+      if ((T5 == true) && (drawingModeEngaged==true)) {
 
       t1 = millis() - lasttimecheck1 ;
 
@@ -551,6 +551,7 @@ class SimulationThread implements Runnable {
       }
     }
 
+
     //textureUpdate();
     tvar = 0;
 
@@ -561,7 +562,7 @@ class SimulationThread implements Runnable {
     }
     else {
       if (drawingModeEngaged==true){
-        playerToken.h_avatar.setDamping(300) ; //680
+        //playerToken.h_avatar.setDamping(300) ; //680
         textureUpdate();}
       else{
         playerToken.h_avatar.setDamping(0) ;
