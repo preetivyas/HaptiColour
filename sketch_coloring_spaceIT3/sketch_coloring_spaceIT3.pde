@@ -104,8 +104,9 @@ ArrayList<Wall> wallList;
 HashMap<Wall, FBox> wallToWorldList;
 
 /* Definition of maze end */
-FCircle end;
-FBox l1    ;
+FCircle end    ;
+FBox l1        ;
+FBox touchWall ;
 
 /* Textures squares and variables*/
 float dist = worldWidth/2-13.5;
@@ -382,13 +383,13 @@ void draw() {
     }
   }
   pause += 1;
-  layers[2].beginDraw();
-  layers[2].clear();
-  layers[2].background(0, 0);
-  drawCursor(layers[2]);
-  layers[2].endDraw();
+  layers[2].beginDraw()                ;
+  layers[2].clear()                    ;
+  layers[2].background(0, 0)           ;
+  drawCursor(layers[2])                ;
+  layers[2].endDraw()                  ;
   image(layers[2], 0, 0, width, height);
-  world.draw();
+  world.draw()                         ;
   
   text("touch = " + touch, 40, 110);
   text("T4 = " + T4, 150, 110)     ;
@@ -545,9 +546,9 @@ class SimulationThread implements Runnable {
         world.add(bumps)             ;
       }
       
-      //if (bumps.isTouchingBody(SOMETHING: ANOTHER TIMER MAYBE)){
-      //  world.remove(bumps);
-      //}
+      if (touchWall.isTouchingBody(bumps)){
+        world.remove(bumps);
+      }
     }
 
     //textureUpdate();
@@ -570,7 +571,7 @@ class SimulationThread implements Runnable {
     //  
     //}
 
-    FBox touchWall ;
+    
     for (Wall item : wallList) {
       touchWall = wallToWorldList.get(item);
       if (C.isTouchingBody(touchWall)) {
