@@ -33,7 +33,7 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 public final String WINDOWS = "COM4";
 public final String MAC = "/dev/cu.usbmodem14201";
 //public final String LINUX = "/dev/ttyUSB0";
-public final String PORT = WINDOWS; //<-- change the port name here!
+public final String PORT = MAC; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
@@ -317,7 +317,7 @@ void draw() {
     x = playerToken.getAvatarPositionX()*pixelsPerCentimeter;
     y = playerToken.getAvatarPositionY()*pixelsPerCentimeter;
     if (checkDraw()) {
-      brush.paint(layers[1], x, y,loadImage(button_img[0]),loadImage(button_img[0])); //30
+      brush.paint(layers[1], x, y); //30
     }
     world.draw();
     layers[1].endDraw();
@@ -554,6 +554,7 @@ void setDrawingColor(int r, int g, int b) {
   drawingColor[1] = g;
   drawingColor[2] = b;
   colorSwatch[7].setFillColor(color(r, g, b));
+  brush.changeColor(drawingColor);
 }
 
 void setDrawingColor(int[] rgb) {
@@ -609,7 +610,7 @@ void createBrush() {
 }
 
 void drawBrush(PGraphics layer) {
-  brush.paint(layer, playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40, loadImage(button_img[0]), loadImage(button_img[1]));
+  brush.paint(layer, playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40);
   //PV added image brush
   //imagebrush(layer, playerToken.getAvatarPositionX()*40, playerToken.getAvatarPositionY()*40);
   world.draw();

@@ -33,7 +33,7 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 public final String WINDOWS = "COM4";
 public final String MAC = "/dev/cu.usbmodem14201";
 //public final String LINUX = "/dev/ttyUSB0";
-public final String PORT = WINDOWS; //<-- change the port name here!
+public final String PORT = MAC; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
