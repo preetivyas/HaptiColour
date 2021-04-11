@@ -603,7 +603,7 @@ ColorPalette createPalette(int index) {
 }
 
 void createBrush() {
-  PImage brushImage = loadImage(button_img[0]);
+  PImage brushImage = loadImage(button_img[3]);
   brush = new Brush(drawingColor, brushImage);
   int[] coords = {0, 0};
   Bristle b = new Bristle(1.0, brush, coords); //centered bristle

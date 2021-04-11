@@ -113,6 +113,7 @@ public class Brush extends PApplet{
 
   //brush 1: pulsing ellipse
   private void paint_1(PGraphics layer, float x, float y) {
+    layer.fill(color(paintColor[0], paintColor[1], paintColor[2]));
     if (true) {
       angle += 5;
       double val = Math.cos(Math.toRadians(angle)) * 12.0;
@@ -130,6 +131,7 @@ public class Brush extends PApplet{
   //brush 2: faster larger, slower small
   private void paint_2(PGraphics layer, float x, float y) {
     //TODO: might leak out of wall or give a padding experience
+    layer.fill(color(paintColor[0], paintColor[1], paintColor[2]));
     float distX;
     float distY;
     float avgdist;
@@ -147,6 +149,7 @@ public class Brush extends PApplet{
 
   //brush 3: different image brushes; we can give user an option to update their tooltip
   private void paint_3(PGraphics layer, float x, float y) {
+    layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
     layer.pushMatrix();
     layer.translate(x-scaleFactor/2, y-scaleFactor/2);
     brush.resize((int)scaleFactor, (int)scaleFactor);
@@ -156,6 +159,7 @@ public class Brush extends PApplet{
 
   //brush 4: modified image brushes; grass like effect
   private void paint_4(PGraphics layer, float x, float y) {
+    layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
     float brushAngle = (float)atan2(x-prevX, y-prevY);
     layer.pushMatrix();
     layer.translate(x, y);
@@ -169,6 +173,7 @@ public class Brush extends PApplet{
 
   //brush 5: jiggle modified image brushes; feels like a soft carpet
   private void paint_5(PGraphics layer, float x, float y) {
+    layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
     float brushAngle = (float)atan2(x-prevX, y-prevY);
     for (int i=0; i<5; i++) {
       layer.pushMatrix();
@@ -176,7 +181,7 @@ public class Brush extends PApplet{
       int min = -20;
 
       float jiggleColor = (int)Math.floor(Math.random()*(255-0+1)+0);
-      layer.tint(100+jiggleColor, 0, 170+jiggleColor, 200); //can change color of the image using this
+      layer.tint(paintColor[0]+jiggleColor, paintColor[1], paintColor[2]+jiggleColor, 200); //can change color of the image using this
 
       float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
       layer.translate(x+jiggle, y+jiggle);
@@ -196,6 +201,7 @@ public class Brush extends PApplet{
 
   //brush 6: jiggle modified image brushes; feels like air spray paint
   private void paint_6(PGraphics layer, float x, float y) {
+    layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
     float brushAngle = (float)atan2(x-prevX, y-prevY);
     for (int i=0; i<5; i++) {
       layer.pushMatrix();
@@ -203,7 +209,7 @@ public class Brush extends PApplet{
       int min = -10;
 
       float jiggleColor = (int)Math.floor(Math.random()*(255-0+1)+0);
-      layer.tint(100+jiggleColor, 0, 170+jiggleColor, 10); //can change color of the image using this
+      layer.tint(paintColor[0]+jiggleColor, paintColor[1], paintColor[2]+jiggleColor, 10); //can change color of the image using this
 
       float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
       layer.translate(x+jiggle, y+jiggle);
