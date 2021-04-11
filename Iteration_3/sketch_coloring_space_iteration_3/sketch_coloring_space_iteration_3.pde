@@ -603,7 +603,8 @@ ColorPalette createPalette(int index) {
 }
 
 void createBrush() {
-  brush = new Brush(drawingColor);
+  PImage brushImage = loadImage(button_img[0]);
+  brush = new Brush(drawingColor, brushImage);
   int[] coords = {0, 0};
   Bristle b = new Bristle(1.0, brush, coords); //centered bristle
   brush.addBristle(b);
@@ -702,9 +703,14 @@ void createGUI() {
   float y = edgeBottomRightY - 1.5;
 
   //prev + next color palette
-  GUIButtons.add(addButton("next", "../img/nextPalette.png", x, y));
+  GUIButtons.add(addButton("next palette", "../img/nextPalette.png", x, y));
   x = x - BUTTON_SPACER;
-  GUIButtons.add(addButton("prev", "../img/prevPalette.png", x, y));
+  GUIButtons.add(addButton("prev palette", "../img/prevPalette.png", x, y));
+  x = x - BUTTON_SPACER;
+  //prev + next color brush
+  GUIButtons.add(addButton("next brush", "../img/nextBrush.png", x, y));
+  x = x - BUTTON_SPACER;
+  GUIButtons.add(addButton("prev brush", "../img/prevBrush.png", x, y));
   x = x - BUTTON_SPACER;
   //larger + smaller brush
   GUIButtons.add(addButton("larger", "../img/largerBrush.png", x, y));
@@ -767,16 +773,26 @@ void checkButtonActivation() {
   for (FBox item : GUIButtons) {
     if (playerToken.h_avatar.isTouchingBody(item)) {
       switch(item.getName()) {
-      case("next"):
+      case("next palette"):
         paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
         updateColorPicker(palettes.get(paletteIndex));
         break;
-      case("prev"):
+      case("prev palette"):
         paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
         if (paletteIndex < 0) {
           paletteIndex = NUM_PALETTES - 1;
         }
         updateColorPicker(palettes.get(paletteIndex));
+        break;
+      case("next brush"):
+        brush.setBrushType((brush.getBrushType()+1) % brush.NUM_BRUSH_TYPES);
+        break;
+      case("prev brush"):
+        int num = brush.getBrushType()-1;
+        if(num < 0){
+          num = brush.NUM_BRUSH_TYPES;
+        }
+        brush.setBrushType(num);
         break;
       case("larger"):
         //if (tooltipsize<2.0){
@@ -887,20 +903,7 @@ void setUpDevice() {
   world = new FWorld();
 }
 
-//void createBrushes() {
-//  for (int i = 0; i <button_img.length; i++) {
-//    bi = loadImage(button_img[i]);
-//    bi.resize(50, 50);
-//    cp5.addButton(button_label[i]).setImage(bi)
-//      .setPosition((50+80*i), 590)
-//      .setValue(0);
-//  }
-//}
-
 void createLayers() {
-  //for(int i = 0; i < layers.length; i++){
-  //  layers[i] = createGraphics((int)worldWidth, (int)worldHeight + 2);
-  //}
   layers[0] = g;
   layers[1] = createGraphics(1200, 680);
   layers[2] = createGraphics(1200, 680);

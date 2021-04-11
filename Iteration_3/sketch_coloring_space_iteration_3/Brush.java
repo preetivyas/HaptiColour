@@ -20,17 +20,19 @@ public class Brush extends PApplet{
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
   "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
   "../img/brush10.png"};
+  PImage brush;
 
 
-  public Brush() {
-    this(new int[] {0, 0, 0});
+  public Brush(PImage brush) {
+    this(new int[] {0, 0, 0}, brush);
   }
 
-  public Brush(int[] c) {
+  public Brush(int[] c, PImage brush) {
     this.paintColor = c;
     this.paintAmount = 0.0f;
     this.scaleFactor = 30f;
     this.brushType = 0;
+    this.brush = brush;
   }
 
   public void changeColor(int[] c) {
@@ -145,7 +147,6 @@ public class Brush extends PApplet{
 
   //brush 3: different image brushes; we can give user an option to update their tooltip
   private void paint_3(PGraphics layer, float x, float y) {
-    PImage brush = loadImage(button_img[0]);
     layer.pushMatrix();
     layer.translate(x-scaleFactor/2, y-scaleFactor/2);
     brush.resize((int)scaleFactor, (int)scaleFactor);
@@ -155,7 +156,6 @@ public class Brush extends PApplet{
 
   //brush 4: modified image brushes; grass like effect
   private void paint_4(PGraphics layer, float x, float y) {
-    PImage brush = loadImage(button_img[0]);
     float brushAngle = (float)atan2(x-prevX, y-prevY);
     layer.pushMatrix();
     layer.translate(x, y);
@@ -169,7 +169,6 @@ public class Brush extends PApplet{
 
   //brush 5: jiggle modified image brushes; feels like a soft carpet
   private void paint_5(PGraphics layer, float x, float y) {
-    PImage brush = loadImage(button_img[0]);
     float brushAngle = (float)atan2(x-prevX, y-prevY);
     for (int i=0; i<5; i++) {
       layer.pushMatrix();
@@ -197,7 +196,6 @@ public class Brush extends PApplet{
 
   //brush 6: jiggle modified image brushes; feels like air spray paint
   private void paint_6(PGraphics layer, float x, float y) {
-    PImage brush = loadImage(button_img[0]);
     float brushAngle = (float)atan2(x-prevX, y-prevY);
     for (int i=0; i<5; i++) {
       layer.pushMatrix();
