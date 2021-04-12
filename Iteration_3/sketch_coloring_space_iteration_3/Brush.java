@@ -20,19 +20,21 @@ public class Brush extends PApplet{
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
   "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
   "../img/brush10.png"};
-  PImage brush;
+  PImage brushImage;
+  PImage brushImage2;
 
 
-  public Brush(PImage brush) {
-    this(new int[] {0, 0, 0}, brush);
+  public Brush(PImage bi, PImage bi2) {
+    this(new int[] {0, 0, 0}, bi, bi2);
   }
 
-  public Brush(int[] c, PImage brush) {
+  public Brush(int[] c, PImage bi, PImage bi2) {
     this.paintColor = c;
     this.paintAmount = 0.0f;
     this.scaleFactor = 30f;
     this.brushType = 0;
-    this.brush = brush;
+    this.brushImage = bi;
+    this.brushImage2 = bi2;
   }
 
   public void changeColor(int[] c) {
@@ -152,8 +154,8 @@ public class Brush extends PApplet{
     layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
     layer.pushMatrix();
     layer.translate(x-scaleFactor/2, y-scaleFactor/2);
-    brush.resize((int)scaleFactor, (int)scaleFactor);
-    layer.image(brush, 0, 0);
+    this.brushImage2.resize((int)scaleFactor, (int)scaleFactor);
+    layer.image(this.brushImage2, 0, 0);
     layer.popMatrix();
   }
 
@@ -164,8 +166,8 @@ public class Brush extends PApplet{
     layer.pushMatrix();
     layer.translate(x, y);
     layer.rotate((float)(brushAngle+((3*PI)/2)));
-    brush.resize((int)scaleFactor, 1); //can play with the thikness, currently 1
-    layer.image(brush, 0, 0);
+    this.brushImage.resize((int)scaleFactor, 1); //can play with the thikness, currently 1
+    layer.image(this.brushImage, 0, 0);
     layer.popMatrix();
     prevX = x;
     prevY = y;
@@ -188,11 +190,11 @@ public class Brush extends PApplet{
 
       float jiggleAngle =  (int)Math.floor(Math.random()*(max-min+1)+min);
       layer.rotate((float)(brushAngle+(Math.toRadians(90+jiggleAngle))));
-      brush.resize((int)scaleFactor, 5); //can play with the thickness  
+      this.brushImage.resize((int)scaleFactor, 5); //can play with the thickness  
 
       float jiggleScale =  (int)Math.floor(Math.random()*(0.03-0.03+1)+0.03);
       layer.scale((float)(0.8+jiggleScale));
-      layer.image(brush, 0, 0);
+      layer.image(this.brushImage, 0, 0);
       layer.popMatrix();
       prevX = x;
       prevY = y;
@@ -217,11 +219,11 @@ public class Brush extends PApplet{
       float jiggleAngle =  (int)Math.floor(Math.random()*(max-min+1)+min);
       layer.rotate((float)(brushAngle+(Math.toRadians(90+jiggleAngle))));
 
-      brush.resize((int)scaleFactor, (int)scaleFactor); //can play with the thickness  
+      this.brushImage.resize((int)scaleFactor, (int)scaleFactor); //can play with the thickness  
 
       float jiggleScale =  (int)Math.floor(Math.random()*(0.03-0.03+1)+0.03);
       layer.scale((float)(0.8+jiggleScale));
-      layer.image(brush, 0, 0);
+      layer.image(this.brushImage, 0, 0);
       layer.popMatrix();
       prevX = x;
       prevY = y;
