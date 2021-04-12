@@ -38,7 +38,7 @@ public final String PORT = MAC; //<-- change the port name here!
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
 public final boolean DEBUG = false; //<-- print helpful print statements to System.out
-public final int NUM_PALETTES = 2;
+public final int NUM_PALETTES = 3;
 public final float PALETTE_SPACER = 1.25; //space between palette elements
 public final float BUTTON_SPACER = 1.25*1.5; //space between GUI elements
 public final float BRUSH_SIZE_JUMP = 2.0; //how much bigger/smaller to make the brush?
@@ -180,12 +180,12 @@ void setup() {
   //  .setValue(680)
   //  //.setFont(createFont("Verdana", 17))
   //  ;
-  
+
   damp = 680;
 
   drawingModeEngaged = BEGIN_IN_DRAWING_MODE;
   shape = 0;
-  
+
 
   createLayers();
 
@@ -223,11 +223,11 @@ void setup() {
   jloop = int(ydim/2);
   iloop = int(xdim/space);
 
-  if (HIDE_TEXTURE){
+  if (HIDE_TEXTURE) {
     opacity = 0;
-  }
-  else
-  {  opacity = 100;
+  } else
+  {  
+    opacity = 100;
   }
 
   for (int j = 0; j<jloop; j++) {
@@ -379,14 +379,13 @@ class SimulationThread implements Runnable {
 
     //playerToken.h_avatar.setDamping(damp);
 
-    if(((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))) {
+    if (((playerToken.h_avatar.isTouchingBody(colorSwatch[0])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[1])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[2])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[3])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[4])) || (playerToken.h_avatar.isTouchingBody(colorSwatch[5])))) {
       playerToken.h_avatar.setDamping(850) ; //850
-    }
-    else {
-      if (drawingModeEngaged==true){
+    } else {
+      if (drawingModeEngaged==true) {
         playerToken.h_avatar.setDamping(680) ;
-        textureUpdate();}
-      else{
+        textureUpdate();
+      } else {
         playerToken.h_avatar.setDamping(0) ;
       }
     }
@@ -587,8 +586,16 @@ ColorPalette createPalette(int index) {
     palette[1] = new ColorSwatch(175, 175, 255, 1); //periwinkle
     palette[0] = new ColorSwatch(202, 175, 255, 0); //lavender
     break;
-    
-    
+    case(2): //dark rainbow
+    palette[5] = new ColorSwatch(127, 0, 0, 5); //garnet
+    palette[4] = new ColorSwatch(127, 63, 0, 4); //sherbet
+    palette[3] = new ColorSwatch(127, 127, 0, 3); //yellow
+    palette[2] = new ColorSwatch(0, 127, 0, 2); //green
+    palette[1] = new ColorSwatch(0, 0, 127, 1); //blue
+    palette[0] = new ColorSwatch(63, 0, 127, 0); //purple
+    break;
+
+
   default:  //pastel rainbow
     palette[5] = new ColorSwatch(255, 175, 175, 5); //pink
     palette[4] = new ColorSwatch(255, 202, 175, 4); //sherbet
@@ -603,9 +610,10 @@ ColorPalette createPalette(int index) {
 }
 
 void createBrush() {
-  PImage brushImage = loadImage(button_img[12]);
-  PImage brushImage2 = loadImage(button_img[11]);
-  brush = new Brush(drawingColor, brushImage, brushImage2);
+  PImage brushImage = loadImage(button_img[10]);
+  PImage brushImage2 = loadImage(button_img[12]);
+  PImage brushImage3 = loadImage(button_img[11]);
+  brush = new Brush(drawingColor, new PImage[] {brushImage, brushImage2, brushImage3});
   int[] coords = {0, 0};
   //Bristle b = new Bristle(1.0, brush, coords); //centered bristle
   //brush.addBristle(b);
@@ -621,7 +629,7 @@ void drawBrush(PGraphics layer) {
 void drawCursor(PGraphics layer) {
   float brushScale = brush.getScale();
   layer.fill(color(drawingColor[0], drawingColor[1], drawingColor[2]));
-  
+
   layer.strokeWeight(1);  // Thicker
   layer.stroke(0, 0, 0);
   float x = playerToken.getAvatarPositionX()*pixelsPerCentimeter;
@@ -631,19 +639,19 @@ void drawCursor(PGraphics layer) {
     layer.ellipse(x, y, brushScale*2/30, brushScale*2/30);
   }
   layer.noFill();
-  
+
   layer.strokeWeight(1);  // Thicker
   layer.stroke(255, 255, 255);
   layer.ellipse(x, y, brushScale*30/30, brushScale*30/30);
-  
+
   if (brushScale > 10) {
     layer.ellipse(x, y, brushScale*4/30, brushScale*4/30);
   }
-  
+
   if (DEBUG) {
     System.out.println("Brush scale: "+brushScale);
   }
-  
+
   world.draw();
 }
 
@@ -771,74 +779,79 @@ void checkChangeColor() {
 }
 
 void checkButtonActivation() {
-  for (FBox item : GUIButtons) {
-    if (playerToken.h_avatar.isTouchingBody(item)) {
-      switch(item.getName()) {
-      case("next palette"):
-        paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
-        updateColorPicker(palettes.get(paletteIndex));
-        break;
-      case("prev palette"):
-        paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
-        if (paletteIndex < 0) {
-          paletteIndex = NUM_PALETTES - 1;
-        }
-        updateColorPicker(palettes.get(paletteIndex));
-        break;
-      case("next brush"):
-        brush.setBrushType((brush.getBrushType()+1) % brush.NUM_BRUSH_TYPES);
-        break;
-      case("prev brush"):
-        int num = brush.getBrushType()-1;
-        if(num < 0){
-          num = brush.NUM_BRUSH_TYPES;
-        }
-        brush.setBrushType(num);
-        break;
-      case("larger"):
-        //if (tooltipsize<2.0){
+  try {
+    for (FBox item : GUIButtons) {
+      if (playerToken.h_avatar.isTouchingBody(item)) {
+        switch(item.getName()) {
+          case("next palette"):
+          paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
+          updateColorPicker(palettes.get(paletteIndex));
+          break;
+          case("prev palette"):
+          paletteIndex = (paletteIndex - 1 ) % (NUM_PALETTES);
+          if (paletteIndex < 0) {
+            paletteIndex = NUM_PALETTES - 1;
+          }
+          updateColorPicker(palettes.get(paletteIndex));
+          break;
+          case("next brush"):
+          brush.setBrushType((brush.getBrushType()+1) % brush.NUM_BRUSH_TYPES);
+          break;
+          case("prev brush"):
+          int num = brush.getBrushType()-1;
+          if (num < 0) {
+            num = brush.NUM_BRUSH_TYPES;
+          }
+          brush.setBrushType(num);
+          break;
+          case("larger"):
+          //if (tooltipsize<2.0){
           brush.larger(BRUSH_SIZE_JUMP);
           println(tooltipsize);
           tooltipsize += BRUSH_SIZE_JUMP/pixelsPerCentimeter;
-        //}
-        //else{
-        //  break;  
-        //}
-        playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
-        C.setSize(brush.getScale()*1.5/30);
-        break;
-      case("smaller"):
-        //if (tooltipsize>0.6){
+          //}
+          //else{
+          //  break;  
+          //}
+          playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
+          C.setSize(brush.getScale()*1.5/30);
+          break;
+          case("smaller"):
+          //if (tooltipsize>0.6){
           brush.smaller(BRUSH_SIZE_JUMP);
           println(tooltipsize);
           tooltipsize -= BRUSH_SIZE_JUMP/pixelsPerCentimeter;
-        //}  
-        //else{
-        //  break;  
-        //} PV tried adding limits to brush size, still crashes, need to revisit
-        playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
-        C.setSize(brush.getScale()*1.5/30);
-        break;
-      case("save"):
-        layers[0].save("./saved/screen"+pageIndex+".png");
-        layers[1].save("./saved/colors"+pageIndex+".png");
-        pageIndex += 1;
-        g.textAlign(CENTER, CENTER);
-        g.textSize(150);
-        g.fill(255);
-        g.text("saved!", width/2, height/2);
-        g.textSize(125);
-        g.fill(0);
-        g.text("saved!", width/2, height/2);
-        break;
-      case("clear"):
-        g.background(255);
-        createLayers();
-        break;
-      default:
-        break;
+          //}  
+          //else{
+          //  break;  
+          //} PV tried adding limits to brush size, still crashes, need to revisit
+          playerToken.h_avatar.setSize(brush.getScale()/pixelsPerCentimeter);
+          C.setSize(brush.getScale()*1.5/30);
+          break;
+          case("save"):
+          layers[0].save("./saved/screen"+pageIndex+".jpg");
+          layers[1].save("./saved/colors"+pageIndex+".jpg");
+          pageIndex += 1;
+          g.textAlign(CENTER, CENTER);
+          g.textSize(150);
+          g.fill(255);
+          g.text("saved!", width/2, height/2);
+          g.textSize(125);
+          g.fill(0);
+          g.text("saved!", width/2, height/2);
+          break;
+          case("clear"):
+          g.background(255);
+          createLayers();
+          break;
+        default:
+          break;
+        }
       }
     }
+  }
+  catch (ConcurrentModificationException e) {
+    //ignore these exceptions
   }
 }
 
@@ -913,15 +926,15 @@ void createLayers() {
 void textureUpdate() {
 
   //if (drawingModeEngaged == true) {
-    //tgrid damp 356
-    for (int j=0; j<jloop; j++) {
-      for (int i=0; i<iloop; i++) {
-        if (playerToken.h_avatar.isTouchingBody(tgrid[i][j])) {
-          playerToken.h_avatar.setDamping(damp);
-          tvar = 1;
-        }
-      }//println(s);
-    }
+  //tgrid damp 356
+  for (int j=0; j<jloop; j++) {
+    for (int i=0; i<iloop; i++) {
+      if (playerToken.h_avatar.isTouchingBody(tgrid[i][j])) {
+        playerToken.h_avatar.setDamping(damp);
+        tvar = 1;
+      }
+    }//println(s);
+  }
   //}
 }
 /* end helper functions section ****************************************************************************************/

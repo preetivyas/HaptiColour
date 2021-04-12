@@ -9,8 +9,9 @@ public class Brush extends PApplet{
   private float paintAmount;
   private int[] paintColor = new int[3];
   private ArrayList<Bristle> bristles = new ArrayList<Bristle>();
-  private float scaleFactor;
+  private float maxSize;
   private int brushType;
+  private float minSize;
 
   //PV added these variables
   private float angle;
@@ -20,21 +21,20 @@ public class Brush extends PApplet{
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
   "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
   "../img/brush10.png"};
-  PImage brushImage;
-  PImage brushImage2;
+  PImage[] brushImages = new PImage[3];
 
 
-  public Brush(PImage bi, PImage bi2) {
-    this(new int[] {0, 0, 0}, bi, bi2);
+  public Brush(PImage[] bi) {
+    this(new int[] {0, 0, 0}, bi);
   }
 
-  public Brush(int[] c, PImage bi, PImage bi2) {
+  public Brush(int[] c, PImage[] bi) {
     this.paintColor = c;
     this.paintAmount = 0.0f;
-    this.scaleFactor = 30f;
+    this.maxSize = 30f;
     this.brushType = 0;
-    this.brushImage = bi;
-    this.brushImage2 = bi2;
+    this.brushImages = bi;
+    this.minSize = maxSize;
   }
 
   public void changeColor(int[] c) {
@@ -56,11 +56,11 @@ public class Brush extends PApplet{
   }
 
   public void setScale(float s) {
-    this.scaleFactor = s;
+    this.maxSize = s;
   }
 
   public float getScale() {
-    return this.scaleFactor;
+    return this.maxSize;
   }
 
   public void addBristle(Bristle b) {
@@ -76,13 +76,13 @@ public class Brush extends PApplet{
   }
 
   public void larger(float amount) {
-    scaleFactor += amount;
+    maxSize += amount;
   }
 
   public void smaller(float amount) {
-    scaleFactor -= amount;
-    if (scaleFactor < 1f) {
-      scaleFactor = 1f;
+    maxSize -= amount;
+    if (maxSize < 1f) {
+      maxSize = 1f;
     }
   }
 
@@ -108,26 +108,36 @@ public class Brush extends PApplet{
       paint_6(layer, x, y);
       break;
     default:
-      layer.ellipse(x, y, scaleFactor, scaleFactor);
+      layer.ellipse(x, y, maxSize, maxSize);
       break;
     }
   }
 
-  //brush 1: pulsing ellipse
-  private void paint_1(PGraphics layer, float x, float y) {
-    layer.fill(color(paintColor[0], paintColor[1], paintColor[2]));
-    if (true) {
-      angle += 5;
-      double val = Math.cos(Math.toRadians(angle)) * 12.0;
-      for (int a = 0; a < 360; a += 75) {
-        double xoff = Math.cos(Math.toRadians(a)) * val;
-        double yoff = Math.sin(Math.toRadians(a)) * val;
-        //layer.fill(0);
-        layer.ellipse((float)(x + xoff), (float)(y + yoff), (float)(val), (float)(val));
-      }
-      layer.fill(175, 175, 255, 1);
-      layer.ellipse(x, y, scaleFactor, scaleFactor);
-    }
+  ////brush 1: pulsing ellipse
+  //private void paint_1(PGraphics layer, float x, float y) {
+  //  layer.fill(color(paintColor[0], paintColor[1], paintColor[2]));
+  //  if (true) {
+  //    angle += 5;
+  //    double val = Math.cos(Math.toRadians(angle)) * 12.0;
+  //    for (int a = 0; a < 360; a += 75) {
+  //      double xoff = Math.cos(Math.toRadians(a)) * val;
+  //      double yoff = Math.sin(Math.toRadians(a)) * val;
+  //      //layer.fill(0);
+  //      layer.ellipse((float)(x + xoff), (float)(y + yoff), (float)(val), (float)(val));
+  //    }
+  //    layer.fill(175, 175, 255, 1);
+  //    layer.ellipse(x, y, maxSize, maxSize);
+  //  }
+  //}
+  
+  //brush 1: soft round brush
+  private void paint_1(PGraphics layer, float x, float y){
+    layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
+    layer.pushMatrix();
+    layer.translate(x-maxSize/2, y-maxSize/2);
+    this.brushImages[0].resize((int)maxSize, (int)maxSize);
+    layer.image(this.brushImages[0], 0, 0);
+    layer.popMatrix();
   }
 
   //brush 2: faster larger, slower small
@@ -140,8 +150,8 @@ public class Brush extends PApplet{
     distX = abs(x - prevX);
     distY = abs(y - prevY);
     avgdist = (distX+distY)/2; 
-    if (avgdist > scaleFactor) {
-      layer.ellipse(x, y, scaleFactor, scaleFactor);
+    if (avgdist*5 > maxSize) {
+      layer.ellipse(x, y, maxSize*30/30, maxSize*30/30);
     } else {
       layer.ellipse(x, y, avgdist*5, avgdist*5);
     }
@@ -153,9 +163,9 @@ public class Brush extends PApplet{
   private void paint_3(PGraphics layer, float x, float y) {
     layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
     layer.pushMatrix();
-    layer.translate(x-scaleFactor/2, y-scaleFactor/2);
-    this.brushImage2.resize((int)scaleFactor, (int)scaleFactor);
-    layer.image(this.brushImage2, 0, 0);
+    layer.translate(x-maxSize/2, y-maxSize/2);
+    this.brushImages[2].resize((int)maxSize, (int)maxSize);
+    layer.image(this.brushImages[2], 0, 0);
     layer.popMatrix();
   }
 
@@ -166,8 +176,8 @@ public class Brush extends PApplet{
     layer.pushMatrix();
     layer.translate(x, y);
     layer.rotate((float)(brushAngle+((3*PI)/2)));
-    this.brushImage.resize((int)scaleFactor, 1); //can play with the thikness, currently 1
-    layer.image(this.brushImage, 0, 0);
+    this.brushImages[1].resize((int)maxSize, 1); //can play with the thikness, currently 1
+    layer.image(this.brushImages[1], 0, 0);
     layer.popMatrix();
     prevX = x;
     prevY = y;
@@ -190,11 +200,11 @@ public class Brush extends PApplet{
 
       float jiggleAngle =  (int)Math.floor(Math.random()*(max-min+1)+min);
       layer.rotate((float)(brushAngle+(Math.toRadians(90+jiggleAngle))));
-      this.brushImage.resize((int)scaleFactor, 5); //can play with the thickness  
+      this.brushImages[1].resize((int)maxSize, 5); //can play with the thickness  
 
       float jiggleScale =  (int)Math.floor(Math.random()*(0.03-0.03+1)+0.03);
       layer.scale((float)(0.8+jiggleScale));
-      layer.image(this.brushImage, 0, 0);
+      layer.image(this.brushImages[1], 0, 0);
       layer.popMatrix();
       prevX = x;
       prevY = y;
@@ -219,11 +229,11 @@ public class Brush extends PApplet{
       float jiggleAngle =  (int)Math.floor(Math.random()*(max-min+1)+min);
       layer.rotate((float)(brushAngle+(Math.toRadians(90+jiggleAngle))));
 
-      this.brushImage.resize((int)scaleFactor, (int)scaleFactor); //can play with the thickness  
+      this.brushImages[1].resize((int)maxSize, (int)maxSize); //can play with the thickness  
 
       float jiggleScale =  (int)Math.floor(Math.random()*(0.03-0.03+1)+0.03);
       layer.scale((float)(0.8+jiggleScale));
-      layer.image(this.brushImage, 0, 0);
+      layer.image(this.brushImages[1], 0, 0);
       layer.popMatrix();
       prevX = x;
       prevY = y;
