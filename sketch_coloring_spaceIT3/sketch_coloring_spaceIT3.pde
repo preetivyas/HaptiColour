@@ -1036,7 +1036,7 @@ void setUpDevice() {
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
 
-  haplyBoard = new Board(this, "COM3", 0);
+  haplyBoard = new Board(this, "COM4", 0);
   //haplyBoard = new Board(this, PORT, 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
