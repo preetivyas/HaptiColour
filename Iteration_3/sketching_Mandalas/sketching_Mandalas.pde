@@ -59,30 +59,13 @@ float             edgeBottomRightY                    = worldHeight;
 /* Initialization of walls */
 FBox              wall ;
 
-FBox             damper;
-
-FBox           dampers ;
-FBox           damper1 ;
-FBox           damper2 ;
-FBox           damper3 ;
-FCircle              C ;
-FCircle              F ;
-FCircle          bumps ;
-FCircle            var1;
-
-float lasttimecheck;
-float timeinterval ;
-float t            ;
-
 /* Initialization of virtual tool */
 HVirtualCoupling s;
 PImage haplyAvatar;
 
 /* end elements definition *********************************************************************************************/ 
 
-
 String[]          button_label      =      {"b1", "b2", "b3", "b4", "b5", "b6"} ;
-
 
 /* setup section *******************************************************************************************************/
 void setup(){
@@ -94,56 +77,6 @@ void setup(){
     /* setup UI elements */
   smooth();
   cp5 = new ControlP5(this);
-  
-  cp5.addButton("Wallitself")
-    .setValue(0)
-    .setPosition(40,200)
-    .setSize(150,30)
-    .setColorValue((255))
-    ;
-  
-  cp5.addButton("SingleDampingLayer")
-    .setValue(0)
-    .setPosition(40,250)
-    .setSize(150,30)
-    .setColorValue((255))
-    ;
-    
-  cp5.addButton("GradualDampingLayers")
-    .setValue(0)
-    .setPosition(40,300)
-    .setSize(150,30)
-    .setColorValue((255))
-    ;
-    
-  cp5.addButton("TranslucentCircle")
-    .setValue(0)
-    .setPosition(40,350)
-    .setSize(150,30)
-    .setColorValue((255))
-    ;
-    
-  cp5.addButton("BumpyWall")
-    .setValue(0)
-    .setPosition(40,400)
-    .setSize(150,30)
-    .setColorValue((255))
-    ;
-    
-  cp5.addButton("Forces")
-    .setValue(0)
-    .setPosition(40,450)
-    .setSize(150,30)
-    .setColorValue((255))
-    ;
-
-  cp5.addButton("RESET")
-    .setValue(0)
-    .setPosition(40,500)
-    .setSize(150,30)
-    .setColorValue((255))
-    ;
-  
   noStroke()     ;
   
   /* device setup */
@@ -176,25 +109,12 @@ void setup(){
   
   /* creation of walls */
   wall                   = new FBox(10.0, 1.0)      ;
-  wall.setPosition(worldWidth/2.0, worldHeight/2.0) ;
+  wall.setPosition(worldWidth/2.0-8, worldHeight/2.0-5) ;
   wall.setDensity(100)                              ;
   wall.setSensor(false)                             ;
   wall.setStatic(true)                              ;
   wall.setFill(0,0,0)                               ;
   world.add(wall)                                   ;
-  
-  var1 = new FCircle(0.5)      ;
-  var1.setDensity(100)         ;
-  var1.setPosition(1500, 1500) ;
-  var1.setStatic(false)        ;
-  var1.setSensor(false)        ;
-  var1.setFill(255,0,0)        ;
-  world.add(var1)              ;
-  
-
-  /* Timer */
-  lasttimecheck = millis();
-  timeinterval = 250      ;
   
   
   /* Haptic Tool Initialization */
@@ -226,147 +146,6 @@ void setup(){
   scheduler.scheduleAtFixedRate(st, 1, 1, MILLISECONDS);  
 }
 /* end setup section ***************************************************************************************************/
-
-
-
-/* buttons action section **********************************************************************************************/
-
-public void Wallitself(int theValue) {
-  wall.setSensor(true)  ;
-  world.remove(damper)  ;
-  world.remove(damper1) ;
-  world.remove(damper2) ;
-  world.remove(damper3) ;
-  world.remove(C)       ;
-  world.remove(F)       ;
-  var1.setSensor(false) ;
-  world.remove(bumps)   ;
-}
-
-public void SingleDampingLayer(int theValue) {
-  
-  wall.setSensor(false);
-  world.remove(C)      ;
-  world.remove(damper1);
-  world.remove(damper2);
-  world.remove(damper3);
-  world.remove(F)      ;
-  var1.setSensor(false);
-  
-  damper                 = new FBox(10.0, 1.0)          ;
-  damper.setPosition(worldWidth/2.0, worldHeight/2.0-1) ;
-  damper.setDensity(100)                                ;
-  damper.setStatic(true)                                ;
-  damper.setFill(0,0,255,10)                            ;
-  damper.setNoStroke()                                  ;
-  damper.setSensor(true)                                ;
-  world.add(damper)                                     ;
-  
-}
-
-public void GradualDampingLayers(int theValue) {
-  
-  wall.setSensor(false);
-  world.remove(damper) ;
-  world.remove(C)      ;
-  world.remove(F)      ;
-  var1.setSensor(false);
-  
-  damper1                 = new FBox(10.0, 1.0)          ;
-  damper1.setPosition(worldWidth/2.0, worldHeight/2.0-3) ;
-  damper1.setDensity(100)                                ;
-  damper1.setStatic(true)                                ;
-  damper1.setFill(0,0,255,5)                             ;
-  damper1.setNoStroke()                                  ;
-  damper1.setSensor(true)                                ;
-  world.add(damper1)                                     ;
-  
-  damper2                 = new FBox(10.0, 1.0)          ;
-  damper2.setPosition(worldWidth/2.0, worldHeight/2.0-2) ;
-  damper2.setDensity(100)                                ;
-  damper2.setStatic(true)                                ;
-  damper2.setFill(0,0,255,10)                            ;
-  damper2.setNoStroke()                                  ;
-  damper2.setSensor(true)                                ;
-  world.add(damper2)                                     ;
-  
-  damper3                 = new FBox(10.0, 1.0)          ;
-  damper3.setPosition(worldWidth/2.0, worldHeight/2.0-1) ;
-  damper3.setDensity(100)                                ;
-  damper3.setStatic(true)                                ;
-  damper3.setFill(0,0,255,15)                            ;
-  damper3.setNoStroke()                                  ;
-  damper3.setSensor(true)                                ;
-  world.add(damper3)                                     ;
-  
-}
-
-public void TranslucentCircle(int theValue) {
-  
-  /* Collision bubble or circle */
-  C                  = new FCircle(1.5);
-  C.setDensity(0.01);
-  C.setSensor(true) ;
-  C.setNoFill()     ;
-  C.setStroke(0,0,0);
-  C.setPosition(3,3);
-  world.add(C)      ;
-  
-  world.remove(damper1);
-  world.remove(damper2);
-  world.remove(damper3);
-  world.remove(F)      ;
-  wall.setSensor(false);
-  var1.setSensor(false);
-  
-}
-
-
-public void BumpyWall(int theValue) {
-  
-  var1.setSensor(true) ;
-  world.remove(damper) ;
-  world.remove(damper1);
-  world.remove(damper2);
-  world.remove(damper3);
-  wall.setSensor(false);
-  world.remove(C)      ;
-  world.remove(F)      ;
-  
-}
-
-
-public void Forces(int theValue) {
-  
-  F                  = new FCircle(1);
-  F.setDensity(0.01);
-  F.setSensor(true) ;
-  F.setNoFill()     ;
-  F.setStroke(0,0,0,30);
-  F.setPosition(3,3);
-  world.add(F)      ;
-  
-  var1.setSensor(false);
-  world.remove(damper) ;
-  world.remove(damper1);
-  world.remove(damper2);
-  world.remove(damper3);
-  wall.setSensor(false);
-  world.remove(C)      ;
-  
-}
-
-
-public void RESET(int theValue) {
-  wall.setSensor(false) ;
-  world.remove(damper)  ;
-  world.remove(damper1) ;
-  world.remove(damper2) ;
-  world.remove(damper3) ;
-  world.remove(C)       ;
-  world.remove(F)       ;
-  var1.setSensor(false) ;
-}
 
 
 /* draw section ********************************************************************************************************/
@@ -408,72 +187,13 @@ class SimulationThread implements Runnable{
     }
     
     s.setToolPosition(edgeTopLeftX+worldWidth/2-(posEE).x, edgeTopLeftY+(posEE).y-7);
-    C.setPosition(s.h_avatar.getX(), s.h_avatar.getY());
-    F.setPosition(s.h_avatar.getX(), s.h_avatar.getY());
-    //joint_Formation();
     
     s.updateCouplingForce();
     fEE.set(-s.getVirtualCouplingForceX(), s.getVirtualCouplingForceY());
     fEE.div(100000); //dynes to newtons
     
-    
-    if (F.isTouchingBody(wall)){
-      s.h_avatar.setDamping(900) ;
-      fEE.x = random(-1.25,1.25) ;
-      fEE.y = random(-1.25,1.25) ;
-    }
-    
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
-    
-    
-    if (s.h_avatar.isTouchingBody(wall) && wall.isSensor()){
-      s.h_avatar.setDamping(950);
-    
-    } else if (s.h_avatar.isTouchingBody(damper)){
-      s.h_avatar.setDamping(950);
-    
-    } else if (s.h_avatar.isTouchingBody(damper1)){
-      s.h_avatar.setDamping(900);
-      
-    } else if (s.h_avatar.isTouchingBody(damper2)){
-      s.h_avatar.setDamping(925);
-      
-    } else if (s.h_avatar.isTouchingBody(damper3)){
-      s.h_avatar.setDamping(950);
-      
-    } else if (C.isTouchingBody(wall)){
-      s.h_avatar.setDamping(950);
-    
-    } else if (s.h_avatar.isTouchingBody(wall) && var1.isSensor()){
-      
-      int bs = 2;
-      
-      for (int i = 0; i < bs; i++){
-      
-        bumps = new FCircle(0.5)                               ;
-        bumps.setDensity(100)                                  ;
-        bumps.setPosition(s.h_avatar.getX(), s.h_avatar.getY());
-        bumps.setStatic(false)                                 ;
-        bumps.setFill(255,0,0)                                 ;
-        world.add(bumps)                                       ;
-      }
-      
-    //} else if (F.isTouchingBody(wall)){
-    //  s.h_avatar.setDamping(900);
-    //  fEE.x = random(-5,5)      ;
-    //  fEE.y = random(-5,5)      ;
-    
-    } else {
-      s.h_avatar.setDamping(500);
-    }
-    
-    
-    t = millis() - lasttimecheck;
-
-    if (millis() > lasttimecheck + timeinterval){
-      lasttimecheck = millis()  ;
-    }
 
 
     world.step(1.0f/1000.0f);
