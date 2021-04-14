@@ -57,10 +57,11 @@ float             edgeBottomRightY                    = worldHeight;
 
 
 /* Initialization of walls */
-FBox     wall ;
-
-FCircle  myCircle1;
-
+FBox    wall      ;
+FCircle myCircle1 ;
+FCircle myCircle2 ;
+FCircle myCircle3 ;
+FCircle myCircle4 ;
 
 /* Initialization of virtual tool */
 HVirtualCoupling s;
@@ -111,8 +112,8 @@ void setup(){
   world               = new FWorld();
   
   /* creation of walls */
-  wall                   = new FBox(10.0, 1.0)      ;
-  wall.setPosition(worldWidth/2.0-8, worldHeight/2.0-5) ;
+  wall                   = new FBox(5.0, 1.0)            ;
+  wall.setPosition(worldWidth/2.0-10, worldHeight/2.0-5) ;
   wall.setDensity(100)                              ;
   wall.setSensor(false)                             ;
   wall.setStatic(true)                              ;
@@ -120,18 +121,41 @@ void setup(){
   world.add(wall)                                   ;
   
   
-  int n = 3;
-  float rad = 1           ;
-  float xO = worldWidth/2 ;
-  float yO = worldHeight/2;
+  float r1 = 1.5  ;
+  float r2 = 6.5  ;
+  float r3 = 11.5 ;
+  
+  FCircle myCircle1 = new FCircle(r1)                ;
+  myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+  myCircle1.setStatic(true)                          ;
+  myCircle1.setNoFill()                              ;
+  world.add(myCircle1)                               ;
+  
+  FCircle myCircle2 = new FCircle(r2)                ;
+  myCircle2.setPosition(worldWidth/2, worldHeight/2) ;
+  myCircle2.setStatic(true)                          ;
+  myCircle2.setNoFill()                              ;
+  world.add(myCircle2)                               ;
+  
+  FCircle myCircle3 = new FCircle(r3)                ;
+  myCircle3.setPosition(worldWidth/2, worldHeight/2) ;
+  myCircle3.setStatic(true)                          ;
+  myCircle3.setNoFill()                              ;
+  world.add(myCircle3)                               ;
+  
+  int n = 8 ;
+  float rad = (r3/2)-(r2/2) ;
   
   for (int i = 0; i < n; i++){
-    FCircle myCircle1 = new FCircle(rad)               ;
-    myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
-    myCircle1.setStatic(true)                          ;
-    myCircle1.setNoFill()                              ;
-    world.add(myCircle1)                               ;
-    rad = 3.5*rad                                      ;
+    
+    float xO = 4.5 * sin(i * TWO_PI/n) ;
+    float yO = 4.5 * cos(i * TWO_PI/n) ;
+    
+    FCircle myCircle4 = new FCircle(rad) ;
+    myCircle4.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
+    myCircle4.setStatic(true)            ;
+    myCircle4.setNoFill()                ;
+    world.add(myCircle4)                 ;
   }
   
   
