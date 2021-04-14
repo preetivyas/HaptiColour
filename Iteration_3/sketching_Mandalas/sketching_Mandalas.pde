@@ -57,7 +57,10 @@ float             edgeBottomRightY                    = worldHeight;
 
 
 /* Initialization of walls */
-FBox              wall ;
+FBox     wall ;
+
+FCircle  myCircle1;
+
 
 /* Initialization of virtual tool */
 HVirtualCoupling s;
@@ -115,6 +118,23 @@ void setup(){
   wall.setStatic(true)                              ;
   wall.setFill(0,0,0)                               ;
   world.add(wall)                                   ;
+  
+  
+  int n = 3;
+  float rad = 2           ;
+  float xO = worldWidth/2 ;
+  float yO = worldHeight/2;
+  
+  for (int i = 0; i < n; i++){
+  
+    FCircle myCircle1 = new FCircle(rad)               ;
+    myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+    myCircle1.setStatic(true)                          ;
+    myCircle1.setnoFill()                              ;
+    world.add(myCircle1)                               ;
+    rad = 2*rad                                        ;
+  }
+  
   
   
   /* Haptic Tool Initialization */
