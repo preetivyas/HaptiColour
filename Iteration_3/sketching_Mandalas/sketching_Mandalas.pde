@@ -121,27 +121,26 @@ void setup(){
   
   
   int n = 3;
-  float rad = 2           ;
+  float rad = 1           ;
   float xO = worldWidth/2 ;
   float yO = worldHeight/2;
   
   for (int i = 0; i < n; i++){
-  
     FCircle myCircle1 = new FCircle(rad)               ;
     myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
     myCircle1.setStatic(true)                          ;
-    myCircle1.setnoFill()                              ;
+    myCircle1.setNoFill()                              ;
     world.add(myCircle1)                               ;
-    rad = 2*rad                                        ;
+    rad = 3.5*rad                                      ;
   }
   
   
   
   /* Haptic Tool Initialization */
-  s                   = new HVirtualCoupling((0.5)); 
-  s.h_avatar.setDensity(4);
-  s.h_avatar.setNoStroke();
-  s.h_avatar.setFill(0,0,250);
+  s = new HVirtualCoupling((0.5)); 
+  s.h_avatar.setDensity(4)       ;
+  s.h_avatar.setNoStroke()       ;
+  s.h_avatar.setFill(0,0,250)    ;
   s.init(world, edgeTopLeftX+worldWidth/2, edgeTopLeftY+2);
   /* If you are developing on a Mac users must update the path below 
    * from "../img/Haply_avatar.png" to "./img/Haply_avatar.png" 
