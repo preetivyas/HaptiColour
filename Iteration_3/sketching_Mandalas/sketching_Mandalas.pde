@@ -129,7 +129,7 @@ void setup(){
   // MANDALAS //
 
 
-  float circles = 4 ;
+  float circles = 2 ;
   
   if (circles == 4){         // MANDALA 1
   
@@ -144,7 +144,21 @@ void setup(){
       D = D + 3;
     }
     
+    int n = 8   ;
+    float d = 3 ;
+    float xO  ;
+    float yO  ;
+  
+    for (int i = 0; i < n; i++){
+      xO = 4.25 * sin(i * TWO_PI/n) ;
+      yO = 4.25 * cos(i * TWO_PI/n) ;
     
+      FCircle myCircle1 = new FCircle(d) ;
+      myCircle1.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
+      myCircle1.setStatic(true) ;
+      myCircle1.setNoFill()     ;
+      world.add(myCircle1)      ;
+    }
   
   } else if (circles == 3) {  // MANDALA 2
     
@@ -196,8 +210,21 @@ void setup(){
       h = -h;
     }
   
-  } else {
+  } else if (circles == 2) {  // MANDALA 3
     
+    float D = 2.5 ;
+  
+    for (int i = 0; i < circles; i++){
+      FCircle myCircle1 = new FCircle(D)                 ;
+      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+      myCircle1.setStatic(true)                          ;
+      myCircle1.setNoFill()                              ;
+      world.add(myCircle1)                               ;
+      D = D + 3;
+    }
+   
+  } else {
+  
   
   }
   
