@@ -62,6 +62,12 @@ FCircle myCircle1 ;
 FCircle myCircle2 ;
 FCircle myCircle3 ;
 FCircle myCircle4 ;
+FLine line1       ;
+FLine line2       ;
+FLine line3       ;
+FLine line4       ;
+FLine line5       ;
+FLine line6       ;
 
 /* Initialization of virtual tool */
 HVirtualCoupling s;
@@ -145,19 +151,42 @@ void setup(){
   
   int n = 8 ;
   float rad = (r3/2)-(r2/2) ;
+  float xO  ;
+  float yO  ;
   
   for (int i = 0; i < n; i++){
     
-    float xO = 4.5 * sin(i * TWO_PI/n) ;
-    float yO = 4.5 * cos(i * TWO_PI/n) ;
+    xO = 4.5 * sin(i * TWO_PI/n) ;
+    yO = 4.5 * cos(i * TWO_PI/n) ;
     
     FCircle myCircle4 = new FCircle(rad) ;
     myCircle4.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
     myCircle4.setStatic(true)            ;
     myCircle4.setNoFill()                ;
     world.add(myCircle4)                 ;
+    
   }
   
+  int m = 2 ;
+  float h1 = 2.3;
+  
+  for (int i = 0; i < m; i++){
+    FLine line1 = new FLine(worldWidth/2, worldHeight/2-(r2/2), worldWidth/2-h1, worldHeight/2+(abs(h1)));
+    world.add(line1);
+    h1 = -h1;
+  }
+  
+  for (int i = 0; i < m; i++){
+    FLine line1 = new FLine(worldWidth/2, worldHeight/2+(r2/2), worldWidth/2-h1, worldHeight/2-(abs(h1)));
+    world.add(line1);
+    h1 = -h1;
+  }
+  
+  for (int i = 0; i < m; i++){
+    FLine line1 = new FLine(worldWidth/2-h1, worldHeight/2+h1, worldWidth/2+h1, worldHeight/2+h1);
+    world.add(line1);
+    h1 = -h1;
+  }
   
   
   /* Haptic Tool Initialization */
