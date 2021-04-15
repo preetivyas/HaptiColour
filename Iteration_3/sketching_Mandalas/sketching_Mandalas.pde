@@ -191,35 +191,23 @@ void setup(){
   
   
   // MANDALA 2 //
+
+  float circles = 4 ;
   
-  float r1 = 2.5  ;
-  float r2 = 5.5  ;
-  float r3 = 8.5  ;
-  float r4 = 11.5 ;
+  if (circles == 4){
   
-  FCircle myCircle1 = new FCircle(r1)                ;
-  myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
-  myCircle1.setStatic(true)                          ;
-  myCircle1.setNoFill()                              ;
-  world.add(myCircle1)                               ;
+    float D = 2.5     ;
   
-  FCircle myCircle2 = new FCircle(r2)                ;
-  myCircle2.setPosition(worldWidth/2, worldHeight/2) ;
-  myCircle2.setStatic(true)                          ;
-  myCircle2.setNoFill()                              ;
-  world.add(myCircle2)                               ;
+    for (int i = 0; i < cir; i++){
+      FCircle myCircle1 = new FCircle(D)                 ;
+      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+      myCircle1.setStatic(true)                          ;
+      myCircle1.setNoFill()                              ;
+      world.add(myCircle1)                               ;
+      D = D + 3;
+    }
   
-  FCircle myCircle3 = new FCircle(r3)                ;
-  myCircle3.setPosition(worldWidth/2, worldHeight/2) ;
-  myCircle3.setStatic(true)                          ;
-  myCircle3.setNoFill()                              ;
-  world.add(myCircle3)                               ;
-  
-  FCircle myCircle4 = new FCircle(r4)                ;
-  myCircle4.setPosition(worldWidth/2, worldHeight/2) ;
-  myCircle4.setStatic(true)                          ;
-  myCircle4.setNoFill()                              ;
-  world.add(myCircle4)                               ;
+  }
   
   
   
