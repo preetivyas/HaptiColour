@@ -68,6 +68,7 @@ FLine line3       ;
 FLine line4       ;
 FLine line5       ;
 FLine line6       ;
+FPoly myPoly      ;
 
 /* Initialization of virtual tool */
 HVirtualCoupling s;
@@ -128,8 +129,9 @@ void setup(){
    
   // MANDALAS //
 
-
   float circles = 2 ;
+  
+  
   
   if (circles == 4){         // MANDALA 1
   
@@ -222,6 +224,16 @@ void setup(){
       world.add(myCircle1)                               ;
       D = D + 3;
     }
+    
+    float l = 6;
+    float[] verticesx = {worldWidth/2, worldWidth/2+l, worldWidth/2, worldWidth/2-l, worldWidth/2}       ;
+    float[] verticesy = {worldHeight/2-l, worldHeight/2, worldHeight/2+l, worldHeight/2, worldHeight/2-l};
+
+    for (int i = 0; i < 4; i++){
+      FLine line1 = new FLine(verticesx[i], verticesy[i], verticesx[i+1], verticesy[i+1]);
+      world.add(line1);
+    }
+    
    
   } else {
   
