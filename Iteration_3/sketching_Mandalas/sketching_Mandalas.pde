@@ -2,7 +2,7 @@
 import processing.serial.*                   ;
 import static java.util.concurrent.TimeUnit.*;
 import java.util.concurrent.*                ;
-import controlP5.*                           ;
+//import controlP5.*                           ;
 /* end library imports *************************************************************************************************/  
 
 
@@ -10,7 +10,7 @@ import controlP5.*                           ;
 private final ScheduledExecutorService scheduler      = Executors.newScheduledThreadPool(1);
 /* end scheduler definition ********************************************************************************************/ 
 
-ControlP5 cp5;
+//ControlP5 cp5;
 
 /* device block definitions ********************************************************************************************/
 Board             haplyBoard;
@@ -86,7 +86,7 @@ void setup(){
   
     /* setup UI elements */
   smooth();
-  cp5 = new ControlP5(this);
+  //cp5 = new ControlP5(this);
   noStroke()     ;
   
   /* device setup */
