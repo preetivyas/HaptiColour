@@ -105,7 +105,6 @@ void setup(){
   pantograph          = new Pantograph();
   
   widgetOne.set_mechanism(pantograph);
-  
   widgetOne.add_actuator(1, CCW, 2);
   widgetOne.add_actuator(2, CW, 1) ;
   widgetOne.add_encoder(1, CCW, 241, 10752, 2);
@@ -127,9 +126,76 @@ void setup(){
   world.add(wall)                                   ;
   
   
-  float r1 = 1.5  ;
-  float r2 = 6.5  ;
-  float r3 = 11.5 ;
+  // MANDALA 1 //
+  
+  //float r1 = 1.5  ;
+  //float r2 = 6.5  ;
+  //float r3 = 11.5 ;
+  
+  //FCircle myCircle1 = new FCircle(r1)                ;
+  //myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+  //myCircle1.setStatic(true)                          ;
+  //myCircle1.setNoFill()                              ;
+  //world.add(myCircle1)                               ;
+  
+  //FCircle myCircle2 = new FCircle(r2)                ;
+  //myCircle2.setPosition(worldWidth/2, worldHeight/2) ;
+  //myCircle2.setStatic(true)                          ;
+  //myCircle2.setNoFill()                              ;
+  //world.add(myCircle2)                               ;
+  
+  //FCircle myCircle3 = new FCircle(r3)                ;
+  //myCircle3.setPosition(worldWidth/2, worldHeight/2) ;
+  //myCircle3.setStatic(true)                          ;
+  //myCircle3.setNoFill()                              ;
+  //world.add(myCircle3)                               ;
+  
+  //int n = 8 ;
+  //float rad = (r3/2)-(r2/2) ;
+  //float xO  ;
+  //float yO  ;
+  
+  //for (int i = 0; i < n; i++){
+    
+  //  xO = 4.5 * sin(i * TWO_PI/n) ;
+  //  yO = 4.5 * cos(i * TWO_PI/n) ;
+    
+  //  FCircle myCircle4 = new FCircle(rad) ;
+  //  myCircle4.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
+  //  myCircle4.setStatic(true)            ;
+  //  myCircle4.setNoFill()                ;
+  //  world.add(myCircle4)                 ;
+    
+  //}
+  
+  //int m = 2 ;
+  //float h1 = 2.3;
+  
+  //for (int i = 0; i < m; i++){
+  //  FLine line1 = new FLine(worldWidth/2, worldHeight/2-(r2/2), worldWidth/2-h1, worldHeight/2+(abs(h1)));
+  //  world.add(line1);
+  //  h1 = -h1;
+  //}
+  
+  //for (int i = 0; i < m; i++){
+  //  FLine line1 = new FLine(worldWidth/2, worldHeight/2+(r2/2), worldWidth/2-h1, worldHeight/2-(abs(h1)));
+  //  world.add(line1);
+  //  h1 = -h1;
+  //}
+  
+  //for (int i = 0; i < m; i++){
+  //  FLine line1 = new FLine(worldWidth/2-h1, worldHeight/2+h1, worldWidth/2+h1, worldHeight/2+h1);
+  //  world.add(line1);
+  //  h1 = -h1;
+  //}
+  
+  
+  // MANDALA 2 //
+  
+  float r1 = 2.5  ;
+  float r2 = 5.5  ;
+  float r3 = 8.5  ;
+  float r4 = 11.5 ;
   
   FCircle myCircle1 = new FCircle(r1)                ;
   myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
@@ -149,44 +215,14 @@ void setup(){
   myCircle3.setNoFill()                              ;
   world.add(myCircle3)                               ;
   
-  int n = 8 ;
-  float rad = (r3/2)-(r2/2) ;
-  float xO  ;
-  float yO  ;
+  FCircle myCircle4 = new FCircle(r4)                ;
+  myCircle4.setPosition(worldWidth/2, worldHeight/2) ;
+  myCircle4.setStatic(true)                          ;
+  myCircle4.setNoFill()                              ;
+  world.add(myCircle4)                               ;
   
-  for (int i = 0; i < n; i++){
-    
-    xO = 4.5 * sin(i * TWO_PI/n) ;
-    yO = 4.5 * cos(i * TWO_PI/n) ;
-    
-    FCircle myCircle4 = new FCircle(rad) ;
-    myCircle4.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
-    myCircle4.setStatic(true)            ;
-    myCircle4.setNoFill()                ;
-    world.add(myCircle4)                 ;
-    
-  }
   
-  int m = 2 ;
-  float h1 = 2.3;
   
-  for (int i = 0; i < m; i++){
-    FLine line1 = new FLine(worldWidth/2, worldHeight/2-(r2/2), worldWidth/2-h1, worldHeight/2+(abs(h1)));
-    world.add(line1);
-    h1 = -h1;
-  }
-  
-  for (int i = 0; i < m; i++){
-    FLine line1 = new FLine(worldWidth/2, worldHeight/2+(r2/2), worldWidth/2-h1, worldHeight/2-(abs(h1)));
-    world.add(line1);
-    h1 = -h1;
-  }
-  
-  for (int i = 0; i < m; i++){
-    FLine line1 = new FLine(worldWidth/2-h1, worldHeight/2+h1, worldWidth/2+h1, worldHeight/2+h1);
-    world.add(line1);
-    h1 = -h1;
-  }
   
   
   /* Haptic Tool Initialization */
@@ -266,7 +302,6 @@ class SimulationThread implements Runnable{
     
     torques.set(widgetOne.set_device_torques(fEE.array()));
     widgetOne.device_write_torques();
-
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
