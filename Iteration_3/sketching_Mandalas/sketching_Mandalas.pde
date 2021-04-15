@@ -59,12 +59,8 @@ float             edgeBottomRightY                    = worldHeight;
 /* Initialization of walls */
 FBox    wall      ;
 FCircle myCircle1 ;
-FCircle myCircle2 ;
-FCircle myCircle3 ;
-FCircle myCircle4 ;
 FLine line1       ;
 FLine square      ;
-FPoly myPoly      ;
 
 /* Initialization of virtual tool */
 HVirtualCoupling s;
@@ -135,14 +131,14 @@ void setup(){
   }
   
   
-
-  float circles = 2 ;
+  int mandala = 2 ;  // 1 - mandala 1 // 2 - mandala 2 // 3 - mandala 3
   
-  if (circles == 4){         // MANDALA 1
+  
+  if (mandala == 1){         // MANDALA 1
   
     float D = 2.5 ;
   
-    for (int i = 0; i < circles; i++){
+    for (int i = 0; i < 4; i++){
       FCircle myCircle1 = new FCircle(D)                 ;
       myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
       myCircle1.setStatic(true)                          ;
@@ -167,11 +163,11 @@ void setup(){
       world.add(myCircle1)      ;
     }
   
-  } else if (circles == 3) {  // MANDALA 2
+  } else if (mandala == 2) {  // MANDALA 2
     
     float D = 1.5 ;
     
-    for (int i = 0; i < circles; i++){
+    for (int i = 0; i < 3; i++){
       FCircle myCircle1 = new FCircle(D)                 ;
       myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
       myCircle1.setStatic(true)                          ;
@@ -217,32 +213,29 @@ void setup(){
       h = -h;
     }
   
-  } else if (circles == 2) {  // MANDALA 3
+  } else if (mandala == 3) {  // MANDALA 3
     
-    float D = 2.5 ;
+    float D = 2.5 ;   
+    
+    int n = 8 ;
+    float d = 5.675 ;
+    float xO  ;
+    float yO  ;
   
-    for (int i = 0; i < circles; i++){
-      FCircle myCircle1 = new FCircle(D)                 ;
-      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
-      myCircle1.setStatic(true)                          ;
-      myCircle1.setNoFill()                              ;
-      world.add(myCircle1)                               ;
-      D = D + 3;
-    }
+    for (int i = 0; i < n; i++){
+      xO = 2.875 * sin(i * TWO_PI/n) ;
+      yO = 2.875 * cos(i * TWO_PI/n) ;
     
-    float l = 5.75;
-    float[] verticesx = {worldWidth/2, worldWidth/2+l, worldWidth/2, worldWidth/2-l, worldWidth/2}       ;
-    float[] verticesy = {worldHeight/2-l, worldHeight/2, worldHeight/2+l, worldHeight/2, worldHeight/2-l};
-
-    for (int i = 0; i < 4; i++){
-      FLine line1 = new FLine(verticesx[i], verticesy[i], verticesx[i+1], verticesy[i+1]);
-      world.add(line1);
+      FCircle myCircle1 = new FCircle(d) ;
+      myCircle1.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
+      myCircle1.setStatic(true) ;
+      myCircle1.setNoFill()     ;
+      world.add(myCircle1)      ;
     }
     
    
   } else {
-  
-  
+      //empty
   }
   
   
