@@ -124,77 +124,14 @@ void setup(){
   wall.setStatic(true)                              ;
   wall.setFill(0,0,0)                               ;
   world.add(wall)                                   ;
-  
-  
-  // MANDALA 1 //
-  
-  //float r1 = 1.5  ;
-  //float r2 = 6.5  ;
-  //float r3 = 11.5 ;
-  
-  //FCircle myCircle1 = new FCircle(r1)                ;
-  //myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
-  //myCircle1.setStatic(true)                          ;
-  //myCircle1.setNoFill()                              ;
-  //world.add(myCircle1)                               ;
-  
-  //FCircle myCircle2 = new FCircle(r2)                ;
-  //myCircle2.setPosition(worldWidth/2, worldHeight/2) ;
-  //myCircle2.setStatic(true)                          ;
-  //myCircle2.setNoFill()                              ;
-  //world.add(myCircle2)                               ;
-  
-  //FCircle myCircle3 = new FCircle(r3)                ;
-  //myCircle3.setPosition(worldWidth/2, worldHeight/2) ;
-  //myCircle3.setStatic(true)                          ;
-  //myCircle3.setNoFill()                              ;
-  //world.add(myCircle3)                               ;
-  
-  //int n = 8 ;
-  //float rad = (r3/2)-(r2/2) ;
-  //float xO  ;
-  //float yO  ;
-  
-  //for (int i = 0; i < n; i++){
-    
-  //  xO = 4.5 * sin(i * TWO_PI/n) ;
-  //  yO = 4.5 * cos(i * TWO_PI/n) ;
-    
-  //  FCircle myCircle4 = new FCircle(rad) ;
-  //  myCircle4.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
-  //  myCircle4.setStatic(true)            ;
-  //  myCircle4.setNoFill()                ;
-  //  world.add(myCircle4)                 ;
-    
-  //}
-  
-  //int m = 2 ;
-  //float h1 = 2.3;
-  
-  //for (int i = 0; i < m; i++){
-  //  FLine line1 = new FLine(worldWidth/2, worldHeight/2-(r2/2), worldWidth/2-h1, worldHeight/2+(abs(h1)));
-  //  world.add(line1);
-  //  h1 = -h1;
-  //}
-  
-  //for (int i = 0; i < m; i++){
-  //  FLine line1 = new FLine(worldWidth/2, worldHeight/2+(r2/2), worldWidth/2-h1, worldHeight/2-(abs(h1)));
-  //  world.add(line1);
-  //  h1 = -h1;
-  //}
-  
-  //for (int i = 0; i < m; i++){
-  //  FLine line1 = new FLine(worldWidth/2-h1, worldHeight/2+h1, worldWidth/2+h1, worldHeight/2+h1);
-  //  world.add(line1);
-  //  h1 = -h1;
-  //}
-  
-  
-  // MANDALA 2 //
+
+   
+  // MANDALAS //
+
 
   float circles = 4 ;
   
-  if (circles == 4){
+  if (circles == 4){         // MANDALA 1
   
     float D = 2.5 ;
   
@@ -206,13 +143,14 @@ void setup(){
       world.add(myCircle1)                               ;
       D = D + 3;
     }
+    
+    
   
-  } else if (circles == 3) {
+  } else if (circles == 3) {  // MANDALA 2
     
     float D = 1.5 ;
     
     for (int i = 0; i < circles; i++){
-      
       FCircle myCircle1 = new FCircle(D)                 ;
       myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
       myCircle1.setStatic(true)                          ;
@@ -220,9 +158,46 @@ void setup(){
       world.add(myCircle1)                               ;
       D = D + 5                                          ;
     }
+    
+    int n = 8 ;
+    float d = 2.5 ;
+    float xO  ;
+    float yO  ;
+  
+    for (int i = 0; i < n; i++){
+      xO = 4.5 * sin(i * TWO_PI/n) ;
+      yO = 4.5 * cos(i * TWO_PI/n) ;
+    
+      FCircle myCircle1 = new FCircle(d) ;
+      myCircle1.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
+      myCircle1.setStatic(true) ;
+      myCircle1.setNoFill()     ;
+      world.add(myCircle1)      ;
+    }
+    
+    int m = 2    ;
+    float h = 2.3;
+  
+    for (int i = 0; i < m; i++){
+      FLine line1 = new FLine(worldWidth/2, worldHeight/2-(3.25), worldWidth/2-h, worldHeight/2+(abs(h)));
+      world.add(line1);
+      h = -h;
+    }
+  
+    for (int i = 0; i < m; i++){
+      FLine line1 = new FLine(worldWidth/2, worldHeight/2+(3.25), worldWidth/2-h, worldHeight/2-(abs(h)));
+      world.add(line1);
+      h = -h;
+    }
+  
+    for (int i = 0; i < m; i++){
+      FLine line1 = new FLine(worldWidth/2-h, worldHeight/2+h, worldWidth/2+h, worldHeight/2+h);
+      world.add(line1);
+      h = -h;
+    }
   
   } else {
-  
+    
   
   }
   
