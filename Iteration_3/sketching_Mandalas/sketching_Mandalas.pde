@@ -63,11 +63,7 @@ FCircle myCircle2 ;
 FCircle myCircle3 ;
 FCircle myCircle4 ;
 FLine line1       ;
-FLine line2       ;
-FLine line3       ;
-FLine line4       ;
-FLine line5       ;
-FLine line6       ;
+FLine square      ;
 FPoly myPoly      ;
 
 /* Initialization of virtual tool */
@@ -128,10 +124,19 @@ void setup(){
 
    
   // MANDALAS //
+  
+  float c = 5.75;
+  float[] cornerx = {worldWidth/2-c, worldWidth/2+c, worldWidth/2+c, worldWidth/2-c, worldWidth/2-c}     ;
+  float[] cornery = {worldHeight/2-c, worldHeight/2-c, worldHeight/2+c, worldHeight/2+c, worldHeight/2-c};
+  
+  for (int i = 0; i < 4; i++){
+    FLine square = new FLine(cornerx[i], cornery[i], cornerx[i+1], cornery[i+1]);
+    world.add(square);
+  }
+  
+  
 
-  float circles = 3 ;
-  
-  
+  float circles = 2 ;
   
   if (circles == 4){         // MANDALA 1
   
@@ -225,7 +230,7 @@ void setup(){
       D = D + 3;
     }
     
-    float l = 6;
+    float l = 5.75;
     float[] verticesx = {worldWidth/2, worldWidth/2+l, worldWidth/2, worldWidth/2-l, worldWidth/2}       ;
     float[] verticesy = {worldHeight/2-l, worldHeight/2, worldHeight/2+l, worldHeight/2, worldHeight/2-l};
 
