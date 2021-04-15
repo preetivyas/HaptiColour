@@ -196,9 +196,9 @@ void setup(){
   
   if (circles == 4){
   
-    float D = 2.5     ;
+    float D = 2.5 ;
   
-    for (int i = 0; i < cir; i++){
+    for (int i = 0; i < circles; i++){
       FCircle myCircle1 = new FCircle(D)                 ;
       myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
       myCircle1.setStatic(true)                          ;
@@ -206,6 +206,23 @@ void setup(){
       world.add(myCircle1)                               ;
       D = D + 3;
     }
+  
+  } else if (circles == 3) {
+    
+    float D = 1.5 ;
+    
+    for (int i = 0; i < circles; i++){
+      
+      FCircle myCircle1 = new FCircle(D)                 ;
+      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+      myCircle1.setStatic(true)                          ;
+      myCircle1.setNoFill()                              ;
+      world.add(myCircle1)                               ;
+      D = D + 5                                          ;
+    }
+  
+  } else {
+  
   
   }
   
