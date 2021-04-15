@@ -129,7 +129,7 @@ void setup(){
    
   // MANDALAS //
 
-  float circles = 2 ;
+  float circles = 3 ;
   
   
   
