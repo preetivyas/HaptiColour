@@ -21,7 +21,7 @@ public class Brush extends PApplet{
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
   "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
   "../img/brush10.png"};
-  PImage[] brushImages = new PImage[3];
+  PImage[] brushImages = new PImage[4];
 
 
   public Brush(PImage[] bi) {
@@ -141,22 +141,32 @@ public class Brush extends PApplet{
   }
 
   //brush 2: faster larger, slower small
-  private void paint_2(PGraphics layer, float x, float y) {
-    //TODO: might leak out of wall or give a padding experience
-    layer.fill(color(paintColor[0], paintColor[1], paintColor[2]));
-    float distX;
-    float distY;
-    float avgdist;
-    distX = abs(x - prevX);
-    distY = abs(y - prevY);
-    avgdist = (distX+distY)/2; 
-    if (avgdist*5 > maxSize) {
-      layer.ellipse(x, y, maxSize*30/30, maxSize*30/30);
-    } else {
-      layer.ellipse(x, y, avgdist*5, avgdist*5);
-    }
-    prevX = x;
-    prevY = y;
+  //private void paint_2(PGraphics layer, float x, float y) {
+  //  //TODO: might leak out of wall or give a padding experience
+  //  layer.fill(color(paintColor[0], paintColor[1], paintColor[2]));
+  //  float distX;
+  //  float distY;
+  //  float avgdist;
+  //  distX = abs(x - prevX);
+  //  distY = abs(y - prevY);
+  //  avgdist = (distX+distY)/2; 
+  //  if (avgdist*5 > maxSize) {
+  //    layer.ellipse(x, y, maxSize*30/30, maxSize*30/30);
+  //  } else {
+  //    layer.ellipse(x, y, avgdist*5, avgdist*5);
+  //  }
+  //  prevX = x;
+  //  prevY = y;
+  //}
+  
+  //dual tip
+  private void paint_2(PGraphics layer, float x, float y){
+    layer.tint(paintColor[0], paintColor[1], paintColor[2], 200);
+    layer.pushMatrix();
+    layer.translate(x-maxSize/2, y-maxSize/2);
+    this.brushImages[3].resize((int)maxSize, (int)maxSize);
+    layer.image(this.brushImages[3], 0, 0);
+    layer.popMatrix();
   }
 
   //brush 3: different image brushes; we can give user an option to update their tooltip
