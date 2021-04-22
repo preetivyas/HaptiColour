@@ -33,7 +33,7 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 public final String WINDOWS = "COM4";
 public final String MAC = "/dev/cu.usbmodem14201";
 //public final String LINUX = "/dev/ttyUSB0";
-public final String PORT = WINDOWS; //<-- change the port name here!
+public final String PORT = MAC; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
@@ -136,8 +136,7 @@ int pageIndex = 0;
 String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
   "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
-  "../img/brush10.png", "../img/brush11.png", "../img/brush12.png", "../img/brush13.png", 
-  "../img/brush14.png"};
+  "../img/brush10.png", "../img/brush11.png", "../img/brush12.png", "../img/brush13.png"};
 //String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
 /* texture variables**********************/
@@ -340,7 +339,6 @@ void draw() {
   layers[2].clear();
   layers[2].background(0, 0);
   drawCursor(layers[2]);
-  drawText(layers[2]);
   layers[2].endDraw();
   image(layers[2], 0, 0, width, height);
   world.draw();
@@ -615,8 +613,7 @@ void createBrush() {
   PImage brushImage = loadImage(button_img[10]);
   PImage brushImage2 = loadImage(button_img[12]);
   PImage brushImage3 = loadImage(button_img[11]);
-  PImage brushImage4 = loadImage(button_img[13]);
-  brush = new Brush(drawingColor, new PImage[] {brushImage, brushImage2, brushImage3, brushImage4});
+  brush = new Brush(drawingColor, new PImage[] {brushImage, brushImage2, brushImage3});
   int[] coords = {0, 0};
   //Bristle b = new Bristle(1.0, brush, coords); //centered bristle
   //brush.addBristle(b);
@@ -708,13 +705,6 @@ float createColorPicker(ColorPalette palette) {
   return x;
 }
 
-void drawText(PGraphics layer){
- layer.fill(255, 0, 0);
- layer.text(paletteIndex, 3*width/5+4, 9*height/10 +10); //colour palette
- layer.text(brush.getBrushType(), width/2 - 26, 9*height/10 +10); //brush tip
- layer.text((int)brush.getScale(), 1*width/3+20, 9*height/10 +10); //brush size
-}
-
 void createGUI() {
   createPalettes();
   paletteIndex = 0;
@@ -791,7 +781,6 @@ void checkChangeColor() {
 void checkButtonActivation() {
   try {
     for (FBox item : GUIButtons) {
-      if (playerToken.h_avatar.isTouchingBody(item)) {
         switch(item.getName()) {
           case("next palette"):
           paletteIndex = (paletteIndex + 1 ) % (NUM_PALETTES);
@@ -857,7 +846,6 @@ void checkButtonActivation() {
         default:
           break;
         }
-      }
     }
   }
   catch (ConcurrentModificationException e) {
@@ -903,8 +891,8 @@ void setUpDevice() {
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
 
-  haplyBoard = new Board(this, "COM3", 0);
-  //haplyBoard = new Board(this, PORT, 0);
+  //haplyBoard = new Board(this, "COM3", 0);
+  haplyBoard = new Board(this, PORT, 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
@@ -930,9 +918,6 @@ void setUpDevice() {
 void createLayers() {
   layers[0] = g;
   layers[1] = createGraphics(1200, 680);
-  layers[1].beginDraw();
-  layers[1].background(255);
-  layers[1].endDraw();
   layers[2] = createGraphics(1200, 680);
 }
 
@@ -950,83 +935,4 @@ void textureUpdate() {
   }
   //}
 }
-
-//void createMandala() {
-
-//  switch(type) {
-//    case("1"):
-//    float D = 2.5 ;
-//    for (int i = 0; i < 4; i++) {
-//      FCircle myCircle1 = new FCircle(D)                 ;
-//      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
-//      myCircle1.setStatic(true)                          ;
-//      myCircle1.setNoFill()                              ;
-//      world.add(myCircle1)                               ;
-//      D = D + 3;
-//    }
-//    int n = 8   ;
-//    float d = 3 ;
-//    float xO  ;
-//    float yO  ;
-//    for (int i = 0; i < n; i++) {
-//      xO = 4.25 * sin(i * TWO_PI/n) ;
-//      yO = 4.25 * cos(i * TWO_PI/n) ;
-//      FCircle myCircle1 = new FCircle(d) ;
-//      myCircle1.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
-//      myCircle1.setStatic(true) ;
-//      myCircle1.setNoFill()     ;
-//      world.add(myCircle1)      ;
-//    }
-//    break;
-    
-//    case("2"):
-//    float D = 1.5 ;
-//    int n = 8 ;
-//    float d = 2.5 ;
-//    float xO  ;
-//    float yO  ;
-
-//    for (int i = 0; i < 3; i++) {
-//      FCircle myCircle1 = new FCircle(D)                 ;
-//      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
-//      myCircle1.setStatic(true)                          ;
-//      myCircle1.setNoFill()                              ;
-//      world.add(myCircle1)                               ;
-//      D = D + 5                                          ;
-//    }
-
-//    for (int i = 0; i < n; i++) {
-//      xO = 4.5 * sin(i * TWO_PI/n) ;
-//      yO = 4.5 * cos(i * TWO_PI/n) ;
-
-//      FCircle myCircle1 = new FCircle(d) ;
-//      myCircle1.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
-//      myCircle1.setStatic(true) ;
-//      myCircle1.setNoFill()     ;
-//      world.add(myCircle1)      ;
-//    }
-
-//    int m = 2    ;
-//    float h = 2.3;
-
-//    for (int i = 0; i < m; i++) {
-//      FLine line1 = new FLine(worldWidth/2, worldHeight/2-(3.25), worldWidth/2-h, worldHeight/2+(abs(h)));
-//      world.add(line1);
-//      h = -h;
-//    }
-
-//    for (int i = 0; i < m; i++) {
-//      FLine line1 = new FLine(worldWidth/2, worldHeight/2+(3.25), worldWidth/2-h, worldHeight/2-(abs(h)));
-//      world.add(line1);
-//      h = -h;
-//    }
-
-//    for (int i = 0; i < m; i++) {
-//      FLine line1 = new FLine(worldWidth/2-h, worldHeight/2+h, worldWidth/2+h, worldHeight/2+h);
-//      world.add(line1);
-//      h = -h;
-//    }
-//    break;
-//  }
-
-  /* end helper functions section ****************************************************************************************/
+/* end helper functions section ****************************************************************************************/
