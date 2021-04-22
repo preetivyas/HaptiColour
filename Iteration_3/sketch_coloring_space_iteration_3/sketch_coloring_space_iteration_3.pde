@@ -33,7 +33,7 @@ private final ScheduledExecutorService scheduler      = Executors.newScheduledTh
 public final String WINDOWS = "COM4";
 public final String MAC = "/dev/cu.usbmodem14201";
 //public final String LINUX = "/dev/ttyUSB0";
-public final String PORT = MAC; //<-- change the port name here!
+public final String PORT = WINDOWS; //<-- change the port name here!
 
 public final String FILENAME = "maze.txt"; //<-- set the default lineart to color!
 public final boolean PRINTMAZE = true; //<-- print the lineart in the System.out!
@@ -937,4 +937,83 @@ void textureUpdate() {
   }
   //}
 }
-/* end helper functions section ****************************************************************************************/
+
+//void createMandala() {
+
+//  switch(type) {
+//    case("1"):
+//    float D = 2.5 ;
+//    for (int i = 0; i < 4; i++) {
+//      FCircle myCircle1 = new FCircle(D)                 ;
+//      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+//      myCircle1.setStatic(true)                          ;
+//      myCircle1.setNoFill()                              ;
+//      world.add(myCircle1)                               ;
+//      D = D + 3;
+//    }
+//    int n = 8   ;
+//    float d = 3 ;
+//    float xO  ;
+//    float yO  ;
+//    for (int i = 0; i < n; i++) {
+//      xO = 4.25 * sin(i * TWO_PI/n) ;
+//      yO = 4.25 * cos(i * TWO_PI/n) ;
+//      FCircle myCircle1 = new FCircle(d) ;
+//      myCircle1.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
+//      myCircle1.setStatic(true) ;
+//      myCircle1.setNoFill()     ;
+//      world.add(myCircle1)      ;
+//    }
+//    break;
+    
+//    case("2"):
+//    float D = 1.5 ;
+//    int n = 8 ;
+//    float d = 2.5 ;
+//    float xO  ;
+//    float yO  ;
+
+//    for (int i = 0; i < 3; i++) {
+//      FCircle myCircle1 = new FCircle(D)                 ;
+//      myCircle1.setPosition(worldWidth/2, worldHeight/2) ;
+//      myCircle1.setStatic(true)                          ;
+//      myCircle1.setNoFill()                              ;
+//      world.add(myCircle1)                               ;
+//      D = D + 5                                          ;
+//    }
+
+//    for (int i = 0; i < n; i++) {
+//      xO = 4.5 * sin(i * TWO_PI/n) ;
+//      yO = 4.5 * cos(i * TWO_PI/n) ;
+
+//      FCircle myCircle1 = new FCircle(d) ;
+//      myCircle1.setPosition(xO+(worldWidth/2), yO+(worldHeight/2)) ;
+//      myCircle1.setStatic(true) ;
+//      myCircle1.setNoFill()     ;
+//      world.add(myCircle1)      ;
+//    }
+
+//    int m = 2    ;
+//    float h = 2.3;
+
+//    for (int i = 0; i < m; i++) {
+//      FLine line1 = new FLine(worldWidth/2, worldHeight/2-(3.25), worldWidth/2-h, worldHeight/2+(abs(h)));
+//      world.add(line1);
+//      h = -h;
+//    }
+
+//    for (int i = 0; i < m; i++) {
+//      FLine line1 = new FLine(worldWidth/2, worldHeight/2+(3.25), worldWidth/2-h, worldHeight/2-(abs(h)));
+//      world.add(line1);
+//      h = -h;
+//    }
+
+//    for (int i = 0; i < m; i++) {
+//      FLine line1 = new FLine(worldWidth/2-h, worldHeight/2+h, worldWidth/2+h, worldHeight/2+h);
+//      world.add(line1);
+//      h = -h;
+//    }
+//    break;
+//  }
+
+  /* end helper functions section ****************************************************************************************/

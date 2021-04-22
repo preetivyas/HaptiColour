@@ -93,7 +93,7 @@ void setup(){
    *      linux:        haplyBoard = new Board(this, "/dev/ttyUSB0", 0);
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem1411", 0);
    */ 
-  haplyBoard          = new Board(this, "COM3", 0);
+  haplyBoard          = new Board(this, "COM4", 0);
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
   
@@ -109,14 +109,14 @@ void setup(){
   hAPI_Fisica.setScale(pixelsPerCentimeter); 
   world               = new FWorld();
   
-  /* creation of walls */
-  wall                   = new FBox(5.0, 1.0)            ;
-  wall.setPosition(worldWidth/2.0-10, worldHeight/2.0-5) ;
-  wall.setDensity(100)                              ;
-  wall.setSensor(false)                             ;
-  wall.setStatic(true)                              ;
-  wall.setFill(0,0,0)                               ;
-  world.add(wall)                                   ;
+  ///* creation of walls */
+  //wall                   = new FBox(5.0, 1.0)            ;
+  //wall.setPosition(worldWidth/2.0-10, worldHeight/2.0-5) ;
+  //wall.setDensity(100)                              ;
+  //wall.setSensor(false)                             ;
+  //wall.setStatic(true)                              ;
+  //wall.setFill(0,0,0)                               ;
+  //world.add(wall)                                   ;
 
    
   // MANDALAS //
@@ -134,7 +134,7 @@ void setup(){
   int mandala = 2 ;  // 1 - mandala 1 // 2 - mandala 2 // 3 - mandala 3
   
   
-  if (mandala == 1){         // MANDALA 1
+  if (mandala == 3){         // MANDALA 1
   
     float D = 2.5 ;
   
