@@ -104,8 +104,9 @@ ArrayList<Wall> wallList;
 HashMap<Wall, FBox> wallToWorldList;
 
 /* Definition of maze end */
-FCircle end;
-FBox l1    ;
+FCircle end    ;
+FBox l1        ;
+FBox touchWall ;
 
 /* Textures squares and variables*/
 float dist = worldWidth/2-13.5;
@@ -117,7 +118,6 @@ boolean T3 ;
 boolean T4 ;
 boolean T5 ;
 boolean touch=false;
-//PImage  bi;
 
 FCircle bumps ;
 float lasttimecheck ;
@@ -129,13 +129,15 @@ float t1            ;
 float lasttimecheck2;
 float timeinterval2 ;
 float t2            ;
-float r = 1             ;
+float t5            ;
+float r = 1.1           ;
 float theta = 0         ;
 float theta_diff = 0.005;
 float m = 0.0011        ;
 
 String[] texture_img  = {"../img/texture1.png", "../img/texture2.png", "../img/texture3.png", "../img/texture4.png", "../img/texture5.png"} ;
 String[] texture_label = {"tex1", "tex2", "tex3", "tex4", "tex5"}                                                                           ;
+String textures                                                                                                                             ;
 
 //int[][] colors = { { 0, 0, 255, 100 }, { 0, 255, 0, 100 }, {255, 0, 0, 100}, {255, 205, 0, 100}, {255, 105, 180, 100}, {128, 0, 128, 100}, {139, 69, 19, 100}, {0, 0, 0, 100} };
 
@@ -158,18 +160,13 @@ ArrayList<FBox> GUIButtons = new ArrayList<FBox>();
 int shape; //what shape is the being drawn?
 boolean           colour;
 float             tooltipsize = 1; //PV: set tooltip size (0.5 to 1 seems to work the best)
-PImage            haplyAvatar, bi;
+PImage            haplyAvatar, bi, cover;
 String            tooltip        ;
 Brush brush                      ;
 ArrayList<ColorPalette> palettes ;
 int paletteIndex ;
 int pageIndex = 0;
 
-//String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.png", 
-//  "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
-//  "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
-//  "../img/brush10.png"};
-//String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
 /* texture variables**********************/
 FBox[][] tgrid =  new FBox[100][200];
@@ -274,18 +271,19 @@ void setup() {
 /* Texture "buttons" */
 
   for (int i = 0; i<5; i++) {
-    //bi = loadImage(texture_img[i])                ;
-    texture[i]  = new FBox(1.25,1.25)             ;
-    //cp5.addButton(texture_label[i]).setImage(bi)  ;
-    texture[i].add(texture_label[i], texture_img[i], x, y);
-    texture[i].setPosition(dist, worldHeight/2+8) ;
-    texture[i].setDensity(1)                      ;
-    texture[i].setSensor(true)                    ;
-    texture[i].setStatic(true)                    ;
-    texture[i].setNoStroke()                      ;
-    texture[i].setFill(255,255,255)               ;
-    world.add(texture[i])                         ;
-    dist = dist + 1.5                             ;
+    textures = texture_img[i]                    ;
+    cover = loadImage(textures)                  ;
+    cover.resize(50, 50)                         ;
+    texture[i]  = new FBox(1.25,1.25)            ;
+    texture[i].attachImage(cover)                ;
+    texture[i].setPosition(dist, worldHeight/2+8);
+    texture[i].setDensity(1)                     ;
+    texture[i].setSensor(true)                   ;
+    texture[i].setStatic(true)                   ;
+    texture[i].setNoStroke()                     ;
+    texture[i].setFill(255,255,255)              ;
+    world.add(texture[i])                        ;
+    dist = dist + 1.5                            ;
   }
 
   /****************************************************************/
@@ -306,7 +304,7 @@ void setup() {
 
   /* Timers */
   lasttimecheck = millis() ;
-  timeinterval = 500       ;
+  timeinterval = 200       ;
 
   lasttimecheck1 = millis();
   timeinterval1 = 200      ;
@@ -386,19 +384,19 @@ void draw() {
     }
   }
   pause += 1;
-  layers[2].beginDraw();
-  layers[2].clear();
-  layers[2].background(0, 0);
-  drawCursor(layers[2]);
-  layers[2].endDraw();
+  layers[2].beginDraw()                ;
+  layers[2].clear()                    ;
+  layers[2].background(0, 0)           ;
+  drawCursor(layers[2])                ;
+  layers[2].endDraw()                  ;
   image(layers[2], 0, 0, width, height);
-  world.draw();
+  world.draw()                         ;
   
   text("touch = " + touch, 40, 110);
   text("T4 = " + T4, 150, 110)     ;
   text("fEEx = " + fEE.x, 40, 130) ;
   text("fEEy = " + fEE.y, 40, 150) ;
-  text("timer = " + t2, 40, 170)   ;
+  text("timer = " + t, 40, 170)   ;
   textSize(16)                     ;
   fill(0, 0, 0)                    ;
   
@@ -491,7 +489,8 @@ class SimulationThread implements Runnable {
     }
     
     
-    if ((T4 == true) && (drawingModeEngaged==true) && (touch=false)) {
+    if ((T4 == true) && (drawingModeEngaged==true)) {
+    //if ((T4 == true) && (drawingModeEngaged==true) && (touch=false)) {
     
       t2 = millis() - lasttimecheck2;
       
@@ -503,7 +502,7 @@ class SimulationThread implements Runnable {
         
           fEE.x = 1.6*m * t2;
           fEE.y = 1.6*m * t2;
-        
+          
         } else {
               fEE.x = -m * t2;
               fEE.y = -m * t2;
@@ -524,15 +523,14 @@ class SimulationThread implements Runnable {
         lasttimecheck = millis()  ;
       }
 
-      if ((t >= 350) && (t < 500)) {
-        playerToken.h_avatar.setDamping(random(975, 995)) ;
+      if ((t >= 1) && (t < 100)) {
+        playerToken.h_avatar.setDamping(random(980, 995)) ;
       } else {
         playerToken.h_avatar.setDamping(damp) ;
       }
     }
     
-    
-    if ((T5 == true) && (drawingModeEngaged==true)) {
+      if ((T5 == true) && (drawingModeEngaged==true)) {
 
       t1 = millis() - lasttimecheck1 ;
 
@@ -549,10 +547,29 @@ class SimulationThread implements Runnable {
         world.add(bumps)             ;
       }
       
-      //if (bumps.isTouchingBody(SOMETHING: ANOTHER TIMER MAYBE)){
-      //  world.remove(bumps);
-      //}
+      if (touchWall.isTouchingBody(bumps)){
+        world.remove(bumps);
+      }
     }
+
+
+  //if ((T5 == true) && (drawingModeEngaged==true)) {
+    
+  //  t5 = millis() - lasttimecheck;
+      
+  //    if (millis() > lasttimecheck + timeinterval) {
+  //      lasttimecheck = millis()  ;
+  //    }
+
+  //    if ((t5 >= 1) && (t5 < 100)) {
+  //       fEE.y = 100;
+  //    }
+  //    else{
+  //      fEE.y = 0;
+  //     }
+   
+  
+  //}
 
     //textureUpdate();
     tvar = 0;
@@ -564,7 +581,7 @@ class SimulationThread implements Runnable {
     }
     else {
       if (drawingModeEngaged==true){
-        playerToken.h_avatar.setDamping(300) ; //680
+        //playerToken.h_avatar.setDamping(300) ; //680
         textureUpdate();}
       else{
         playerToken.h_avatar.setDamping(0) ;
@@ -574,7 +591,7 @@ class SimulationThread implements Runnable {
     //  
     //}
 
-    FBox touchWall ;
+    
     for (Wall item : wallList) {
       touchWall = wallToWorldList.get(item);
       if (C.isTouchingBody(touchWall)) {
@@ -1043,7 +1060,7 @@ void setUpDevice() {
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
 
-  haplyBoard = new Board(this, "COM3", 0);
+  haplyBoard = new Board(this, "COM4", 0);
   //haplyBoard = new Board(this, PORT, 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);

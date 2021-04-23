@@ -5,7 +5,7 @@ import processing.core.PApplet;
 import static java.lang.Math.*;
 
 public class Brush extends PApplet{
-  public final int NUM_BRUSH_TYPES = 6;
+  public final int NUM_BRUSH_TYPES = 12;
   private float paintAmount;
   private int[] paintColor = new int[3];
   private ArrayList<Bristle> bristles = new ArrayList<Bristle>();
@@ -38,7 +38,9 @@ public class Brush extends PApplet{
   }
 
   public void changeColor(int[] c) {
+    if (this.brushType < 7){
     this.paintColor = c;
+    }
   }
 
   public int[] getColor() {
@@ -106,6 +108,24 @@ public class Brush extends PApplet{
       break;
       case(6):
       paint_6(layer, x, y);
+      break;
+      case(7):
+      paint_7(layer, x, y);
+      break;
+      case(8):
+      paint_8(layer, x, y);
+      break;
+      case(9):
+      paint_9(layer, x, y);
+      break;
+      case(10):
+      paint_10(layer, x, y);
+      break;
+      case(11):
+      paint_11(layer, x, y);
+      break;
+      case(12):
+      paint_12(layer, x, y);
       break;
     default:
       layer.ellipse(x, y, maxSize, maxSize);
@@ -186,7 +206,7 @@ public class Brush extends PApplet{
     layer.pushMatrix();
     layer.translate(x, y);
     layer.rotate((float)(brushAngle+((3*PI)/2)));
-    this.brushImages[1].resize((int)maxSize, 1); //can play with the thikness, currently 1
+    this.brushImages[1].resize((int)maxSize, 5); //can play with the thikness, currently 1
     layer.image(this.brushImages[1], 0, 0);
     layer.popMatrix();
     prevX = x;
@@ -249,4 +269,83 @@ public class Brush extends PApplet{
       prevY = y;
     }
   }
+  
+  private void paint_7(PGraphics layer, float x, float y){//star
+    layer.tint(255);
+    layer.pushMatrix();
+      int max = 0;
+      int min = -40;
+    //layer.translate(x-maxSize/2, y-maxSize/2);
+    float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
+    layer.translate(x+jiggle, y+jiggle);
+    this.brushImages[4].resize((int)maxSize, (int)maxSize);
+    layer.image(this.brushImages[4], 0, 0);
+    layer.popMatrix();
+  }
+  
+  private void paint_8(PGraphics layer, float x, float y){ //rainbow
+    layer.tint(255);
+    layer.pushMatrix();
+     int max = 0;
+      int min = -40;
+    //layer.translate(x-maxSize/2, y-maxSize/2);
+    float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
+    layer.translate(x+jiggle, y+jiggle);
+    this.brushImages[5].resize((int)maxSize, (int)maxSize);
+    layer.image(this.brushImages[5], 0, 0);
+    layer.popMatrix();
+  }
+  
+  private void paint_9(PGraphics layer, float x, float y){ //umbrella   
+    layer.tint(255);
+    layer.pushMatrix();
+     int max = 0;
+      int min = -40;
+    //layer.translate(x-maxSize/2, y-maxSize/2);
+    float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
+    layer.translate(x+jiggle, y+jiggle);
+    this.brushImages[6].resize((int)maxSize, (int)maxSize);
+    layer.image(this.brushImages[6], 0, 0);
+    layer.popMatrix();
+  }
+  
+   private void paint_10(PGraphics layer, float x, float y){ //flowers
+    layer.tint(255);
+    layer.pushMatrix();
+     int max = 0;
+      int min = -40;
+    //layer.translate(x-maxSize/2, y-maxSize/2);
+    float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
+    layer.translate(x+jiggle, y+jiggle);
+    this.brushImages[7].resize((int)maxSize*2, (int)maxSize*2);
+    layer.image(this.brushImages[7], 0, 0);
+    layer.popMatrix();
+  }
+  
+   private void paint_11(PGraphics layer, float x, float y){//sunflower
+    layer.tint(255);
+    layer.pushMatrix();
+     int max = 0;
+      int min = -40;
+    //layer.translate(x-maxSize/2, y-maxSize/2);
+    float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
+    layer.translate(x+jiggle, y+jiggle);
+    this.brushImages[8].resize((int)maxSize*2, (int)maxSize*2);
+    layer.image(this.brushImages[8], 0, 0);
+    layer.popMatrix();
+  }
+  
+   private void paint_12(PGraphics layer, float x, float y){ //pizza
+    layer.tint(255);
+    layer.pushMatrix();
+     int max = 0;
+      int min = -40;
+    //layer.translate(x-maxSize/2, y-maxSize/2);
+    float jiggle =  (int)Math.floor(Math.random()*(max-min+1)+min);
+    layer.translate(x+jiggle, y+jiggle);
+    this.brushImages[9].resize((int)maxSize*2, (int)maxSize*2);
+    layer.image(this.brushImages[9], 0, 0);
+    layer.popMatrix();
+  }
+  
 }

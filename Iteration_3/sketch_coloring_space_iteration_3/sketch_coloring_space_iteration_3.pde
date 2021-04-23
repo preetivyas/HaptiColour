@@ -137,11 +137,11 @@ String[] button_img = {"../img/brush1.png", "../img/brush2.png", "../img/brush3.
   "../img/brush4.png", "../img/brush5.png", "../img/brush6.png", 
   "../img/brush7.png", "../img/brush8.png", "../img/brush9.png", 
   "../img/brush10.png", "../img/brush11.png", "../img/brush12.png", "../img/brush13.png", 
-  "../img/brush14.png"};
+  "../img/brush14.png", "../img/brush15.png", "../img/brush16.png", "../img/brush17.png"};
 //String[] button_label = {"b1", "b2", "b3", "b4", "b5", "b6", "b7", "b8", "b9", "b10"};
 
 /* texture variables**********************/
-FBox[][] tgrid =  new FBox[100][200];
+FBox[][] hgrid =  new FBox[100][200];
 FBox[][] vgrid =  new FBox[100][200];
 FBox[][] bgrid =  new FBox[100][200];
 
@@ -154,8 +154,11 @@ float ydim = worldHeight;
 float space = 1.5;
 float wall_h = 2;
 float wall_w = 0.1;
-int iloop, jloop;
+public int tjloop, tiloop, viloop, vjloop, biloop, bjloop, iloop, jloop;
 PFont p;
+
+float lasttimecheck, lasttimecheck2, timeinterval, timeinterval2, t, t2        ;
+float m = 0.0013        ;
 
 /*****************************************/
 
@@ -217,32 +220,71 @@ void setup() {
 
 
   /*texture specific code*********************************************/
+  if (HIDE_TEXTURE) {
+    opacity = 0;
+  } else {  
+    opacity = 100;
+  }
+
   space = 1.2;
   wall_h = 1.6;
-  wall_w = 1;  //
+  wall_w = 0.1;  //
 
   jloop = int(ydim/2);
   iloop = int(xdim/space);
 
-  if (HIDE_TEXTURE) {
-    opacity = 0;
-  } else
-  {  
-    opacity = 100;
+  for (int j = 0; j<jloop; j++) {
+    for (int i = 0; i<iloop; i++) {
+      vgrid[j][i] = new FBox(wall_w, wall_h);
+      vgrid[j][i].setPosition((i+1)*space, (j+0.8)*2);
+      vgrid[j][i].setFill(40, 62, 102, opacity) ;
+      vgrid[j][i].setDensity(100);
+      vgrid[j][i].setSensor(true);
+      vgrid[j][i].setNoStroke()  ;
+      vgrid[j][i].setStatic(true);
+      world.add(vgrid[j][i]);
+    }
   }
+
+  space = 1.2;
+  wall_h = 1.6;
+  wall_w = 1;  //
 
   for (int j = 0; j<jloop; j++) {
     for (int i = 0; i<iloop; i++) {
-      tgrid[j][i] = new FBox(wall_w, wall_h);
-      tgrid[j][i].setPosition((i+1)*space, (j+0.8)*2);
-      tgrid[j][i].setFill(40, 62, 102, opacity) ;
-      tgrid[j][i].setDensity(100);
-      tgrid[j][i].setSensor(true);
-      tgrid[j][i].setNoStroke()  ;
-      tgrid[j][i].setStatic(true);
-      world.add(tgrid[j][i]);
+      bgrid[j][i] = new FBox(wall_w, wall_h);
+      bgrid[j][i].setPosition((i+1)*space, (j+0.8)*2);
+      bgrid[j][i].setFill(40, 62, 102, opacity) ;
+      bgrid[j][i].setDensity(100);
+      bgrid[j][i].setSensor(true);
+      bgrid[j][i].setNoStroke()  ;
+      bgrid[j][i].setStatic(true);
+      world.add(bgrid[j][i]);
     }
   }
+
+  space = 1.2;
+  wall_h = 1.6;
+  wall_w = 0.1;  
+
+  for (int j = 0; j<iloop; j++) {
+    for (int i = 0; i<jloop+5; i++) {
+      hgrid[j][i] = new FBox(wall_h, wall_w);
+      hgrid[j][i].setPosition((j+0.8)*2, (i+1)*space);
+      hgrid[j][i].setFill(40, 62, 102, opacity) ;
+      hgrid[j][i].setDensity(100);
+      hgrid[j][i].setSensor(true);
+      hgrid[j][i].setNoStroke()  ;
+      hgrid[j][i].setStatic(true);
+      world.add(hgrid[j][i]);
+    }
+  }
+
+  lasttimecheck = millis() ;
+  timeinterval = 200       ;
+  
+  lasttimecheck2 = millis();
+  timeinterval2 = 1000     ;
 
   /****************************************************************/
 
@@ -373,8 +415,6 @@ class SimulationThread implements Runnable {
     fEE.set(-playerToken.getVirtualCouplingForceX(), playerToken.getVirtualCouplingForceY());
     fEE.div(100000); //dynes to newtons
 
-    torques.set(widgetOne.set_device_torques(fEE.array()));
-    widgetOne.device_write_torques();
 
     //textureUpdate();
     tvar = 0;
@@ -385,7 +425,6 @@ class SimulationThread implements Runnable {
       playerToken.h_avatar.setDamping(850) ; //850
     } else {
       if (drawingModeEngaged==true) {
-        playerToken.h_avatar.setDamping(680) ;
         textureUpdate();
       } else {
         playerToken.h_avatar.setDamping(0) ;
@@ -400,9 +439,12 @@ class SimulationThread implements Runnable {
       touchWall = wallToWorldList.get(item);
       if (C.isTouchingBody(touchWall)) {
         playerToken.h_avatar.setDamping(damp); //820
+      } else {
+        //playerToken.h_avatar.setDamping(0);
       }
     }
-
+    torques.set(widgetOne.set_device_torques(fEE.array()));
+    widgetOne.device_write_torques();
 
     world.step(1.0f/1000.0f);
     renderingForce = false  ;
@@ -616,7 +658,9 @@ void createBrush() {
   PImage brushImage2 = loadImage(button_img[12]);
   PImage brushImage3 = loadImage(button_img[11]);
   PImage brushImage4 = loadImage(button_img[13]);
-  brush = new Brush(drawingColor, new PImage[] {brushImage, brushImage2, brushImage3, brushImage4});
+  brush = new Brush(drawingColor, new PImage[] {brushImage, brushImage2, brushImage3, brushImage4, 
+    loadImage(button_img[7]), loadImage(button_img[8]), loadImage(button_img[9]), 
+    loadImage(button_img[14]), loadImage(button_img[15]), loadImage(button_img[16])});
   int[] coords = {0, 0};
   //Bristle b = new Bristle(1.0, brush, coords); //centered bristle
   //brush.addBristle(b);
@@ -708,11 +752,11 @@ float createColorPicker(ColorPalette palette) {
   return x;
 }
 
-void drawText(PGraphics layer){
- layer.fill(255, 0, 0);
- layer.text(paletteIndex, 3*width/5+4, 9*height/10 +10); //colour palette
- layer.text(brush.getBrushType(), width/2 - 26, 9*height/10 +10); //brush tip
- layer.text((int)brush.getScale(), 1*width/3+20, 9*height/10 +10); //brush size
+void drawText(PGraphics layer) {
+  layer.fill(255, 0, 0);
+  layer.text(paletteIndex, 3*width/5+4, 9*height/10 +10); //colour palette
+  layer.text(brush.getBrushType(), width/2 - 26, 9*height/10 +10); //brush tip
+  layer.text((int)brush.getScale(), 1*width/3+20, 9*height/10 +10); //brush size
 }
 
 void createGUI() {
@@ -903,8 +947,8 @@ void setUpDevice() {
    *      mac:          haplyBoard = new Board(this, "/dev/cu.usbmodem14201", 0);
    */
 
-  haplyBoard = new Board(this, "COM3", 0);
-  //haplyBoard = new Board(this, PORT, 0);
+  //haplyBoard = new Board(this, "COM3", 0);
+  haplyBoard = new Board(this, PORT, 0);
 
   widgetOne           = new Device(widgetOneID, haplyBoard);
   pantograph          = new Pantograph();
@@ -940,15 +984,110 @@ void textureUpdate() {
 
   //if (drawingModeEngaged == true) {
   //tgrid damp 356
-  for (int j=0; j<jloop; j++) {
-    for (int i=0; i<iloop; i++) {
-      if (playerToken.h_avatar.isTouchingBody(tgrid[i][j])) {
-        playerToken.h_avatar.setDamping(damp);
+  //}
+  switch(brush.getBrushType()) {
+    case(1):
+    texture_1();
+    break;
+    case(2):
+    texture_2();
+    break;
+    case(3):
+    texture_3();
+    break;
+    case(4):
+    texture_4();
+    break;
+    case(5):
+    texture_5();
+    break;
+    case(6):
+    texture_6();
+    break;
+    case(7):
+    texture_7();
+    break;
+    default:
+    texture_2();
+    break;
+  }
+}
+
+void texture_1() {//vertical grid
+  playerToken.h_avatar.setDamping(680) ;
+  for (int j=0; j<iloop; j++) {
+    for (int i=0; i<jloop; i++) {
+      if (playerToken.h_avatar.isTouchingBody(vgrid[i][j])) {
+        playerToken.h_avatar.setDamping(0);
         tvar = 1;
       }
     }//println(s);
   }
-  //}
+}
+
+void texture_2() { //wide vertical grid
+  playerToken.h_avatar.setDamping(680) ;
+  for (int j=0; j<iloop; j++) {
+    for (int i=0; i<jloop; i++) {
+      if (playerToken.h_avatar.isTouchingBody(bgrid[i][j])) {
+        playerToken.h_avatar.setDamping(700);
+        tvar = 1;
+      }
+    }//println(s);
+  }
+}
+
+void texture_3() { //horizontal grid
+  playerToken.h_avatar.setDamping(680) ;
+  for (int j=0; j<jloop; j++) {
+    for (int i=0; i<iloop+5; i++) {
+      if (playerToken.h_avatar.isTouchingBody(hgrid[i][j])) {
+        playerToken.h_avatar.setDamping(0);
+        tvar = 1;
+      }
+    }//println(s);
+  }
+}
+
+void texture_4() { //random rough texture
+  fEE.x = random(-1.25, 1.25) ;
+  fEE.y = random(-1.25, 1.25) ;
+}
+
+void texture_5() { //random rough texture
+  fEE.x = random(-1.25, 1.25) ;
+  fEE.y = random(-1.25, 1.25) ;
+}
+
+void texture_6() { //random rough texture
+  t = millis() - lasttimecheck;
+  if (millis() > lasttimecheck + timeinterval) {
+    lasttimecheck = millis()  ;
+  }
+  if ((t >= 1) && (t < 100)) {
+    playerToken.h_avatar.setDamping(random(980, 995)) ;
+  } else {
+    playerToken.h_avatar.setDamping(damp) ;
+  }
+}
+
+void texture_7() {//active moving cursor
+
+  t2 = millis() - lasttimecheck2;
+
+  if (millis() > lasttimecheck2 + timeinterval2) {
+    lasttimecheck2 = millis()   ;
+  }
+
+  if ((t2 >= 0) && (t2 < 500)) {
+
+    fEE.x = 2*m * t2;
+    fEE.y = 2*m * t2;
+  } else {
+
+    fEE.x = -m * t2;
+    fEE.y = -m * t2;
+  }
 }
 
 //void createMandala() {
@@ -978,7 +1117,7 @@ void textureUpdate() {
 //      world.add(myCircle1)      ;
 //    }
 //    break;
-    
+
 //    case("2"):
 //    float D = 1.5 ;
 //    int n = 8 ;
@@ -1029,4 +1168,4 @@ void textureUpdate() {
 //    break;
 //  }
 
-  /* end helper functions section ****************************************************************************************/
+/* end helper functions section ****************************************************************************************/
