@@ -501,7 +501,7 @@ class SimulationThread implements Runnable {
         
           fEE.x = 1.6*m * t2;
           fEE.y = 1.6*m * t2;
-        
+          
         } else {
               fEE.x = -m * t2;
               fEE.y = -m * t2;
@@ -529,28 +529,46 @@ class SimulationThread implements Runnable {
       }
     }
     
-      if ((T5 == true) && (drawingModeEngaged==true)) {
+    //  if ((T5 == true) && (drawingModeEngaged==true)) {
 
-      t1 = millis() - lasttimecheck1 ;
+    //  t1 = millis() - lasttimecheck1 ;
 
-      if (millis() > lasttimecheck1 + timeinterval1) {
-        lasttimecheck1 = millis() ;
+    //  if (millis() > lasttimecheck1 + timeinterval1) {
+    //    lasttimecheck1 = millis() ;
         
-        bumps = new FCircle(1)       ;
-        bumps.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY()-0.15);
-        bumps.setNoFill()            ;
-        bumps.setDensity(100)        ;
-        bumps.setStroke(0, 0, 0, 10) ;
-        bumps.setSensor(false)       ;
-        bumps.setStatic(false)       ;
-        world.add(bumps)             ;
-      }
+    //    bumps = new FCircle(1)       ;
+    //    bumps.setPosition(playerToken.h_avatar.getX(), playerToken.h_avatar.getY()-0.15);
+    //    bumps.setNoFill()            ;
+    //    bumps.setDensity(100)        ;
+    //    bumps.setStroke(0, 0, 0, 10) ;
+    //    bumps.setSensor(false)       ;
+    //    bumps.setStatic(false)       ;
+    //    world.add(bumps)             ;
+    //  }
       
-      if (touchWall.isTouchingBody(bumps)){
-        world.remove(bumps);
-      }
-    }
+    //  if (touchWall.isTouchingBody(bumps)){
+    //    world.remove(bumps);
+    //  }
+    //}
 
+
+  if ((T5 == true) && (drawingModeEngaged==true)) {
+    
+    t = millis() - lasttimecheck;
+      
+      if (millis() > lasttimecheck + timeinterval) {
+        lasttimecheck = millis()  ;
+      }
+
+      if ((t >= 1) && (t < 100)) {
+         fEE.x = 2;
+      }
+      else{
+        fEE.x = 0;
+       }
+   
+  
+  }
 
     //textureUpdate();
     tvar = 0;
